@@ -1,0 +1,11 @@
+{
+  "restartable": "rs",
+  "verbose": true,
+  "watch": ["src/"],
+  "execMap": {
+     "js": "babel-node"
+  },
+  "env": {
+    "NODE_ENV": "production"
+  }
+}

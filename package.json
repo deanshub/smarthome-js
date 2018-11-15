@@ -1,0 +1,46 @@
+{
+  "name": "broadlinkjs",
+  "version": "0.2.0",
+  "description": "A Node.JS library for controlling Broadlink devices",
+  "main": "src/index.js",
+  "types": "index.d.ts",
+  "scripts": {
+    "test": "jest",
+    "start": "nodemon src/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/deanshub/broadlinkjs.git"
+  },
+  "keywords": [
+    "Broadlink",
+    "IoT",
+    "remote",
+    "control"
+  ],
+  "author": "Dean Shub",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/deanshub/broadlinkjs/issues"
+  },
+  "homepage": "https://github.com/deanshub/broadlinkjs#readme",
+  "dependencies": {
+    "@types/node": "^7.0.5",
+    "broadlinkjs": "^0.1.0",
+    "config": "^1.30.0",
+    "fs-extra": "^6.0.1",
+    "node-telegram-bot-api": "^0.30.0"
+  },
+  "directories": {
+    "test": "test"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-core": "^6.26.3",
+    "babel-eslint": "^8.2.5",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-stage-0": "^6.24.1",
+    "eslint": "^5.9.0",
+    "nodemon": "^1.18.6"
+  }
+}
