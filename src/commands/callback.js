@@ -1,9 +1,14 @@
+import config from 'config'
 import botCommander from '../botCommander'
 import broadlinkController from '../broadlinkController'
 import CONSTS from '../consts'
 
 function getRoomFromData(data, command) {
   return data.substr(0, data.length - command.length)
+}
+
+function isAdmin(msg) {
+  return config.ADMINS_CHATID.includes(`${msg.from.id}`)
 }
 
 function getEmoji(name) {
@@ -28,7 +33,11 @@ function getEmoji(name) {
 }
 
 export default async function(msg, data){
-  if (data.endsWith(CONSTS.COMMANDS.BACK)) {
+  if (!isAdmin(msg) && !data.endsWith(CONSTS.COMMANDS.BACK)){
+    return botCommander.sendMessage(msg.from.id, 'Not Authorized!').then(()=>{
+      config.ADMINS_CHATID.forEach(adminId=> botCommander.sendMessage(adminId, `${JSON.stringify(msg, null, 2)}\n\nrequested usage of ${data}`))
+    })
+  } else if (data.endsWith(CONSTS.COMMANDS.BACK)) {
     return botCommander.runCommand('start', msg)
   } else if (data.endsWith(CONSTS.COMMANDS.COLD)) {
     const room = getRoomFromData(data, CONSTS.COMMANDS.COLD).toLocaleLowerCase()
