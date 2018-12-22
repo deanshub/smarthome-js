@@ -2,6 +2,7 @@ import fs from 'fs-extra'
 import path from 'path'
 import Broadlink from './Broadlink'
 import CONSTS from './consts'
+import logger from './logger'
 var b = new Broadlink()
 
 const names = Object.values(CONSTS.ROOMS)
@@ -25,12 +26,14 @@ const devicesReady = new Promise((resolve) => {
     getDeviceNames.then(devicesNames=>{
       const devName = devicesNames.find(d=>d.key.toString()===dev.key.toString())
       dev.name = (devName&&devName.name)||'Unkown'
+      logger.info(`device "${dev.name}" found`)
       devices.push(dev)
       setTimeout(()=>{
         resolve(devices)
       },200)
     })
   })
+  logger.info('discovering...')
   b.discover()
 })
 
@@ -71,7 +74,7 @@ const workroom = {
     return getDeviceByName(CONSTS.ROOMS.WORKROOM).then(dev=>{
       return new Promise((resolve, reject) => {
         dev.on('rawData', data => {
-          console.log(data);
+          logger.info(data)
           fs.writeFile(path.join(__dirname, '../signals', `${cmd}.deg`), data).then(resolve).catch(reject)
         })
         dev.checkData()
@@ -92,7 +95,7 @@ const livingroom = {
     return getDeviceByName(CONSTS.ROOMS.LIVINGROOM).then(dev=>{
       return new Promise((resolve, reject) => {
         dev.on('rawData', data => {
-          console.log(data);
+          logger.info(data)
           fs.writeFile(path.join(__dirname, '../signals', `${cmd}.deg`), data).then(resolve).catch(reject)
         })
         dev.checkData()
@@ -112,6 +115,7 @@ const bedroom = {
     onFile = 'bed30.deg'
     sendSignal(onFile, CONSTS.ROOMS.BEDROOM)
   },
+  tv: () => sendSignal('bedTv.deg', CONSTS.ROOMS.BEDROOM),
   off: () => sendSignal(onFile, CONSTS.ROOMS.BEDROOM),
   temprature: ()=>{
     return getDeviceByName(CONSTS.ROOMS.BEDROOM).then(checkSingleTemperature)
@@ -120,7 +124,7 @@ const bedroom = {
     return getDeviceByName(CONSTS.ROOMS.BEDROOM).then(dev=>{
       return new Promise((resolve, reject) => {
         dev.on('rawData', data => {
-          console.log(data);
+          logger.info(data)
           fs.writeFile(path.join(__dirname, '../signals', `${cmd}.deg`), data).then(resolve).catch(reject)
         })
         dev.checkData()

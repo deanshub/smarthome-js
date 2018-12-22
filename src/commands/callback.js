@@ -14,22 +14,39 @@ function isAdmin(msg) {
 function getEmoji(name) {
   switch (name) {
   case CONSTS.COMMANDS.COLD:
-    return '❄️'
+    return `❄️ ${name}`
   case CONSTS.COMMANDS.TEMPRATURE:
-    return '🌡️'
+    return `🌡️ ${name}`
   case CONSTS.COMMANDS.HOT:
-    return '☀️'
+    return `☀️ ${name}`
   case CONSTS.COMMANDS.OFF:
-    return '💀'
+    return `💀 ${name}`
   case CONSTS.COMMANDS.LEARN:
-    return '🎓'
+    return `🎓 ${name}`
   case CONSTS.COMMANDS.BACK:
-    return '⬅️'
+    return `⬅️ ${name}`
+  case CONSTS.COMMANDS.TV:
+    return `📺 ${name}`
 
   default:
     return name.charAt(0).toUpperCase() + name.slice(1).toLocaleLowerCase()
   }
+}
 
+function filterCommand(cmd, room) {
+  if (cmd===CONSTS.COMMANDS.TV){
+    if (room===CONSTS.ROOMS.BEDROOM){
+      return true
+    }
+    return false
+  }
+  if (cmd===CONSTS.COMMANDS.TEMPRATURE) {
+    if (room===CONSTS.ROOMS.WORKROOM){
+      return true
+    }
+    return false
+  }
+  return true
 }
 
 export default async function(msg, data){
@@ -68,8 +85,13 @@ export default async function(msg, data){
     const room = getRoomFromData(data, CONSTS.COMMANDS.OFF).toLocaleLowerCase()
     broadlinkController[room][CONSTS.COMMANDS.OFF.toLocaleLowerCase()].call(this)
     return botCommander.runCommand('start', msg)
+  } else if (data.endsWith(CONSTS.COMMANDS.TV)) {
+    const room = getRoomFromData(data, CONSTS.COMMANDS.TV).toLocaleLowerCase()
+    broadlinkController[room][CONSTS.COMMANDS.TV.toLocaleLowerCase()].call(this)
+    return botCommander.runCommand('start', msg)
   } else {
     const inlineButtons = Object.keys(CONSTS.COMMANDS)
+      .filter(cmdKey => filterCommand(cmdKey, data.toUpperCase()))
       .reduce((res, key, index)=>{
         if (index % 3 === 0) {
           res.push([])

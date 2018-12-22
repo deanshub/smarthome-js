@@ -4,6 +4,7 @@ export default {
     TEMPRATURE: 'TEMPRATURE',
     HOT: 'HOT',
     OFF: 'OFF',
+    TV: 'TV',
     LEARN: 'LEARN',
     BACK: 'BACK',
   },

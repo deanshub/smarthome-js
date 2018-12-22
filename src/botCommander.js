@@ -1,5 +1,6 @@
 import config from 'config'
 import TelegramBot from 'node-telegram-bot-api'
+import logger from './logger'
 
 const options = {
   polling: true,
@@ -12,18 +13,18 @@ const options = {
 }
 const bot = new TelegramBot(config.BOT_TOKEN, options)
 
-// bot.on('polling_error', (error) => {
-//   console.error(error.code)
-//   console.error(error.Error || error)
-// })
+bot.on('polling_error', (error) => {
+  logger.error(error.code)
+  logger.error(error.Error || error)
+})
 // bot.on('webhook_error', (error) => {
-//   console.error(error.code)
-//   console.error(error.Error || error)
+//   logger.error(error.code)
+//   logger.error(error.Error || error)
 // })
-// bot.on('error', (error) => {
-//   console.error(error.code)
-//   console.error(error.Error || error)
-// })
+bot.on('error', (error) => {
+  logger.error(error.code)
+  logger.error(error.Error || error)
+})
 
 
 const allKeyboardOpts ={
