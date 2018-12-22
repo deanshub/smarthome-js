@@ -35,7 +35,7 @@ function getEmoji(name) {
 
 function filterCommand(cmd, room) {
   if (cmd===CONSTS.COMMANDS.TV){
-    if (room===CONSTS.ROOMS.BEDROOM){
+    if (room===CONSTS.ROOMS.BEDROOM || room===CONSTS.ROOMS.LIVINGROOM){
       return true
     }
     return false

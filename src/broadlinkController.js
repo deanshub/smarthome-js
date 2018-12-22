@@ -91,6 +91,7 @@ const livingroom = {
   temprature: ()=>{
     return getDeviceByName(CONSTS.ROOMS.LIVINGROOM).then(checkSingleTemperature)
   },
+  tv: () => sendSignal('salonTv.deg', CONSTS.ROOMS.LIVINGROOM),
   learn: (cmd) => {
     return getDeviceByName(CONSTS.ROOMS.LIVINGROOM).then(dev=>{
       return new Promise((resolve, reject) => {
