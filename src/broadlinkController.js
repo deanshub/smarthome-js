@@ -1,142 +1,127 @@
-import fs from 'fs-extra'
-import path from 'path'
-import Broadlink from './Broadlink'
-import CONSTS from './consts'
-import logger from './logger'
-var b = new Broadlink()
+import fs from "fs-extra";
+import path from "path";
+import Broadlink from "./Broadlink";
+import CONSTS from "./consts";
+import logger from "./logger";
+const b = new Broadlink();
 
-const names = Object.values(CONSTS.ROOMS)
+const names = Object.values(CONSTS.ROOMS);
 
 const getDeviceNames = Promise.all([
-  fs.readFile(path.join(__dirname, '../devices', 'Broadlink RM Mini1')),
-  fs.readFile(path.join(__dirname, '../devices', 'Broadlink RM Mini2')),
-  fs.readFile(path.join(__dirname, '../devices', 'Broadlink RM2 Pro Plus v23')),
-]).then(keys=>{
-  return keys.map((key, index)=>({
+  fs.readFile(path.join(__dirname, "../devices", "Broadlink RM Mini1")),
+  fs.readFile(path.join(__dirname, "../devices", "Broadlink RM Mini2")),
+  fs.readFile(path.join(__dirname, "../devices", "Broadlink RM2 Pro Plus v23"))
+]).then(keys => {
+  return keys.map((key, index) => ({
     key,
-    name: names[index].toLocaleLowerCase(),
-  }))
-})
+    name: names[index].toLocaleLowerCase()
+  }));
+});
 
-const devicesReady = new Promise((resolve) => {
-  const devices = []
-  b.on('deviceReady', (dev) => {
-    dev.checkData()
+const devicesReady = new Promise(resolve => {
+  const devices = {};
+  let unkownIndex = 0;
+  b.on("deviceReady", dev => {
+    dev.checkData();
     // fs.writeFile(path.join(__dirname, '../devices', `${dev.model}${index}`), dev.key)
-    getDeviceNames.then(devicesNames=>{
-      const devName = devicesNames.find(d=>d.key.toString()===dev.key.toString())
-      dev.name = (devName&&devName.name)||'Unkown'
-      logger.info(`device "${dev.name}" found`)
-      devices.push(dev)
-      setTimeout(()=>{
-        resolve(devices)
-      },200)
-    })
-  })
-  logger.info('discovering...')
-  b.discover()
-})
+    getDeviceNames.then(devicesNames => {
+      const devName = devicesNames.find(
+        d => d.key.toString() === dev.key.toString()
+      );
+      dev.name = (devName && devName.name) || `Unkown${unkownIndex++}`;
+      logger.info(`device "${dev.name}" found`);
+      devices[dev.name] = dev;
+      setTimeout(() => {
+        resolve(devices);
+      }, 200);
+    });
+  });
+  logger.info("discovering...");
+  b.discover();
+});
 
-const getDeviceByName = (name) => {
-  const lowercasedName = name.toLocaleLowerCase()
-  return devicesReady.then(devs=>{
-    return devs.find(dev=>dev.name===lowercasedName)
-  })
-}
+const getDeviceByName = name => {
+  const lowercasedName = name.toLocaleLowerCase();
+  return devicesReady.then(devices => devices[lowercasedName]);
+};
 
-const sendSignal = (signalFile, name) => {
-  return getDeviceByName(name).then(dev=>{
-    return fs.readFile(path.join(__dirname, '../signals', signalFile)).then(data=>({dev, data}))
-  }).then(({dev, data}) => {
-    return dev.sendData(data)
-  })
-}
+const sendSignal = async (signalFile, deviceName) => {
+  const dev = await getDeviceByName(name);
+  const signalData = await fs.readFile(
+    path.join(__dirname, "../signals", signalFile)
+  );
+  return dev.sendData(signalData);
+};
 
-const checkSingleTemperature = (dev) => {
-  return new Promise(resolve=>{
+const learnSignal = (deviceName, signalName) => {
+  const dev = await getDeviceByName(name);
+  return new Promise((resolve, reject) => {
+    dev.on("rawData", signalData => {
+      fs.writeFile(
+        path.join(__dirname, "../signals", `${signalName}.deg`),
+        signalData
+      )
+        .then(resolve)
+        .catch(reject);
+    });
+    dev.checkData();
+    dev.enterLearning();
+  });
+};
+
+const checkSingleTemperature = dev => {
+  return new Promise(resolve => {
     // const temperatureFn = (temp)=>{
     //   // dev.off('temperature', temperatureFn)
     //   resolve(temp)
     // }
-    dev.on('temperature', resolve)
-    dev.checkTemperature()
-  })
-}
+    dev.on("temperature", resolve);
+    dev.checkTemperature();
+  });
+};
 
 const workroom = {
-  cold: () => sendSignal('work17.deg', CONSTS.ROOMS.WORKROOM),
-  hot: () => sendSignal('work30.deg', CONSTS.ROOMS.WORKROOM),
-  off: () => sendSignal('workoff.deg', CONSTS.ROOMS.WORKROOM),
-  temprature: ()=>{
-    return getDeviceByName(CONSTS.ROOMS.WORKROOM).then(checkSingleTemperature)
+  cold: () => sendSignal("work17.deg", CONSTS.ROOMS.WORKROOM),
+  hot: () => sendSignal("work30.deg", CONSTS.ROOMS.WORKROOM),
+  off: () => sendSignal("workoff.deg", CONSTS.ROOMS.WORKROOM),
+  temprature: () => {
+    return getDeviceByName(CONSTS.ROOMS.WORKROOM).then(checkSingleTemperature);
   },
-  learn: (cmd) => {
-    return getDeviceByName(CONSTS.ROOMS.WORKROOM).then(dev=>{
-      return new Promise((resolve, reject) => {
-        dev.on('rawData', data => {
-          logger.info(data)
-          fs.writeFile(path.join(__dirname, '../signals', `${cmd}.deg`), data).then(resolve).catch(reject)
-        })
-        dev.checkData()
-        dev.enterLearning()
-      })
-    })
-  },
-}
+  learn: cmd => learnSignal(CONSTS.ROOMS.WORKROOM, cmd)
+};
 
 const livingroom = {
-  cold: () => sendSignal('salon22.deg', CONSTS.ROOMS.LIVINGROOM),
-  hot: () => sendSignal('salon28.deg', CONSTS.ROOMS.LIVINGROOM),
-  off: () => sendSignal('salonoff.deg', CONSTS.ROOMS.LIVINGROOM),
-  temprature: ()=>{
-    return getDeviceByName(CONSTS.ROOMS.LIVINGROOM).then(checkSingleTemperature)
+  cold: () => sendSignal("salon22.deg", CONSTS.ROOMS.LIVINGROOM),
+  hot: () => sendSignal("salon28.deg", CONSTS.ROOMS.LIVINGROOM),
+  off: () => sendSignal("salonoff.deg", CONSTS.ROOMS.LIVINGROOM),
+  temprature: () => {
+    return getDeviceByName(CONSTS.ROOMS.LIVINGROOM).then(
+      checkSingleTemperature
+    );
   },
-  tv: () => sendSignal('salonTv.deg', CONSTS.ROOMS.LIVINGROOM),
-  learn: (cmd) => {
-    return getDeviceByName(CONSTS.ROOMS.LIVINGROOM).then(dev=>{
-      return new Promise((resolve, reject) => {
-        dev.on('rawData', data => {
-          logger.info(data)
-          fs.writeFile(path.join(__dirname, '../signals', `${cmd}.deg`), data).then(resolve).catch(reject)
-        })
-        dev.checkData()
-        dev.enterLearning()
-      })
-    })
-  },
-}
+  tv: () => sendSignal("salonTv.deg", CONSTS.ROOMS.LIVINGROOM),
+  learn: cmd => learnSignal(CONSTS.ROOMS.LIVINGROOM, cmd)
+};
 
-let onFile
+let onFile;
 const bedroom = {
   cold: () => {
-    onFile = 'bed16.deg'
-    sendSignal(onFile, CONSTS.ROOMS.BEDROOM)
+    onFile = "bed16.deg";
+    sendSignal(onFile, CONSTS.ROOMS.BEDROOM);
   },
   hot: () => {
-    onFile = 'bed30.deg'
-    sendSignal(onFile, CONSTS.ROOMS.BEDROOM)
+    onFile = "bed30.deg";
+    sendSignal(onFile, CONSTS.ROOMS.BEDROOM);
   },
-  tv: () => sendSignal('bedTv.deg', CONSTS.ROOMS.BEDROOM),
+  tv: () => sendSignal("bedTv.deg", CONSTS.ROOMS.BEDROOM),
   off: () => sendSignal(onFile, CONSTS.ROOMS.BEDROOM),
-  temprature: ()=>{
-    return getDeviceByName(CONSTS.ROOMS.BEDROOM).then(checkSingleTemperature)
+  temprature: () => {
+    return getDeviceByName(CONSTS.ROOMS.BEDROOM).then(checkSingleTemperature);
   },
-  learn: (cmd) => {
-    return getDeviceByName(CONSTS.ROOMS.BEDROOM).then(dev=>{
-      return new Promise((resolve, reject) => {
-        dev.on('rawData', data => {
-          logger.info(data)
-          fs.writeFile(path.join(__dirname, '../signals', `${cmd}.deg`), data).then(resolve).catch(reject)
-        })
-        dev.checkData()
-        dev.enterLearning()
-      })
-    })
-  },
-}
+  learn: cmd => learnSignal(CONSTS.ROOMS.BEDROOM, cmd)
+};
 
-
-const getDevices = () => devicesReady
+const getDevices = () => devicesReady;
 
 // b.on('deviceReady', (dev) => {
 //     var timer = setInterval(function(){
@@ -187,11 +172,10 @@ const getDevices = () => devicesReady
 // b.checkTemperature()
 // b.cancelLearn()
 
-
 export default {
   sendSignal,
   workroom,
   livingroom,
   bedroom,
-  getDevices,
-}
+  getDevices
+};
