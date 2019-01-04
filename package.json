@@ -1,5 +1,5 @@
 {
-  "name": "broadlinkjs",
+  "name": "smarthome-js",
   "version": "0.2.0",
   "description": "A Node.JS library for controlling Broadlink devices",
   "main": "dist/index.js",
@@ -14,7 +14,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/deanshub/broadlinkjs.git"
+    "url": "git+https://github.com/deanshub/smarthome-js.git"
   },
   "keywords": [
     "Broadlink",
@@ -25,9 +25,9 @@
   "author": "Dean Shub",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/deanshub/broadlinkjs/issues"
+    "url": "https://github.com/deanshub/smarthome-js/issues"
   },
-  "homepage": "https://github.com/deanshub/broadlinkjs#readme",
+  "homepage": "https://github.com/deanshub/smarthome-js#readme",
   "dependencies": {
     "@types/node": "^7.0.5",
     "broadlinkjs": "^0.1.0",
