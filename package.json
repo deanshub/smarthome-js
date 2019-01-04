@@ -9,8 +9,8 @@
     "test": "jest",
     "start": "npm run build && cross-env NODE_ENV=production node dist/index.js",
     "build": "cross-env NODE_ENV=production babel src -d dist",
-    "install-service": "npm run build && winser -a -i --env NODE_ENV=production --startcmd \"node dist/index.js\"",
-    "uninstall-service": "winser -x -r"
+    "install": "npm run build && winser -a -i --env NODE_ENV=production --startcmd \"node dist/index.js\"",
+    "uninstall": "winser -x -r"
   },
   "repository": {
     "type": "git",

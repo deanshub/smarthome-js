@@ -2,6 +2,7 @@ import config from 'config'
 import botCommander from '../botCommander'
 import broadlinkController from '../broadlinkController'
 import CONSTS from '../consts'
+import logger from './logger'
 
 function getRoomFromData(data, command) {
   return data.substr(0, data.length - command.length)
@@ -51,11 +52,16 @@ function filterCommand(cmd, room) {
 
 export default async function(msg, data) {
   if (!isAdmin(msg) && !data.endsWith(CONSTS.COMMANDS.BACK)) {
+    logger.info(`Not Authorized!\nrequested usage of "${data}"`)
+    logger.info(JSON.stringify(msg, null, 2))
     const res = await botCommander.sendMessage(msg.from.id, 'Not Authorized!')
     config.ADMINS_CHATID.forEach(adminId =>
+      // TODO: add request for action with timeout to admins
+      // if admin aproved remove request for action from the other admins
+      // and send to the requester a message that it has been aproved
       botCommander.sendMessage(
         adminId,
-        `${JSON.stringify(msg, null, 2)}\n\nrequested usage of ${data}`
+        `${JSON.stringify(msg, null, 2)}\n\nrequested usage of "${data}"`
       )
     )
     return res
