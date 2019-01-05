@@ -38,3 +38,5 @@ jspm_packages
 
 config/production.json
 dist/
+
+logs/

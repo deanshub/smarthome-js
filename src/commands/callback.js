@@ -2,7 +2,7 @@ import config from 'config'
 import botCommander from '../botCommander'
 import broadlinkController from '../broadlinkController'
 import CONSTS from '../consts'
-import logger from './logger'
+import logger from '../logger'
 
 function getRoomFromData(data, command) {
   return data.substr(0, data.length - command.length)

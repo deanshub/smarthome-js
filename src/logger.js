@@ -1,4 +1,8 @@
 import winston from 'winston'
+import 'winston-daily-rotate-file'
+
+const {  combine, timestamp, printf } = winston.format
+const logFormat = printf(info => `${info.timestamp} [${info.level}]: ${info.message}`)
 
 const logger = winston.createLogger({
   level: 'info',
@@ -8,13 +12,19 @@ const logger = winston.createLogger({
     // - Write to all logs with level `info` and below to `combined.log`
     // - Write all logs error (and below) to `error.log`.
     //
-    new winston.transports.File({ filename: 'error.log', level: 'error' }),
-    new winston.transports.File({ filename: 'combined.log' }),
+    // new winston.transports.File({ filename: 'error.log', level: 'error' }),
+    // new winston.transports.File({ filename: 'combined.log' }),
+    new (winston.transports.DailyRotateFile)({
+      dirname: './logs',
+      filename: 'application-%DATE%.log',
+      datePattern: 'YYYY-MM-DD-HH',
+      zippedArchive: true,
+      maxSize: '20m',
+      maxFiles: '14d',
+      format: combine(timestamp(), logFormat),
+    }),
   ],
 })
-
-const {  combine, timestamp, printf } = winston.format
-const logFormat = printf(info => `${info.timestamp} [${info.level}]: ${info.message}`)
 
 //
 // If we're not in production then log to the `console` with the format:
