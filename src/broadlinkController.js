@@ -40,12 +40,12 @@ const devicesReady = new Promise(resolve => {
   b.discover()
 })
 
-const getDeviceByName = name => {
+export const getDeviceByName = name => {
   const lowercasedName = name.toLocaleLowerCase()
   return devicesReady.then(devices => devices[lowercasedName])
 }
 
-const sendSignal = async (signalFile, deviceName) => {
+export const sendSignal = async (signalFile, deviceName) => {
   const dev = await getDeviceByName(deviceName)
   const signalData = await fs.readFile(
     path.join(__dirname, '../signals', signalFile)
@@ -80,7 +80,7 @@ const checkSingleTemperature = dev => {
   })
 }
 
-const workroom = {
+export const workroom = {
   cold: () => sendSignal('work17.deg', CONSTS.ROOMS.WORKROOM),
   hot: () => sendSignal('work30.deg', CONSTS.ROOMS.WORKROOM),
   off: () => sendSignal('workoff.deg', CONSTS.ROOMS.WORKROOM),
@@ -90,7 +90,7 @@ const workroom = {
   learn: cmd => learnSignal(CONSTS.ROOMS.WORKROOM, cmd),
 }
 
-const livingroom = {
+export const livingroom = {
   cold: () => sendSignal('salon22.deg', CONSTS.ROOMS.LIVINGROOM),
   hot: () => sendSignal('salon28.deg', CONSTS.ROOMS.LIVINGROOM),
   off: () => sendSignal('salonoff.deg', CONSTS.ROOMS.LIVINGROOM),
@@ -104,7 +104,7 @@ const livingroom = {
 }
 
 let onFile
-const bedroom = {
+export const bedroom = {
   cold: () => {
     onFile = 'bed16.deg'
     sendSignal(onFile, CONSTS.ROOMS.BEDROOM)
@@ -121,7 +121,7 @@ const bedroom = {
   learn: cmd => learnSignal(CONSTS.ROOMS.BEDROOM, cmd),
 }
 
-const getDevices = () => devicesReady
+export const getDevices = () => devicesReady
 
 // b.on('deviceReady', (dev) => {
 //     var timer = setInterval(function(){
@@ -171,11 +171,3 @@ const getDevices = () => devicesReady
 // b.enterLearning()
 // b.checkTemperature()
 // b.cancelLearn()
-
-export default {
-  sendSignal,
-  workroom,
-  livingroom,
-  bedroom,
-  getDevices,
-}

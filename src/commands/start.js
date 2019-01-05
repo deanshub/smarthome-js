@@ -1,11 +1,11 @@
-import broadlinkController from "../broadlinkController";
-import botCommander from "../botCommander";
+import {getDevices} from '../broadlinkController'
+import {editMessageText, editMessageReplyMarkup, sendMessage} from '../botCommander'
 
 export default async function(msg) {
-  const id = msg.from.id;
-  const name = msg.from.first_name;
+  const id = msg.from.id
+  const name = msg.from.first_name
 
-  const devices = await broadlinkController.getDevices();
+  const devices = await getDevices()
 
   const inline_keyboard = [
     Object.keys(devices).map(devName => {
@@ -13,39 +13,39 @@ export default async function(msg) {
         text:
           devName.charAt(0).toUpperCase() +
           devName.slice(1).toLocaleLowerCase(),
-        callback_data: devName
-      };
-    })
-  ];
+        callback_data: devName,
+      }
+    }),
+  ]
   const keyboardOpts = {
     reply_markup: JSON.stringify({
       inline_keyboard,
       resize_keyboard: true,
-      one_time_keyboard: true
+      one_time_keyboard: true,
     }),
-    parse_mode: "Markdown",
-    disable_web_page_preview: true
-  };
+    parse_mode: 'Markdown',
+    disable_web_page_preview: true,
+  }
 
   if (msg.message && msg.message.message_id) {
-    await botCommander.editMessageText(`Hi ${name}, what do you want to do?`, {
+    await editMessageText(`Hi ${name}, what do you want to do?`, {
       chat_id: msg.message.chat.id,
-      message_id: msg.message.message_id
-    });
+      message_id: msg.message.message_id,
+    })
 
-    return botCommander.editMessageReplyMarkup(
+    return editMessageReplyMarkup(
       {
-        inline_keyboard
+        inline_keyboard,
       },
       {
         chat_id: msg.message.chat.id,
-        message_id: msg.message.message_id
+        message_id: msg.message.message_id,
       }
-    );
+    )
   }
-  return botCommander.sendMessage(
+  return sendMessage(
     id,
     `Hi ${name}, what do you want to do?`,
     keyboardOpts
-  );
+  )
 }

@@ -1,10 +1,10 @@
-import botCommander from './botCommander'
+import {addCommand} from './botCommander'
 import commandsConfig from './commandsConfiguration'
 
 commandsConfig
   .filter(command=>!command.disabled)
   .forEach(command=>{
-    botCommander.addCommand(command, require(`./commands/${command.name}`)[command.fn||'default'])
+    addCommand(command, require(`./commands/${command.name}`)[command.fn||'default'])
   })
 
 // setTimeout(()=>{

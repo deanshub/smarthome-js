@@ -1,6 +1,6 @@
 import config from 'config'
-import botCommander from '../botCommander'
-import broadlinkController from '../broadlinkController'
+import * as botCommander from '../botCommander'
+import * as broadlinkController from '../broadlinkController'
 import CONSTS from '../consts'
 import logger from '../logger'
 
@@ -50,6 +50,10 @@ function filterCommand(cmd, room) {
   return true
 }
 
+const logAction = (msg, room, action) => {
+  logger.info(`${botCommander.getUserFriendlyName(msg)} called ${action} at ${room}`)
+}
+
 export default async function(msg, data) {
   if (!isAdmin(msg) && !data.endsWith(CONSTS.COMMANDS.BACK)) {
     logger.info(`Not Authorized!\nrequested usage of "${data}"`)
@@ -61,7 +65,7 @@ export default async function(msg, data) {
       // and send to the requester a message that it has been aproved
       botCommander.sendMessage(
         adminId,
-        `${JSON.stringify(msg, null, 2)}\n\nrequested usage of "${data}"`
+        `${JSON.stringify(msg, null, 2)}\n\n${botCommander.getUserFriendlyName(msg)} requested usage of "${data}"`
       )
     )
     return res
@@ -72,12 +76,14 @@ export default async function(msg, data) {
       data,
       CONSTS.COMMANDS.COLD
     ).toLocaleLowerCase()
+    logAction(msg, room, CONSTS.COMMANDS.COLD)
     broadlinkController[room][CONSTS.COMMANDS.COLD.toLocaleLowerCase()].call(
       this
     )
     return botCommander.runCommand('start', msg)
   } else if (data.endsWith(CONSTS.COMMANDS.HOT)) {
     const room = getRoomFromData(data, CONSTS.COMMANDS.HOT).toLocaleLowerCase()
+    logAction(msg, room, CONSTS.COMMANDS.HOT)
     broadlinkController[room][CONSTS.COMMANDS.HOT.toLocaleLowerCase()].call(
       this
     )
@@ -87,18 +93,16 @@ export default async function(msg, data) {
       data,
       CONSTS.COMMANDS.TEMPRATURE
     ).toLocaleLowerCase()
-    broadlinkController[room][CONSTS.COMMANDS.TEMPRATURE.toLocaleLowerCase()]
-      .call(this)
-      .then(t => {
-        return botCommander
-          .sendMessage(msg.from.id, `${t}℃`)
-          .then(() => botCommander.runCommand('start', msg))
-      })
+    logAction(msg, room, CONSTS.COMMANDS.TEMPRATURE)
+    const t = await broadlinkController[room][CONSTS.COMMANDS.TEMPRATURE.toLocaleLowerCase()].call(this)
+    await botCommander.sendMessage(msg.from.id, `${t}℃`)
+    return botCommander.runCommand('start', msg)
   } else if (data.endsWith(CONSTS.COMMANDS.LEARN)) {
     const room = getRoomFromData(
       data,
       CONSTS.COMMANDS.LEARN
     ).toLocaleLowerCase()
+    logAction(msg, room, CONSTS.COMMANDS.LEARN)
     await broadlinkController[room][CONSTS.COMMANDS.LEARN.toLocaleLowerCase()].call(this, room)
     await botCommander.editMessageText('Done learning', {
       chat_id: msg.message.chat.id,
@@ -107,12 +111,14 @@ export default async function(msg, data) {
     return botCommander.runCommand('start', msg)
   } else if (data.endsWith(CONSTS.COMMANDS.OFF)) {
     const room = getRoomFromData(data, CONSTS.COMMANDS.OFF).toLocaleLowerCase()
+    logAction(msg, room, CONSTS.COMMANDS.OFF)
     broadlinkController[room][CONSTS.COMMANDS.OFF.toLocaleLowerCase()].call(
       this
     )
     return botCommander.runCommand('start', msg)
   } else if (data.endsWith(CONSTS.COMMANDS.TV)) {
     const room = getRoomFromData(data, CONSTS.COMMANDS.TV).toLocaleLowerCase()
+    logAction(msg, room, CONSTS.COMMANDS.TV)
     broadlinkController[room][CONSTS.COMMANDS.TV.toLocaleLowerCase()].call(
       this
     )

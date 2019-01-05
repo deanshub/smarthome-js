@@ -1,5 +1,5 @@
 import commandsConfig from '../commandsConfiguration'
-import botCommander from '../botCommander'
+import {sendMessage} from '../botCommander'
 
 const commandsDescription = commandsConfig
   .filter(command=>!command.disabled)
@@ -27,5 +27,5 @@ const helpMessage = [helpIntro, commandsDescription].join('\n')
 
 export default function(msg){
   const fromId = msg.from.id
-  botCommander.sendMessage(fromId, helpMessage, {disable_web_page_preview:false})
+  sendMessage(fromId, helpMessage, {disable_web_page_preview:false})
 }

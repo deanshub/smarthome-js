@@ -1,2 +1,2 @@
-# AC telegram bot
+# Smart Home telegram bot
 written in node js with broadlink hardware and telegram as UI
