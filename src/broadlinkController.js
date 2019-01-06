@@ -36,7 +36,7 @@ const devicesReady = new Promise(resolve => {
       }, 200)
     })
   })
-  logger.info('discovering...')
+  logger.info('Discovering devices...')
   b.discover()
 })
 
