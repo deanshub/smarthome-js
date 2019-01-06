@@ -7,6 +7,7 @@ export default {
     TV: 'TV',
     LEARN: 'LEARN',
     BACK: 'BACK',
+    LIGHTS: 'LIGHTS',
   },
   ROOMS: {
     LIVINGROOM: 'LIVINGROOM',

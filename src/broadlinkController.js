@@ -9,8 +9,8 @@ const names = Object.values(CONSTS.ROOMS)
 
 const getDeviceNames = Promise.all([
   fs.readFile(path.join(__dirname, '../devices', 'Broadlink RM Mini1')),
-  fs.readFile(path.join(__dirname, '../devices', 'Broadlink RM Mini2')),
   fs.readFile(path.join(__dirname, '../devices', 'Broadlink RM2 Pro Plus v23')),
+  fs.readFile(path.join(__dirname, '../devices', 'Broadlink RM Mini2')),
 ]).then(keys => {
   return keys.map((key, index) => ({
     key,
@@ -118,6 +118,7 @@ export const bedroom = {
   temprature: () => {
     return getDeviceByName(CONSTS.ROOMS.BEDROOM).then(checkSingleTemperature)
   },
+  lights: () => sendSignal('bedLights.deg', CONSTS.ROOMS.BEDROOM),
   learn: cmd => learnSignal(CONSTS.ROOMS.BEDROOM, cmd),
 }
 

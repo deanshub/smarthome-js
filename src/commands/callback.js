@@ -24,10 +24,13 @@ function getEmoji(name) {
     return `💀 ${name}`
   case CONSTS.COMMANDS.LEARN:
     return `🎓 ${name}`
+  case CONSTS.COMMANDS.LIGHTS:
+    return `💡 ${name}`
   case CONSTS.COMMANDS.BACK:
     return `⬅️ ${name}`
   case CONSTS.COMMANDS.TV:
     return `📺 ${name}`
+
 
   default:
     return name.charAt(0).toUpperCase() + name.slice(1).toLocaleLowerCase()
@@ -35,6 +38,12 @@ function getEmoji(name) {
 }
 
 function filterCommand(cmd, room) {
+  if (cmd === CONSTS.COMMANDS.LIGHTS) {
+    if (room === CONSTS.ROOMS.BEDROOM) {
+      return true
+    }
+    return false
+  }
   if (cmd === CONSTS.COMMANDS.TV) {
     if (room === CONSTS.ROOMS.BEDROOM || room === CONSTS.ROOMS.LIVINGROOM) {
       return true
@@ -42,7 +51,7 @@ function filterCommand(cmd, room) {
     return false
   }
   if (cmd === CONSTS.COMMANDS.TEMPRATURE) {
-    if (room === CONSTS.ROOMS.WORKROOM) {
+    if (room === CONSTS.ROOMS.BEDROOM) {
       return true
     }
     return false
@@ -120,6 +129,13 @@ export default async function(msg, data) {
     const room = getRoomFromData(data, CONSTS.COMMANDS.TV).toLocaleLowerCase()
     logAction(msg, room, CONSTS.COMMANDS.TV)
     broadlinkController[room][CONSTS.COMMANDS.TV.toLocaleLowerCase()].call(
+      this
+    )
+    return botCommander.runCommand('start', msg)
+  } else if (data.endsWith(CONSTS.COMMANDS.LIGHTS)) {
+    const room = getRoomFromData(data, CONSTS.COMMANDS.LIGHTS).toLocaleLowerCase()
+    logAction(msg, room, CONSTS.COMMANDS.LIGHTS)
+    broadlinkController[room][CONSTS.COMMANDS.LIGHTS.toLocaleLowerCase()].call(
       this
     )
     return botCommander.runCommand('start', msg)
