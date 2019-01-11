@@ -14,6 +14,7 @@ const options = {
 const bot = new TelegramBot(config.BOT_TOKEN, options)
 
 bot.on('polling_error', error => {
+  logger.error('polling error')
   logger.error(error.code)
   logger.error(error.Error || error)
 })
@@ -22,6 +23,7 @@ bot.on('polling_error', error => {
 //   logger.error(error.Error || error)
 // })
 bot.on('error', error => {
+  logger.error('general error')
   logger.error(error.code)
   logger.error(error.Error || error)
 })

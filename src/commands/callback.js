@@ -70,23 +70,28 @@ function executeCommand(msg, data, cmd){
   return botCommander.runCommand('start', msg)
 }
 
+const roomNames = Object.values(CONSTS.ROOMS).map(r=>r.toLocaleLowerCase())
+function anonymousCommands(data) {
+  return (data.endsWith(CONSTS.COMMANDS.BACK)) || roomNames.includes(data)
+}
+
 export default async function(msg, data) {
-  if (!isAdmin(msg) && !data.endsWith(CONSTS.COMMANDS.BACK)) {
+  if (data.endsWith(CONSTS.COMMANDS.BACK)) {
+    return botCommander.runCommand('start', msg)
+  } else if (!isAdmin(msg) && !anonymousCommands(data)) {
     logger.info(`Not Authorized!\nrequested usage of "${data}"`)
     logger.info(JSON.stringify(msg, null, 2))
     const res = await botCommander.sendMessage(msg.from.id, 'Not Authorized!')
     config.ADMINS_CHATID.forEach(adminId =>
-      // TODO: add request for action with timeout to admins
-      // if admin aproved remove request for action from the other admins
-      // and send to the requester a message that it has been aproved
+    // TODO: add request for action with timeout to admins
+    // if admin aproved remove request for action from the other admins
+    // and send to the requester a message that it has been aproved
       botCommander.sendMessage(
         adminId,
-        `${JSON.stringify(msg, null, 2)}\n\n${botCommander.getUserFriendlyName(msg)} requested usage of "${data}"`
+        `${botCommander.getUserFriendlyName(msg)} requested usage of "${data}"`
       )
     )
     return res
-  } else if (data.endsWith(CONSTS.COMMANDS.BACK)) {
-    return botCommander.runCommand('start', msg)
   } else if (data.endsWith(CONSTS.COMMANDS.COLD)) {
     return executeCommand(msg, data, CONSTS.COMMANDS.COLD)
   } else if (data.endsWith(CONSTS.COMMANDS.HOT)) {
