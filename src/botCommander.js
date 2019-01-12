@@ -31,7 +31,7 @@ bot.on('error', error => {
 const allKeyboardOpts = {
   reply_markup: JSON.stringify({
     keyboard: [
-      ['/start', '/help'],
+      ['/start', '/rediscover', '/help'],
       // ['/off','/cold','/hot','/temp'],
     ],
     resize_keyboard: true,

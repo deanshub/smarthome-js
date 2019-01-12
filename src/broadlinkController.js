@@ -3,7 +3,7 @@ import path from 'path'
 import Broadlink from './Broadlink'
 import CONSTS from './consts'
 import logger from './logger'
-const b = new Broadlink()
+let b = new Broadlink()
 
 const names = Object.values(CONSTS.ROOMS)
 
@@ -18,7 +18,7 @@ const getDeviceNames = Promise.all([
   }))
 })
 
-const devicesReady = new Promise(resolve => {
+const discoverDevices = () =>  new Promise(resolve => {
   const devices = {}
   let unkownIndex = 0
   b.on('deviceReady', dev => {
@@ -39,6 +39,14 @@ const devicesReady = new Promise(resolve => {
   logger.info('Discovering devices...')
   b.discover()
 })
+
+let devicesReady = discoverDevices()
+
+export const rediscoverDevices = () => {
+  b = new Broadlink()
+  devicesReady = discoverDevices()
+  return devicesReady
+}
 
 export const getDeviceByName = name => {
   const lowercasedName = name.toLocaleLowerCase()
