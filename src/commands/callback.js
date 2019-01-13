@@ -64,15 +64,37 @@ const logAction = (msg, room, action) => {
 }
 
 function executeCommand(msg, data, cmd){
-  const room = getRoomFromData(data, cmd).toLocaleLowerCase()
-  logAction(msg, room, cmd)
-  broadlinkController[room][cmd.toLocaleLowerCase()].call(this)
-  return botCommander.runCommand('start', msg)
+  if (data.includes('~')){
+    cancelAdminRequestMessages()
+    const authData = data.split('~')
+    const room = getRoomFromData(authData[1], cmd).toLocaleLowerCase()
+    logAction(msg, room, cmd)
+    broadlinkController[room][cmd.toLocaleLowerCase()].call(this)
+    return botCommander.sendMessage(authData[0], `@${msg.from.username} authorized your request for ${getEmoji(cmd)} on ${room}`)
+  }else {
+    const room = getRoomFromData(data, cmd).toLocaleLowerCase()
+    logAction(msg, room, cmd)
+    broadlinkController[room][cmd.toLocaleLowerCase()].call(this)
+    return botCommander.runCommand('start', msg)
+  }
 }
 
 const roomNames = Object.values(CONSTS.ROOMS).map(r=>r.toLocaleLowerCase())
 function anonymousCommands(data) {
   return (data.endsWith(CONSTS.COMMANDS.BACK)) || roomNames.includes(data)
+}
+
+let adminRequestMessages = []
+let adminRequestMessagesTimer
+
+function cancelAdminRequestMessages(){
+  clearTimeout(adminRequestMessagesTimer)
+  adminRequestMessages.forEach(subMsg => {
+    botCommander.editMessageReplyMarkup(undefined, {
+      chat_id: subMsg.chat.id,
+      message_id: subMsg.message_id,
+    })
+  })
 }
 
 export default async function(msg, data) {
@@ -82,17 +104,17 @@ export default async function(msg, data) {
     logger.info(`Not Authorized!\nrequested usage of "${data}"`)
     logger.info(JSON.stringify(msg, null, 2))
     const res = await botCommander.sendMessage(msg.from.id, 'Not Authorized!')
-    const authorizeKeyboard = [[{text: 'Authorize',callback_data: data}]]
-    config.ADMINS_CHATID.forEach(adminId =>
-    // TODO: add request for action with timeout to admins
-    // if admin aproved remove request for action from the other admins
-    // and send to the requester a message that it has been aproved
+    const authorizeKeyboard = [[{text: 'Authorize',callback_data: `${res.chat.id}~${data}`}]]
+    cancelAdminRequestMessages()
+    adminRequestMessages = await Promise.all(config.ADMINS_CHATID.map(adminId =>
       botCommander.sendMessage(
         adminId,
         `${botCommander.getUserFriendlyName(msg)} requested usage of "${data}"`,
         {reply_markup: JSON.stringify({inline_keyboard: authorizeKeyboard})},
       )
-    )
+    ))
+    adminRequestMessagesTimer = setTimeout(cancelAdminRequestMessages, (config.AUTHORIZATION_TIMEOUT || (60*1000)))
+
     return res
   } else if (data.endsWith(CONSTS.COMMANDS.COLD)) {
     return executeCommand(msg, data, CONSTS.COMMANDS.COLD)
