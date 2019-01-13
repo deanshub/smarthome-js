@@ -68,6 +68,7 @@ function executeCommand(msg, data, cmd){
     cancelAdminRequestMessages()
     const authData = data.split('~')
     const room = getRoomFromData(authData[1], cmd).toLocaleLowerCase()
+    logger.info(`Authorization request granted usage of "${data}"`)
     logAction(msg, room, cmd)
     broadlinkController[room][cmd.toLocaleLowerCase()].call(this)
     return botCommander.sendMessage(authData[0], `@${msg.from.username} authorized your request for ${getEmoji(cmd)} on ${room}`)
@@ -101,7 +102,7 @@ export default async function(msg, data) {
   if (data.endsWith(CONSTS.COMMANDS.BACK)) {
     return botCommander.runCommand('start', msg)
   } else if (!isAdmin(msg) && !anonymousCommands(data)) {
-    logger.info(`Not Authorized!\nrequested usage of "${data}"`)
+    logger.info(`Not Authorized!: ${botCommander.getUserFriendlyName(msg)} requested usage of "${data}"`)
     logger.info(JSON.stringify(msg, null, 2))
     const res = await botCommander.sendMessage(msg.from.id, 'Not Authorized!')
     const authorizeKeyboard = [[{text: 'Authorize',callback_data: `${res.chat.id}~${data}`}]]
