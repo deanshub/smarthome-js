@@ -82,13 +82,15 @@ export default async function(msg, data) {
     logger.info(`Not Authorized!\nrequested usage of "${data}"`)
     logger.info(JSON.stringify(msg, null, 2))
     const res = await botCommander.sendMessage(msg.from.id, 'Not Authorized!')
+    const authorizeKeyboard = [[{text: 'Authorize',callback_data: data}]]
     config.ADMINS_CHATID.forEach(adminId =>
     // TODO: add request for action with timeout to admins
     // if admin aproved remove request for action from the other admins
     // and send to the requester a message that it has been aproved
       botCommander.sendMessage(
         adminId,
-        `${botCommander.getUserFriendlyName(msg)} requested usage of "${data}"`
+        `${botCommander.getUserFriendlyName(msg)} requested usage of "${data}"`,
+        {reply_markup: JSON.stringify({inline_keyboard: authorizeKeyboard})},
       )
     )
     return res
