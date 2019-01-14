@@ -8,7 +8,7 @@ function getRoomFromData(data, command) {
   return data.substr(0, data.length - command.length)
 }
 
-function isAdmin(msg) {
+export function isAdmin(msg) {
   return config.ADMINS_CHATID.includes(`${msg.from.id}`)
 }
 

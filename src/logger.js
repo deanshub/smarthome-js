@@ -1,3 +1,4 @@
+import './winston-workaround'
 import winston from 'winston'
 import 'winston-daily-rotate-file'
 
@@ -17,6 +18,7 @@ const logger = winston.createLogger({
     new (winston.transports.DailyRotateFile)({
       dirname: './logs',
       filename: 'application-%DATE%.log',
+      json: true,
       datePattern: 'YYYY-MM-DD-HH',
       zippedArchive: true,
       maxSize: '20m',

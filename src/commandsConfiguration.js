@@ -9,6 +9,11 @@ export default [{
   disabled: false,
   description: 'rediscover controlled devices',
 },{
+  name: 'log',
+  regex: /\/log$/,
+  disabled: false,
+  description: 'get the log of the last hour',
+},{
 //   name: 'cold',
 //   regex: /\/cold/,
 //   disabled: false,
