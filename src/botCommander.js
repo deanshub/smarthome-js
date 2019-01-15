@@ -69,6 +69,28 @@ export function editMessageText(text, options) {
   return bot.editMessageText(text, options)
 }
 
+let cb
+export function subscribeToMessages(){
+  bot.on('message', (msg) => {
+    if (cb) {
+      cb(msg)
+    }
+  })
+}
+export function getMessage() {
+  return new Promise((resolve, reject) => {
+    const getMessageTimeout = setTimeout(reject, 10000)
+    cb = (msg) => {
+      clearTimeout(getMessageTimeout)
+      resolve(msg)
+    }
+  })
+}
+
+export function deleteMessage(chatId, messageId) {
+  bot.deleteMessage(chatId, messageId)
+}
+
 export function getUserFriendlyName(msg) {
   let friendlyName = ''
   if (msg.from.is_bot) {

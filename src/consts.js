@@ -14,4 +14,5 @@ export default {
     BEDROOM: 'BEDROOM',
     WORKROOM: 'WORKROOM',
   },
+  TIMER: 'TIMER',
 }

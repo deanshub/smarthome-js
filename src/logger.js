@@ -1,9 +1,13 @@
 import './winston-workaround'
 import winston from 'winston'
 import 'winston-daily-rotate-file'
+import dateformat from 'dateformat'
 
 const {  combine, timestamp, printf } = winston.format
-const logFormat = printf(info => `${info.timestamp} [${info.level}]: ${info.message}`)
+const logFormat = printf(info => {
+  const timestamp = dateformat(new Date(info.timestamp), 'yyyy-mm-dd HH:MM:ss')
+  return `${timestamp} [${info.level}]: ${info.message}`
+})
 
 const logger = winston.createLogger({
   level: 'info',

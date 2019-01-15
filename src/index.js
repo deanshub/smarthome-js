@@ -1,4 +1,4 @@
-import {addCommand} from './botCommander'
+import {addCommand, subscribeToMessages} from './botCommander'
 import commandsConfig from './commandsConfiguration'
 
 commandsConfig
@@ -6,6 +6,8 @@ commandsConfig
   .forEach(command=>{
     addCommand(command, require(`./commands/${command.name}`)[command.fn||'default'])
   })
+
+subscribeToMessages()
 
 // setTimeout(()=>{
 //   console.log('offing');

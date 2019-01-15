@@ -1,5 +1,6 @@
 import {getDevices} from '../broadlinkController'
 import {editMessageText, editMessageReplyMarkup, sendMessage} from '../botCommander'
+import CONSTS from '../consts'
 
 export default async function(msg) {
   const id = msg.from.id
@@ -13,10 +14,15 @@ export default async function(msg) {
         text:
           devName.charAt(0).toUpperCase() +
           devName.slice(1).toLocaleLowerCase(),
-        callback_data: devName,
+        callback_data: msg.timer ? `${devName}@${msg.timer}`: devName,
       }
     }),
   ]
+
+  if (!msg.timer) {
+    inline_keyboard.unshift([{text: '⏲ Timer', callback_data: CONSTS.TIMER}])
+  }
+
   const keyboardOpts = {
     reply_markup: JSON.stringify({
       inline_keyboard,
@@ -43,9 +49,11 @@ export default async function(msg) {
       }
     )
   }
+
+  const startText = msg.timer ? `What do you want to do ${msg.timer}` : `Hi ${name}, what do you want to do?`
   return sendMessage(
     id,
-    `Hi ${name}, what do you want to do?`,
+    startText,
     keyboardOpts
   )
 }

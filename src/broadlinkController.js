@@ -111,7 +111,7 @@ export const livingroom = {
   learn: cmd => learnSignal(CONSTS.ROOMS.LIVINGROOM, cmd),
 }
 
-let onFile
+let onFile = 'bed30.deg'
 export const bedroom = {
   cold: () => {
     onFile = 'bed16.deg'

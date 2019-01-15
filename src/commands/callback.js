@@ -3,6 +3,8 @@ import * as botCommander from '../botCommander'
 import * as broadlinkController from '../broadlinkController'
 import CONSTS from '../consts'
 import logger from '../logger'
+import later from 'later'
+later.date.localTime()
 
 function getRoomFromData(data, command) {
   return data.substr(0, data.length - command.length)
@@ -60,10 +62,10 @@ function filterCommand(cmd, room) {
 }
 
 const logAction = (msg, room, action) => {
-  logger.info(`${botCommander.getUserFriendlyName(msg)} called ${action} at ${room}`)
+  logger.info(`${botCommander.getUserFriendlyName(msg)} called ${action} in ${room}`)
 }
 
-function executeCommand(msg, data, cmd){
+async function executeCommand(msg, data, cmd){
   if (data.includes('~')){
     cancelAdminRequestMessages()
     const authData = data.split('~')
@@ -72,7 +74,25 @@ function executeCommand(msg, data, cmd){
     logAction(msg, room, cmd)
     broadlinkController[room][cmd.toLocaleLowerCase()].call(this)
     return botCommander.sendMessage(authData[0], `@${msg.from.username} authorized your request for ${getEmoji(cmd)} on ${room}`)
-  }else {
+  } else if (data.includes('@')) {
+    const roomAndTime = getRoomFromData(data, cmd).toLocaleLowerCase().split('@')
+    const room = roomAndTime[0]
+    let timeText = roomAndTime[1]
+
+    if (/^\d/.test(roomAndTime[1])){
+      timeText = `at ${roomAndTime[1]}`
+    }
+
+    const time = later.parse.text(timeText)
+    logger.info(`${botCommander.getUserFriendlyName(msg)} scheduled ${cmd} in ${room} at ${roomAndTime[1]}`)
+    const letKnowMessage = await botCommander.sendMessage(msg.from.id, `${getEmoji(cmd)} scheduled in ${room} ${timeText}`)
+    later.setTimeout(() => {
+      logAction(msg, room, cmd)
+      broadlinkController[room][cmd.toLocaleLowerCase()].call(this)
+      botCommander.sendMessage(msg.from.id, 'Done', {reply_to_message_id: letKnowMessage.message_id})
+    }, time)
+    return botCommander.runCommand('start', msg)
+  } else {
     const room = getRoomFromData(data, cmd).toLocaleLowerCase()
     logAction(msg, room, cmd)
     broadlinkController[room][cmd.toLocaleLowerCase()].call(this)
@@ -87,7 +107,6 @@ function anonymousCommands(data) {
 
 let adminRequestMessages = []
 let adminRequestMessagesTimer
-
 function cancelAdminRequestMessages(){
   clearTimeout(adminRequestMessagesTimer)
   adminRequestMessages.forEach(subMsg => {
@@ -98,7 +117,7 @@ function cancelAdminRequestMessages(){
   })
 }
 
-export default async function(msg, data) {
+export default async function callback(msg, data) {
   if (data.endsWith(CONSTS.COMMANDS.BACK)) {
     return botCommander.runCommand('start', msg)
   } else if (!isAdmin(msg) && !anonymousCommands(data)) {
@@ -148,9 +167,29 @@ export default async function(msg, data) {
     return executeCommand(msg, data, CONSTS.COMMANDS.TV)
   } else if (data.endsWith(CONSTS.COMMANDS.LIGHTS)) {
     return executeCommand(msg, data, CONSTS.COMMANDS.LIGHTS)
+  } else if (data === CONSTS.TIMER) {
+    const whenMessage = await botCommander.sendMessage(msg.from.id, 'When?')
+    try {
+      const timeMessage = await botCommander.getMessage()
+      let timerText = timeMessage.text
+      if (/^\d/.test(timeMessage.text)){
+        timerText = `at ${timeMessage.text}`
+      }
+
+      if (later.parse.text(timerText).error===-1){
+        return botCommander.runCommand('start', {...timeMessage, timer: timerText})
+      } else {
+        botCommander.sendMessage(msg.from.id, `I don't understand what time is ${timerText}`)
+        return callback(msg, data)
+      }
+    }catch(e){
+      logger.info(e)
+      return botCommander.deleteMessage(whenMessage.chat.id, whenMessage.message_id)
+    }
   } else {
+    const room = data.includes('@') ? data.slice(0, data.indexOf('@')) : data
     const inlineButtons = Object.keys(CONSTS.COMMANDS)
-      .filter(cmdKey => filterCommand(cmdKey, data.toUpperCase()))
+      .filter(cmdKey => filterCommand(cmdKey, room.toUpperCase()))
       .reduce((res, key, index) => {
         if (index % 3 === 0) {
           res.push([])
@@ -163,7 +202,7 @@ export default async function(msg, data) {
       }, [])
 
     await botCommander.editMessageText(
-      data.charAt(0).toUpperCase() + data.slice(1).toLocaleLowerCase(),
+      room.charAt(0).toUpperCase() + room.slice(1).toLocaleLowerCase(),
       {
         chat_id: msg.message.chat.id,
         message_id: msg.message.message_id,
