@@ -13,9 +13,10 @@ export default async function(msg) {
     let message = []
     logLines.forEach((line, index, logLines) => {
       message.push(line)
-      if (index===logLines.length -1) {
+      if (index === logLines.length - 1) {
         sendMessage(fromId, message.join('\n'))
-      }else if (index!==0 && (index % 10) === 0) {
+        message = []
+      }else if ((index !== 0) && (index % 10) === 0) {
         sendMessage(fromId, message.join('\n'))
         message = []
       }
