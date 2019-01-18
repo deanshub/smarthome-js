@@ -79,7 +79,7 @@ export function subscribeToMessages(){
 }
 export function getMessage() {
   return new Promise((resolve, reject) => {
-    const getMessageTimeout = setTimeout(reject, 10000)
+    const getMessageTimeout = setTimeout(reject, 20000)
     cb = (msg) => {
       clearTimeout(getMessageTimeout)
       resolve(msg)

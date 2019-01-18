@@ -120,6 +120,25 @@ function cancelAdminRequestMessages(){
 export default async function callback(msg, data) {
   if (data.endsWith(CONSTS.COMMANDS.BACK)) {
     return botCommander.runCommand('start', msg)
+  } else if (data === CONSTS.TIMER) {
+    const whenMessage = await botCommander.sendMessage(msg.from.id, 'When?')
+    try {
+      const timeMessage = await botCommander.getMessage()
+      let timerText = timeMessage.text
+      if (/^\d/.test(timeMessage.text)){
+        timerText = `at ${timeMessage.text}`
+      }
+
+      if (later.parse.text(timerText).error===-1){
+        return botCommander.runCommand('start', {...timeMessage, timer: timerText})
+      } else {
+        botCommander.sendMessage(msg.from.id, `I don't understand what time is ${timerText}`)
+        return callback(msg, data)
+      }
+    }catch(e){
+      logger.info(e)
+      return botCommander.deleteMessage(whenMessage.chat.id, whenMessage.message_id)
+    }
   } else if (!isAdmin(msg) && !anonymousCommands(data)) {
     logger.info(`Not Authorized!: ${botCommander.getUserFriendlyName(msg)} requested usage of "${data}"`)
     logger.info(JSON.stringify(msg, null, 2))
@@ -150,42 +169,34 @@ export default async function callback(msg, data) {
     await botCommander.sendMessage(msg.from.id, `${t}℃`)
     return botCommander.runCommand('start', msg)
   } else if (data.endsWith(CONSTS.COMMANDS.LEARN)) {
-    const room = getRoomFromData(
-      data,
-      CONSTS.COMMANDS.LEARN
-    ).toLocaleLowerCase()
-    logAction(msg, room, CONSTS.COMMANDS.LEARN)
-    await broadlinkController[room][CONSTS.COMMANDS.LEARN.toLocaleLowerCase()].call(this, room)
-    await botCommander.editMessageText('Done learning', {
-      chat_id: msg.message.chat.id,
-      message_id: msg.message.message_id,
-    })
-    return botCommander.runCommand('start', msg)
+    await botCommander.sendMessage(msg.from.id, 'Action name?')
+    try {
+      const nameMessage = await botCommander.getMessage()
+      const cmdName = nameMessage.text.trim()
+
+      const room = getRoomFromData(
+        data,
+        CONSTS.COMMANDS.LEARN
+      ).toLocaleLowerCase()
+      const learningMessage = await botCommander.sendMessage(msg.from.id, 'Please send signal to learn')
+      logAction(msg, room, CONSTS.COMMANDS.LEARN)
+      await broadlinkController[room][CONSTS.COMMANDS.LEARN.toLocaleLowerCase()].call(this, `${room}.${cmdName}`)
+      await botCommander.sendMessage(msg.from.id, 'Done learning')
+      // return botCommander.editMessageText('Done learning', {
+      //   chat_id: `${learningMessage.chat.id}`,
+      //   message_id: `${learningMessage.message_id}`,
+      // })
+      return botCommander.runCommand('start', {...msg, message: null})
+    }catch(e){
+      logger.error(e)
+      return botCommander.sendMessage(msg.from.id, 'Couldn\'t learn the signal')
+    }
   } else if (data.endsWith(CONSTS.COMMANDS.OFF)) {
     return executeCommand(msg, data, CONSTS.COMMANDS.OFF)
   } else if (data.endsWith(CONSTS.COMMANDS.TV)) {
     return executeCommand(msg, data, CONSTS.COMMANDS.TV)
   } else if (data.endsWith(CONSTS.COMMANDS.LIGHTS)) {
     return executeCommand(msg, data, CONSTS.COMMANDS.LIGHTS)
-  } else if (data === CONSTS.TIMER) {
-    const whenMessage = await botCommander.sendMessage(msg.from.id, 'When?')
-    try {
-      const timeMessage = await botCommander.getMessage()
-      let timerText = timeMessage.text
-      if (/^\d/.test(timeMessage.text)){
-        timerText = `at ${timeMessage.text}`
-      }
-
-      if (later.parse.text(timerText).error===-1){
-        return botCommander.runCommand('start', {...timeMessage, timer: timerText})
-      } else {
-        botCommander.sendMessage(msg.from.id, `I don't understand what time is ${timerText}`)
-        return callback(msg, data)
-      }
-    }catch(e){
-      logger.info(e)
-      return botCommander.deleteMessage(whenMessage.chat.id, whenMessage.message_id)
-    }
   } else {
     const room = data.includes('@') ? data.slice(0, data.indexOf('@')) : data
     const inlineButtons = Object.keys(CONSTS.COMMANDS)

@@ -64,16 +64,35 @@ export const sendSignal = async (signalFile, deviceName) => {
 const learnSignal = async (deviceName, signalName) => {
   const dev = await getDeviceByName(deviceName)
   return new Promise((resolve, reject) => {
+    const cancelTimeout = setTimeout(()=>{
+      dev.cancelLearn()
+      reject(new Error('no signal found to learn'))
+    }, 10000)
+
     dev.on('rawData', signalData => {
       fs.writeFile(
         path.join(__dirname, '../signals', `${signalName}.deg`),
         signalData
       )
-        .then(resolve)
-        .catch(reject)
+        .then(res => {
+          clearTimeout(cancelTimeout)
+          resolve(res)
+        })
+        .catch(err => {
+          clearTimeout(cancelTimeout)
+          reject(err)
+        })
     })
-    dev.checkData()
     dev.enterLearning()
+    setTimeout(() => {
+      dev.checkData()
+    },3000)
+    setTimeout(() => {
+      dev.checkData()
+    },6000)
+    setTimeout(() => {
+      dev.checkData()
+    },9000)
   })
 }
 
