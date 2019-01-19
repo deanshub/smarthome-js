@@ -10,7 +10,7 @@ export default [{
   description: 'rediscover controlled devices',
 },{
   name: 'log',
-  regex: /\/log$/,
+  regex: /\/log( \d+)?/,
   disabled: false,
   description: 'get the log of the last hour',
 },{

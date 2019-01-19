@@ -6,59 +6,20 @@ import logger from '../logger'
 import later from 'later'
 later.date.localTime()
 
-function getRoomFromData(data, command) {
-  return data.substr(0, data.length - command.length)
+function getRoomFromData(data) {
+  const withoutTime = data.split(CONSTS.TIME_KEY)[0]
+  return withoutTime.split(CONSTS.SEPERATOR)[0]
+}
+function getCmdFromData(data) {
+  const withoutTime = data.split(CONSTS.TIME_KEY)[0]
+  return withoutTime.split(CONSTS.SEPERATOR)[1]
+}
+function getTimeFromData(data) {
+  return data.split(CONSTS.TIME_KEY)[1]
 }
 
 export function isAdmin(msg) {
   return config.ADMINS_CHATID.includes(`${msg.from.id}`)
-}
-
-function getEmoji(name) {
-  switch (name) {
-  case CONSTS.COMMANDS.COLD:
-    return `❄️ ${name}`
-  case CONSTS.COMMANDS.TEMPRATURE:
-    return `🌡️ ${name}`
-  case CONSTS.COMMANDS.HOT:
-    return `☀️ ${name}`
-  case CONSTS.COMMANDS.OFF:
-    return `💀 ${name}`
-  case CONSTS.COMMANDS.LEARN:
-    return `🎓 ${name}`
-  case CONSTS.COMMANDS.LIGHTS:
-    return `💡 ${name}`
-  case CONSTS.COMMANDS.BACK:
-    return `⬅️ ${name}`
-  case CONSTS.COMMANDS.TV:
-    return `📺 ${name}`
-
-
-  default:
-    return name.charAt(0).toUpperCase() + name.slice(1).toLocaleLowerCase()
-  }
-}
-
-function filterCommand(cmd, room) {
-  if (cmd === CONSTS.COMMANDS.LIGHTS) {
-    if (room === CONSTS.ROOMS.BEDROOM) {
-      return true
-    }
-    return false
-  }
-  if (cmd === CONSTS.COMMANDS.TV) {
-    if (room === CONSTS.ROOMS.BEDROOM || room === CONSTS.ROOMS.LIVINGROOM) {
-      return true
-    }
-    return false
-  }
-  if (cmd === CONSTS.COMMANDS.TEMPRATURE) {
-    if (room === CONSTS.ROOMS.BEDROOM) {
-      return true
-    }
-    return false
-  }
-  return true
 }
 
 const logAction = (msg, room, action) => {
@@ -66,43 +27,47 @@ const logAction = (msg, room, action) => {
 }
 
 async function executeCommand(msg, data, cmd){
-  if (data.includes('~')){
+  if (data.includes(CONSTS.REQ_AUTH_KEY)){
     cancelAdminRequestMessages()
-    const authData = data.split('~')
-    const room = getRoomFromData(authData[1], cmd).toLocaleLowerCase()
+    const authData = data.split(CONSTS.REQ_AUTH_KEY)
+    const room = getRoomFromData(authData[1])
+    const time = getTimeFromData(authData[1])
     logger.info(`Authorization request granted usage of "${data}"`)
     logAction(msg, room, cmd)
-    broadlinkController[room][cmd.toLocaleLowerCase()].call(this)
-    return botCommander.sendMessage(authData[0], `@${msg.from.username} authorized your request for ${getEmoji(cmd)} on ${room}`)
-  } else if (data.includes('@')) {
-    const roomAndTime = getRoomFromData(data, cmd).toLocaleLowerCase().split('@')
-    const room = roomAndTime[0]
-    let timeText = roomAndTime[1]
+    const roomConfig = await broadlinkController.getRoomConfiguration(room)
+    const cmdConfig = await broadlinkController.getCommandConfiguration(room, cmd)
+    if (time) {
+      executeCommand(msg, authData[1], cmd)
+    }else{
+      broadlinkController.executeCommand(room, cmd, msg)
+    }
+    return botCommander.sendMessage(authData[0], `@${msg.from.username} authorized your request for ${cmdConfig.displayName} on ${roomConfig.displayName} ${time||''}`)
+  } else if (data.includes(CONSTS.TIME_KEY)) {
+    const room = getRoomFromData(data)
+    const timeData = getTimeFromData(data)
+    const roomConfig = await broadlinkController.getRoomConfiguration(room)
+    const cmdConfig = await broadlinkController.getCommandConfiguration(room, cmd)
+    let timeText = timeData
 
-    if (/^\d/.test(roomAndTime[1])){
-      timeText = `at ${roomAndTime[1]}`
+    if (/^\d/.test(timeData)){
+      timeText = `at ${timeData}`
     }
 
     const time = later.parse.text(timeText)
-    logger.info(`${botCommander.getUserFriendlyName(msg)} scheduled ${cmd} in ${room} at ${roomAndTime[1]}`)
-    const letKnowMessage = await botCommander.sendMessage(msg.from.id, `${getEmoji(cmd)} scheduled in ${room} ${timeText}`)
+    logger.info(`${botCommander.getUserFriendlyName(msg)} scheduled ${cmd} in ${room} at ${timeData}`)
+    const letKnowMessage = await botCommander.sendMessage(msg.from.id, `${cmdConfig.displayName} scheduled in ${roomConfig.displayName} ${timeText}`)
     later.setTimeout(() => {
       logAction(msg, room, cmd)
-      broadlinkController[room][cmd.toLocaleLowerCase()].call(this)
+      broadlinkController.executeCommand(room, cmd, msg)
       botCommander.sendMessage(msg.from.id, 'Done', {reply_to_message_id: letKnowMessage.message_id})
     }, time)
     return botCommander.runCommand('start', msg)
   } else {
-    const room = getRoomFromData(data, cmd).toLocaleLowerCase()
+    const room = getRoomFromData(data)
     logAction(msg, room, cmd)
-    broadlinkController[room][cmd.toLocaleLowerCase()].call(this)
+    await broadlinkController.executeCommand(room, cmd, msg)
     return botCommander.runCommand('start', msg)
   }
-}
-
-const roomNames = Object.values(CONSTS.ROOMS).map(r=>r.toLocaleLowerCase())
-function anonymousCommands(data) {
-  return (data.endsWith(CONSTS.COMMANDS.BACK)) || roomNames.includes(data)
 }
 
 let adminRequestMessages = []
@@ -117,8 +82,17 @@ function cancelAdminRequestMessages(){
   })
 }
 
+async function isRoomProp(data) {
+  if (!data.includes(CONSTS.SEPERATOR)){
+    const devices = await broadlinkController.getDevices()
+    const roomPart = data.split(CONSTS.TIME_KEY)[0]
+    return Object.keys(devices).includes(roomPart)
+  }
+  return false
+}
+
 export default async function callback(msg, data) {
-  if (data.endsWith(CONSTS.COMMANDS.BACK)) {
+  if (data === CONSTS.BACK) {
     return botCommander.runCommand('start', msg)
   } else if (data === CONSTS.TIMER) {
     const whenMessage = await botCommander.sendMessage(msg.from.id, 'When?')
@@ -139,81 +113,41 @@ export default async function callback(msg, data) {
       logger.info(e)
       return botCommander.deleteMessage(whenMessage.chat.id, whenMessage.message_id)
     }
-  } else if (!isAdmin(msg) && !anonymousCommands(data)) {
-    logger.info(`Not Authorized!: ${botCommander.getUserFriendlyName(msg)} requested usage of "${data}"`)
-    logger.info(JSON.stringify(msg, null, 2))
-    const res = await botCommander.sendMessage(msg.from.id, 'Not Authorized!')
-    const authorizeKeyboard = [[{text: 'Authorize',callback_data: `${res.chat.id}~${data}`}]]
-    cancelAdminRequestMessages()
-    adminRequestMessages = await Promise.all(config.ADMINS_CHATID.map(adminId =>
-      botCommander.sendMessage(
-        adminId,
-        `${botCommander.getUserFriendlyName(msg)} requested usage of "${data}"`,
-        {reply_markup: JSON.stringify({inline_keyboard: authorizeKeyboard})},
-      )
-    ))
-    adminRequestMessagesTimer = setTimeout(cancelAdminRequestMessages, (config.AUTHORIZATION_TIMEOUT || (60*1000)))
+  } else if (await isRoomProp(data)) {
+    const room = getRoomFromData(data)
+    const time = getTimeFromData(data)
 
-    return res
-  } else if (data.endsWith(CONSTS.COMMANDS.COLD)) {
-    return executeCommand(msg, data, CONSTS.COMMANDS.COLD)
-  } else if (data.endsWith(CONSTS.COMMANDS.HOT)) {
-    return executeCommand(msg, data, CONSTS.COMMANDS.HOT)
-  } else if (data.endsWith(CONSTS.COMMANDS.TEMPRATURE)) {
-    const room = getRoomFromData(
-      data,
-      CONSTS.COMMANDS.TEMPRATURE
-    ).toLocaleLowerCase()
-    logAction(msg, room, CONSTS.COMMANDS.TEMPRATURE)
-    const t = await broadlinkController[room][CONSTS.COMMANDS.TEMPRATURE.toLocaleLowerCase()].call(this)
-    await botCommander.sendMessage(msg.from.id, `${t}℃`)
-    return botCommander.runCommand('start', msg)
-  } else if (data.endsWith(CONSTS.COMMANDS.LEARN)) {
-    await botCommander.sendMessage(msg.from.id, 'Action name?')
-    try {
-      const nameMessage = await botCommander.getMessage()
-      const cmdName = nameMessage.text.trim()
-
-      const room = getRoomFromData(
-        data,
-        CONSTS.COMMANDS.LEARN
-      ).toLocaleLowerCase()
-      const learningMessage = await botCommander.sendMessage(msg.from.id, 'Please send signal to learn')
-      logAction(msg, room, CONSTS.COMMANDS.LEARN)
-      await broadlinkController[room][CONSTS.COMMANDS.LEARN.toLocaleLowerCase()].call(this, `${room}.${cmdName}`)
-      await botCommander.sendMessage(msg.from.id, 'Done learning')
-      // return botCommander.editMessageText('Done learning', {
-      //   chat_id: `${learningMessage.chat.id}`,
-      //   message_id: `${learningMessage.message_id}`,
-      // })
-      return botCommander.runCommand('start', {...msg, message: null})
-    }catch(e){
-      logger.error(e)
-      return botCommander.sendMessage(msg.from.id, 'Couldn\'t learn the signal')
-    }
-  } else if (data.endsWith(CONSTS.COMMANDS.OFF)) {
-    return executeCommand(msg, data, CONSTS.COMMANDS.OFF)
-  } else if (data.endsWith(CONSTS.COMMANDS.TV)) {
-    return executeCommand(msg, data, CONSTS.COMMANDS.TV)
-  } else if (data.endsWith(CONSTS.COMMANDS.LIGHTS)) {
-    return executeCommand(msg, data, CONSTS.COMMANDS.LIGHTS)
-  } else {
-    const room = data.includes('@') ? data.slice(0, data.indexOf('@')) : data
-    const inlineButtons = Object.keys(CONSTS.COMMANDS)
-      .filter(cmdKey => filterCommand(cmdKey, room.toUpperCase()))
-      .reduce((res, key, index) => {
+    const roomConfig = await broadlinkController.getRoomConfiguration(room)
+    const inlineButtons = Object.keys(roomConfig.commands)
+      .filter(cmd => !roomConfig.commands[cmd].disabled)
+      .reduce((res, cmd, index)=>{
         if (index % 3 === 0) {
           res.push([])
         }
         res[res.length - 1].push({
-          text: getEmoji(CONSTS.COMMANDS[key]),
-          callback_data: `${data}${CONSTS.COMMANDS[key]}`,
+          text: roomConfig.commands[cmd].displayName,
+          callback_data: time ?
+            `${room}${CONSTS.SEPERATOR}${cmd}${CONSTS.TIME_KEY}${time}`
+            :
+            `${room}${CONSTS.SEPERATOR}${cmd}`,
         })
         return res
       }, [])
 
+    if (inlineButtons[inlineButtons.length-1].length<3) {
+      inlineButtons[inlineButtons.length-1].push({
+        text: CONSTS.BACK_TEXT,
+        callback_data: CONSTS.BACK,
+      })
+    } else {
+      inlineButtons.push([{
+        text: CONSTS.BACK_TEXT,
+        callback_data: CONSTS.BACK,
+      }])
+    }
+
     await botCommander.editMessageText(
-      room.charAt(0).toUpperCase() + room.slice(1).toLocaleLowerCase(),
+      roomConfig.displayName,
       {
         chat_id: msg.message.chat.id,
         message_id: msg.message.message_id,
@@ -228,5 +162,34 @@ export default async function callback(msg, data) {
         message_id: msg.message.message_id,
       }
     )
+  } else if (!isAdmin(msg)) {
+    logger.info(`Not Authorized!: ${botCommander.getUserFriendlyName(msg)} requested usage of "${data}"`)
+    logger.info(JSON.stringify(msg, null, 2))
+    const res = await botCommander.sendMessage(msg.from.id, 'Not Authorized!')
+    const authorizeKeyboard = [[{
+      text: 'Authorize',
+      callback_data: `${res.chat.id}${CONSTS.REQ_AUTH_KEY}${data}`,
+    }]]
+    cancelAdminRequestMessages()
+    const room = getRoomFromData(data)
+    const cmd = getCmdFromData(data)
+    const time = getTimeFromData(data)
+    const roomConfig = await broadlinkController.getRoomConfiguration(room)
+    const cmdConfig = await broadlinkController.getCommandConfiguration(room, cmd)
+
+    adminRequestMessages = await Promise.all(config.ADMINS_CHATID.map(adminId =>
+      botCommander.sendMessage(
+        adminId,
+        `${botCommander.getUserFriendlyName(msg)} requested usage of ${cmdConfig.displayName} in ${roomConfig.displayName} ${time||''}`,
+        {reply_markup: JSON.stringify({inline_keyboard: authorizeKeyboard})},
+      )
+    ))
+    adminRequestMessagesTimer = setTimeout(cancelAdminRequestMessages, (config.AUTHORIZATION_TIMEOUT || (60*1000)))
+
+    return res
+  } else {
+    const cmd = getCmdFromData(data)
+    return executeCommand(msg, data, cmd)
+    // logger.error(`${botCommander.getUserFriendlyName(msg)} called unknown command "${data}"`)
   }
 }

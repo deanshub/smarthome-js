@@ -2,7 +2,7 @@ import commandsConfig from '../commandsConfiguration'
 import {sendMessage} from '../botCommander'
 
 const commandsDescription = commandsConfig
-  .filter(command=>!command.disabled)
+  .filter(command=>!command.disabled && command.description)
   .map(command=>{
     const mdParams = command.params&&command.params.map(param=>`_<${param.toUpperCase()}>_`).join(' ')
     const paramsStr = mdParams? ` ${mdParams}`:''

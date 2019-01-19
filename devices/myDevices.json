@@ -1,0 +1,108 @@
+{
+  "livingroom": {
+    "displayName": "Livingroom",
+    "keyName": "Broadlink RM Mini1",
+    "commands": {
+      "hot": {
+        "displayName": "Hot ☀️",
+        "function": "sendSignal",
+        "signal": "salon28.deg"
+      },
+      "cold": {
+        "displayName": "Cold ❄️",
+        "function": "sendSignal",
+        "signal": "salon22.deg"
+      },
+      "tv": {
+        "displayName": "TV 📺",
+        "function": "sendSignal",
+        "signal": "salonTv.deg"
+      },
+      "off": {
+        "displayName": "Off 💀",
+        "function": "sendSignal",
+        "signal": "salonoff.deg"
+      },
+      "temprature": {
+        "displayName": "Temprature 🌡️",
+        "module": "temprature",
+        "disabled": true
+      },
+      "learn": {
+        "displayName": "Learn 🎓",
+        "module": "learn"
+      }
+    }
+  },
+  "workroom": {
+    "displayName": "Workroom",
+    "keyName": "Broadlink RM Mini2",
+    "commands": {
+      "hot": {
+        "displayName": "Hot ☀️",
+        "function": "sendSignal",
+        "signal": "work30.deg"
+      },
+      "cold": {
+        "displayName": "Cold ❄️",
+        "function": "sendSignal",
+        "signal": "work17.deg"
+      },
+      "off": {
+        "displayName": "Off 💀",
+        "function": "sendSignal",
+        "signal": "workoff.deg"
+      },
+      "temprature": {
+        "displayName": "Temprature 🌡️",
+        "module": "temprature",
+        "disabled": true
+      },
+      "learn": {
+        "displayName": "Learn 🎓",
+        "module": "learn"
+      }
+    }
+  },
+  "bedroom": {
+    "displayName": "Bedroom",
+    "keyName": "Broadlink RM2 Pro Plus v23",
+    "commands": {
+      "hot": {
+        "displayName": "Hot ☀️",
+        "signal": "bed30.deg",
+        "module": "bedAc",
+        "function": "on"
+      },
+      "cold": {
+        "displayName": "Cold ❄️",
+        "signal": "bed16.deg",
+        "module": "bedAc",
+        "function": "on"
+      },
+      "tv": {
+        "displayName": "TV 📺",
+        "function": "sendSignal",
+        "signal": "bedTv.deg"
+      },
+      "off": {
+        "displayName": "Off 💀",
+        "module": "bedAc",
+        "function": "off"
+      },
+      "temprature": {
+        "displayName": "Temprature 🌡️",
+        "module": "temprature"
+      },
+      "lights": {
+        "displayName": "Lights 💡",
+        "function": "sendSignal",
+        "signal": "bedLights.deg"
+      },
+      "learn": {
+        "displayName": "Learn 🎓",
+        "module": "learn"
+      }
+    }
+  }
+}

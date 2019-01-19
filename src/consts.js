@@ -1,18 +1,8 @@
 export default {
-  COMMANDS: {
-    COLD: 'COLD',
-    TEMPRATURE: 'TEMPRATURE',
-    HOT: 'HOT',
-    OFF: 'OFF',
-    TV: 'TV',
-    LEARN: 'LEARN',
-    BACK: 'BACK',
-    LIGHTS: 'LIGHTS',
-  },
-  ROOMS: {
-    LIVINGROOM: 'LIVINGROOM',
-    BEDROOM: 'BEDROOM',
-    WORKROOM: 'WORKROOM',
-  },
+  BACK: 'BACK',
+  BACK_TEXT: '🔙 Back',
   TIMER: 'TIMER',
+  TIME_KEY: '@',
+  REQ_AUTH_KEY: '~',
+  SEPERATOR: '.',
 }

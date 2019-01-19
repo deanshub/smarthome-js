@@ -1,40 +1,35 @@
 import fs from 'fs-extra'
 import path from 'path'
 import Broadlink from './Broadlink'
-import CONSTS from './consts'
 import logger from './logger'
+import {getMyDevices} from './devicesHelper'
 let b = new Broadlink()
 
-const names = Object.values(CONSTS.ROOMS)
+const discoverDevices = () =>  new Promise(async (resolve) => {
+  const savedDevices = await getMyDevices()
 
-const getDeviceNames = Promise.all([
-  fs.readFile(path.join(__dirname, '../devices', 'Broadlink RM Mini1')),
-  fs.readFile(path.join(__dirname, '../devices', 'Broadlink RM2 Pro Plus v23')),
-  fs.readFile(path.join(__dirname, '../devices', 'Broadlink RM Mini2')),
-]).then(keys => {
-  return keys.map((key, index) => ({
-    key,
-    name: names[index].toLocaleLowerCase(),
-  }))
-})
-
-const discoverDevices = () =>  new Promise(resolve => {
-  const devices = {}
   let unkownIndex = 0
   b.on('deviceReady', dev => {
     dev.checkData()
     // fs.writeFile(path.join(__dirname, '../devices', `${dev.model}${index}`), dev.key)
-    getDeviceNames.then(devicesNames => {
-      const devName = devicesNames.find(
-        d => d.key.toString() === dev.key.toString()
-      )
-      dev.name = (devName && devName.name) || `Unkown${unkownIndex++}`
-      logger.info(`device "${dev.name}" found`)
-      devices[dev.name] = dev
-      setTimeout(() => {
-        resolve(devices)
-      }, 200)
-    })
+    const deviceConfiguration = Object.values(savedDevices).find(
+      savedDevice => savedDevice.key.toString() === dev.key.toString()
+    )
+    if (deviceConfiguration) {
+      if (!deviceConfiguration.displayName) {
+        deviceConfiguration.displayName = deviceConfiguration.propName
+      }
+      logger.info(`device "${deviceConfiguration.displayName}" found`)
+      deviceConfiguration.device = dev
+    }else{
+      const unknownDeviceProp = `Unkown${unkownIndex++}`
+      savedDevices[unknownDeviceProp].device = dev
+      savedDevices[unknownDeviceProp].propName = unknownDeviceProp
+      savedDevices[unknownDeviceProp].displayName = unknownDeviceProp
+    }
+    setTimeout(() => {
+      resolve(savedDevices)
+    }, 200)
   })
   logger.info('Discovering devices...')
   b.discover()
@@ -48,28 +43,38 @@ export const rediscoverDevices = () => {
   return devicesReady
 }
 
-export const getDeviceByName = name => {
-  const lowercasedName = name.toLocaleLowerCase()
-  return devicesReady.then(devices => devices[lowercasedName])
+export async function getRoomConfiguration(room) {
+  const devices = await devicesReady
+  return devices[room]
 }
 
-export const sendSignal = async (signalFile, deviceName) => {
-  const dev = await getDeviceByName(deviceName)
+export async function getCommandConfiguration(room, cmd) {
+  const roomConfig = await getRoomConfiguration(room)
+  return roomConfig.commands[cmd]
+}
+
+export async function executeCommand(room, cmd, msg) {
+  const roomConfig = await getRoomConfiguration(room)
+  const commandConfig = await getCommandConfiguration(room, cmd)
+  const module = require(commandConfig.module ? `./commands/${commandConfig.module}` : './broadlinkController')
+  return module[commandConfig.function||'default'].call(module, {...commandConfig, device: roomConfig.device, msg})
+}
+
+export const sendSignal = async ({signal, device}) => {
   const signalData = await fs.readFile(
-    path.join(__dirname, '../signals', signalFile)
+    path.join(__dirname, '../signals', signal)
   )
-  return dev.sendData(signalData)
+  return device.sendData(signalData)
 }
 
-const learnSignal = async (deviceName, signalName) => {
-  const dev = await getDeviceByName(deviceName)
+export const learnSignal = async ({device, signalName}) => {
   return new Promise((resolve, reject) => {
     const cancelTimeout = setTimeout(()=>{
-      dev.cancelLearn()
+      device.cancelLearn()
       reject(new Error('no signal found to learn'))
     }, 10000)
 
-    dev.on('rawData', signalData => {
+    device.on('rawData', signalData => {
       fs.writeFile(
         path.join(__dirname, '../signals', `${signalName}.deg`),
         signalData
@@ -83,70 +88,28 @@ const learnSignal = async (deviceName, signalName) => {
           reject(err)
         })
     })
-    dev.enterLearning()
+    device.enterLearning()
     setTimeout(() => {
-      dev.checkData()
+      device.checkData()
     },3000)
     setTimeout(() => {
-      dev.checkData()
+      device.checkData()
     },6000)
     setTimeout(() => {
-      dev.checkData()
+      device.checkData()
     },9000)
   })
 }
 
-const checkSingleTemperature = dev => {
+export const checkSingleTemperature = ({device}) => {
   return new Promise(resolve => {
     // const temperatureFn = (temp)=>{
     //   // dev.off('temperature', temperatureFn)
     //   resolve(temp)
     // }
-    dev.on('temperature', resolve)
-    dev.checkTemperature()
+    device.on('temperature', resolve)
+    device.checkTemperature()
   })
-}
-
-export const workroom = {
-  cold: () => sendSignal('work17.deg', CONSTS.ROOMS.WORKROOM),
-  hot: () => sendSignal('work30.deg', CONSTS.ROOMS.WORKROOM),
-  off: () => sendSignal('workoff.deg', CONSTS.ROOMS.WORKROOM),
-  temprature: () => {
-    return getDeviceByName(CONSTS.ROOMS.WORKROOM).then(checkSingleTemperature)
-  },
-  learn: cmd => learnSignal(CONSTS.ROOMS.WORKROOM, cmd),
-}
-
-export const livingroom = {
-  cold: () => sendSignal('salon22.deg', CONSTS.ROOMS.LIVINGROOM),
-  hot: () => sendSignal('salon28.deg', CONSTS.ROOMS.LIVINGROOM),
-  off: () => sendSignal('salonoff.deg', CONSTS.ROOMS.LIVINGROOM),
-  temprature: () => {
-    return getDeviceByName(CONSTS.ROOMS.LIVINGROOM).then(
-      checkSingleTemperature
-    )
-  },
-  tv: () => sendSignal('salonTv.deg', CONSTS.ROOMS.LIVINGROOM),
-  learn: cmd => learnSignal(CONSTS.ROOMS.LIVINGROOM, cmd),
-}
-
-let onFile = 'bed30.deg'
-export const bedroom = {
-  cold: () => {
-    onFile = 'bed16.deg'
-    sendSignal(onFile, CONSTS.ROOMS.BEDROOM)
-  },
-  hot: () => {
-    onFile = 'bed30.deg'
-    sendSignal(onFile, CONSTS.ROOMS.BEDROOM)
-  },
-  tv: () => sendSignal('bedTv.deg', CONSTS.ROOMS.BEDROOM),
-  off: () => sendSignal(onFile, CONSTS.ROOMS.BEDROOM),
-  temprature: () => {
-    return getDeviceByName(CONSTS.ROOMS.BEDROOM).then(checkSingleTemperature)
-  },
-  lights: () => sendSignal('bedLights.deg', CONSTS.ROOMS.BEDROOM),
-  learn: cmd => learnSignal(CONSTS.ROOMS.BEDROOM, cmd),
 }
 
 export const getDevices = () => devicesReady

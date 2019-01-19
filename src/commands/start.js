@@ -9,12 +9,10 @@ export default async function(msg) {
   const devices = await getDevices()
 
   const inline_keyboard = [
-    Object.keys(devices).map(devName => {
+    Object.values(devices).map(device => {
       return {
-        text:
-          devName.charAt(0).toUpperCase() +
-          devName.slice(1).toLocaleLowerCase(),
-        callback_data: msg.timer ? `${devName}@${msg.timer}`: devName,
+        text: device.displayName,
+        callback_data: msg.timer ? `${device.propName}${CONSTS.TIME_KEY}${msg.timer}`: device.propName,
       }
     }),
   ]
