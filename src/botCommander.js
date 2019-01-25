@@ -69,6 +69,11 @@ export function editMessageText(text, options) {
   return bot.editMessageText(text, options)
 }
 
+export async function editMessage(text, replyMarkup, options) {
+  await editMessageReplyMarkup(replyMarkup, options)
+  return editMessageText(text, options)
+}
+
 let cb
 export function subscribeToMessages(){
   bot.on('message', (msg) => {
@@ -79,7 +84,7 @@ export function subscribeToMessages(){
 }
 export function getMessage() {
   return new Promise((resolve, reject) => {
-    const getMessageTimeout = setTimeout(reject, 20000)
+    const getMessageTimeout = setTimeout(()=>reject(new Error('Message not received in time')), 20000)
     cb = (msg) => {
       clearTimeout(getMessageTimeout)
       resolve(msg)
@@ -87,8 +92,12 @@ export function getMessage() {
   })
 }
 
+export function getChat(chatId) {
+  return bot.getChat(chatId)
+}
+
 export function deleteMessage(chatId, messageId) {
-  bot.deleteMessage(chatId, messageId)
+  return bot.deleteMessage(chatId, messageId)
 }
 
 export function getUserFriendlyName(msg) {

@@ -57,7 +57,7 @@ export async function executeCommand(room, cmd, msg) {
   const roomConfig = await getRoomConfiguration(room)
   const commandConfig = await getCommandConfiguration(room, cmd)
   const module = require(commandConfig.module ? `./commands/${commandConfig.module}` : './broadlinkController')
-  return module[commandConfig.function||'default'].call(module, {...commandConfig, device: roomConfig.device, msg})
+  return module[commandConfig.function||'default'].call(module, {...commandConfig, device: roomConfig.device, room, msg})
 }
 
 export const sendSignal = async ({signal, device}) => {
