@@ -47,11 +47,7 @@ export default async function({device, msg, room}) {
   }catch(e){
     console.log(e && e.stack)
     logger.error(e && e.message)
-    editMessageText('Couldn\'t learn the signal', {
-      chat_id: msg.message.chat.id,
-      message_id: msg.message.message_id,
-    })
-    // return sendMessage(msg.from.id, 'Couldn\'t learn the signal')
+    await sendMessage(msg.from.id, 'Couldn\'t learn the signal')
   }
   return runCommand('start', {...msg, message: null})
 }
