@@ -12,7 +12,6 @@ export default async function({device, msg, room}) {
   try {
 
     // let lastMessage = await sendMessage(msg.from.id, 'Action name?')
-    console.log(1)
     await editMessage('Action name?', undefined, {
       chat_id: msg.message.chat.id,
       message_id: msg.message.message_id,
