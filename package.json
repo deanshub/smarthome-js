@@ -8,8 +8,9 @@
     "dev": "nodemon src/index.js",
     "test": "jest",
     "start": "npm run build && cross-env NODE_ENV=production node dist/index.js",
-    "build": "cross-env NODE_ENV=production babel src -d dist",
-    "clean": "rm -rf logs/",
+    "build": "npm run clean && cross-env NODE_ENV=production babel src -d dist",
+    "clean": "rm -rf dist/*",
+    "clean-all": "rm -rf dist/* logs/*",
     "install-service": "npm run build && winser -a -i --env NODE_ENV=production --startcmd \"node dist/index.js\"",
     "uninstall-service": "winser -x -r"
   },
@@ -49,7 +50,9 @@
     "@babel/cli": "^7.2.3",
     "@babel/core": "^7.2.2",
     "@babel/node": "^7.2.2",
+    "@babel/plugin-transform-runtime": "^7.2.0",
     "@babel/preset-env": "^7.3.1",
+    "@babel/runtime": "^7.3.1",
     "babel-plugin-dynamic-import-node-babel-7": "^2.0.7",
     "eslint": "^5.9.0",
     "nodemon": "^1.18.6"
