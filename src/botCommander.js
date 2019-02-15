@@ -13,10 +13,17 @@ const options = {
 }
 const bot = new TelegramBot(config.BOT_TOKEN, options)
 
+function reconnect() {
+  logger.info('reconnecting')
+  bot.startPolling({restart: true})
+}
+
 bot.on('polling_error', error => {
   logger.error('polling error')
   logger.error(error.code)
   logger.error(error.Error || error)
+  bot.stopPolling()
+  setTimeout(reconnect, 3000)
 })
 // bot.on('webhook_error', (error) => {
 //   logger.error(error.code)
