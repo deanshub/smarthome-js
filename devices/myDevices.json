@@ -31,6 +31,14 @@
       "learn": {
         "displayName": "Learn 🎓",
         "module": "learn"
+      },
+      "mood": {
+        "displayName": "TV&AC 🌅",
+        "module": "multi",
+        "signals": [
+          "salon30.deg",
+          "salonTv.deg"
+        ]
       }
     }
   },
@@ -97,11 +105,20 @@
       "lights": {
         "displayName": "Lights 💡",
         "function": "sendSignal",
-        "signal": "bedLights.deg"
+        "signal": "bedLights.deg",
+        "disabled": true
       },
       "learn": {
         "displayName": "Learn 🎓",
         "module": "learn"
+      },
+      "mood": {
+        "displayName": "TV&AC 🌅",
+        "module": "multi",
+        "signals": [
+          "bed30.deg",
+          "bedTv.deg"
+        ]
       }
     }
   }
