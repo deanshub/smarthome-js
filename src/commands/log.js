@@ -13,7 +13,6 @@ export default async function(msg, values) {
       fs.readFile(path.join(__dirname, '../..',files[files.length - (index+1)].name))
     ))
     const logLines = logs.reduce((res, l)=>{
-      console.log(l)
       return res.concat(l.toString().split('\n'))
     },[])
     let message = []

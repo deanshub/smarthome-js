@@ -1,5 +1,8 @@
+import logger from './logger'
 import {addCommand, subscribeToMessages} from './botCommander'
 import commandsConfig from './commandsConfiguration'
+
+logger.info('Device Restarted')
 
 commandsConfig
   .filter(command=>!command.disabled)
