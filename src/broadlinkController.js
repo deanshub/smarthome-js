@@ -102,12 +102,16 @@ export const learnSignal = async ({device, signalName}) => {
 }
 
 export const checkSingleTemperature = ({device}) => {
-  return new Promise(resolve => {
+  return new Promise((resolve, reject) => {
     // const temperatureFn = (temp)=>{
     //   // dev.off('temperature', temperatureFn)
     //   resolve(temp)
     // }
-    device.on('temperature', resolve)
+    const timeoutId = setTimeout(reject, 3000)
+    device.on('temperature', t=>{
+      clearTimeout(timeoutId)
+      resolve(t)
+    })
     device.checkTemperature()
   })
 }

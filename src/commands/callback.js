@@ -39,7 +39,12 @@ async function executeCommand(msg, data, cmd){
     if (time) {
       executeCommand(msg, authData[1], cmd)
     }else{
-      broadlinkController.executeCommand(room, cmd, msg)
+      try {
+        await broadlinkController.executeCommand(room, cmd, msg)
+      } catch (e) {
+        logger.error(e)
+        botCommander.sendMessage(msg.from.id, 'Could\'t execute command')
+      }
     }
     return botCommander.sendMessage(authData[0], `@${msg.from.username} authorized your request for ${cmdConfig.displayName} on ${roomConfig.displayName} ${time||''}`)
   } else if (data.includes(CONSTS.TIME_KEY)) {
@@ -56,16 +61,26 @@ async function executeCommand(msg, data, cmd){
     const time = later.parse.text(timeText)
     logger.info(`${botCommander.getUserFriendlyName(msg)} scheduled ${cmd} in ${room} at ${timeData}`)
     const letKnowMessage = await botCommander.sendMessage(msg.from.id, `${cmdConfig.displayName} scheduled in ${roomConfig.displayName} ${timeText}`)
-    later.setTimeout(() => {
+    later.setTimeout(async () => {
       logAction(msg, room, cmd)
-      broadlinkController.executeCommand(room, cmd, msg)
+      try {
+        await broadlinkController.executeCommand(room, cmd, msg)
+      } catch (e) {
+        logger.error(e)
+        botCommander.sendMessage(msg.from.id, 'Could\'t execute command')
+      }
       botCommander.sendMessage(msg.from.id, 'Done', {reply_to_message_id: letKnowMessage.message_id})
     }, time)
     return botCommander.runCommand('start', msg)
   } else {
     const room = getRoomFromData(data)
     logAction(msg, room, cmd)
-    await broadlinkController.executeCommand(room, cmd, msg)
+    try {
+      await broadlinkController.executeCommand(room, cmd, msg)
+    } catch (e) {
+      logger.error(e)
+      botCommander.sendMessage(msg.from.id, 'Could\'t execute command')
+    }
     return botCommander.runCommand('start', msg)
   }
 }
