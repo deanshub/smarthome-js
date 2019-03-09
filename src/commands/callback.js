@@ -43,6 +43,7 @@ async function executeCommand(msg, data, cmd){
         await broadlinkController.executeCommand(room, cmd, msg)
       } catch (e) {
         logger.error(e)
+        logger.error(e.stack)
         botCommander.sendMessage(msg.from.id, 'Could\'t execute command')
       }
     }
@@ -67,6 +68,7 @@ async function executeCommand(msg, data, cmd){
         await broadlinkController.executeCommand(room, cmd, msg)
       } catch (e) {
         logger.error(e)
+        logger.error(e.stack)
         botCommander.sendMessage(msg.from.id, 'Could\'t execute command')
       }
       botCommander.sendMessage(msg.from.id, 'Done', {reply_to_message_id: letKnowMessage.message_id})
@@ -79,6 +81,7 @@ async function executeCommand(msg, data, cmd){
       await broadlinkController.executeCommand(room, cmd, msg)
     } catch (e) {
       logger.error(e)
+      logger.error(e.stack)
       botCommander.sendMessage(msg.from.id, 'Could\'t execute command')
     }
     return botCommander.runCommand('start', msg)

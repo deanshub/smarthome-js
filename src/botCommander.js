@@ -22,6 +22,7 @@ bot.on('polling_error', error => {
   logger.error('polling error')
   logger.error(error.code)
   logger.error(error.Error || error)
+  console.error(error)
   bot.stopPolling()
   setTimeout(reconnect, 3000)
 })
