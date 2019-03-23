@@ -18,13 +18,15 @@ export default [{
   regex: /\/search (.+)/,
   disabled: false,
   description: 'Google search',
-  fn: 'google'
+  fn: 'google',
+  auth: false,
 },{
   name: 'web',
   regex: /\/youtube (.+)/,
   disabled: false,
   description: 'Youtube search',
-  fn: 'youtube'
+  fn: 'youtube',
+  auth: true,
 },{
   name: 'help',
   regex: /\/help/,

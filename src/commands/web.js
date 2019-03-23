@@ -1,6 +1,6 @@
 import opn from 'opn'
 import puppeteer from 'puppeteer'
-import {sendImage, sendMessage, getMessage, editMessage, editMessageText, runCommand} from '../botCommander'
+import {sendImage, sendMessage, getMessage, editMessage} from '../botCommander'
 
 const width = 2400
 const height = 600

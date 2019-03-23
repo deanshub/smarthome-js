@@ -18,10 +18,6 @@ function getTimeFromData(data) {
   return data.split(CONSTS.TIME_KEY)[1]
 }
 
-export function isAdmin(msg) {
-  return config.ADMINS_CHATID.includes(`${msg.from.id}`)
-}
-
 const logAction = (msg, room, action) => {
   logger.info(`${botCommander.getUserFriendlyName(msg)} called ${action} in ${room}`)
 }
@@ -180,7 +176,7 @@ export default async function callback(msg, data) {
         message_id: msg.message.message_id,
       }
     )
-  } else if (!isAdmin(msg)) {
+  } else if (!botCommander.isAdmin(msg)) {
     logger.info(`Not Authorized!: ${botCommander.getUserFriendlyName(msg)} requested usage of "${data}"`)
     logger.info(JSON.stringify(msg, null, 2))
     const res = await botCommander.sendMessage(msg.from.id, 'Not Authorized!')

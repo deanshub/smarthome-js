@@ -62,9 +62,10 @@ export function sendImage(id, img, extraOps, fileOps) {
 
 let commands = {}
 export function addCommand(command, fn) {
-  commands[`${command.name}.${command.fn || 'default'}`] = fn
+  const wrappedFn = command.auth?withLog(command, onlyAdmins(fn)):withLog(command, fn)
+  commands[`${command.name}.${command.fn || 'default'}`] = wrappedFn
   if (command.regex) {
-    bot.onText(command.regex, fn)
+    bot.onText(command.regex, wrappedFn)
   }
 }
 
@@ -129,4 +130,25 @@ export function getUserFriendlyName(msg) {
   }
 
   return `${friendlyName}(${msg.from.id})`
+}
+
+export function isAdmin(msg) {
+  return config.ADMINS_CHATID.includes(`${msg.from.id}`)
+}
+
+export function onlyAdmins(fn) {
+  return (...args)=>{
+    if (isAdmin(args[0])) {
+      return fn.apply(fn, args)
+    }
+    logger.info(`${getUserFriendlyName(args[0])} denied because not Admin.`)
+  }
+}
+
+export function withLog(command, fn) {
+  return (...args)=>{
+    logger.info(`${getUserFriendlyName(args[0])} activated "${command.name}" module's "${command.fn}" function`)
+    logger.info(JSON.stringify(args))
+    return fn.apply(fn, args)
+  }
 }
