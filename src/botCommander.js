@@ -57,6 +57,10 @@ export function sendMessage(id, message, extraOps) {
   return bot.sendMessage(id, message, { ...allKeyboardOpts, ...extraOps })
 }
 
+export function sendImage(id, img, extraOps, fileOps) {
+  return bot.sendPhoto(id, img, { ...allKeyboardOpts, ...extraOps }, fileOps)
+}
+
 let commands = {}
 export function addCommand(command, fn) {
   commands[`${command.name}.${command.fn || 'default'}`] = fn

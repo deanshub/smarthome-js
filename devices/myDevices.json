@@ -70,10 +70,16 @@
         "displayName": "Learn 🎓",
         "module": "learn"
       },
-      "learn": {
-        "displayName": "Fun 💃",
-        "module": "open",
-        "url": "https://www.youtube.com/watch?v=OUaqWkVv4DM&list=PUxiMh-xcmHrCqxeUIIhIijw"
+      "google": {
+        "displayName": "Google 🔍",
+        "module": "web",
+        "function": "google"
+      },
+      "youtube": {
+        "displayName": "Youtube 📽️",
+        "module": "web",
+        "function": "youtube",
+        "disabled": true
       }
     }
   },
