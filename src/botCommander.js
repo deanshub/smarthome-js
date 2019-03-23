@@ -40,7 +40,6 @@ const allKeyboardOpts = {
   reply_markup: JSON.stringify({
     keyboard: [
       ['/start', '/rediscover', '/help'],
-      // ['/off','/cold','/hot','/temp'],
     ],
     resize_keyboard: true,
     one_time_keyboard: true,

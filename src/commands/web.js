@@ -4,6 +4,17 @@ import {sendImage, sendMessage, getMessage, editMessage, editMessageText, runCom
 
 const width = 2400
 const height = 600
+const headless = true
+
+const allKeyboardOpts = {
+  reply_markup: JSON.stringify({
+    keyboard: [
+      ['/start', '/rediscover', '/help'],
+    ],
+    resize_keyboard: true,
+  }),
+  parse_mode: '',
+}
 
 export async function youtube(data, args) {
   const msg = data.msg || data
@@ -21,7 +32,7 @@ export async function youtube(data, args) {
     searchTerm = args[1]
   }
 
-  // const browser = await puppeteer.launch({headless: false})
+  // const browser = await puppeteer.launch({headless})
   // const page = await browser.newPage()
   // const searchUrl = `https://www.youtube.com/results?search_query=${searchTerm}`
   // await page.goto(searchUrl)
@@ -47,7 +58,7 @@ export async function google(data, args) {
     searchTerm = args[1]
   }
 
-  const browser = await puppeteer.launch()
+  const browser = await puppeteer.launch({headless})
   const page = await browser.newPage()
   await page.setViewport({width, height})
   const searchUrl = `https://www.google.com/search?q=${searchTerm}`
@@ -55,8 +66,8 @@ export async function google(data, args) {
   const text = (await page.$eval('#search [data-hveid]', a => a.textContent)).slice(0,1500)
   const img = await (await page.$('#search [data-hveid]')).screenshot()
   await browser.close()
-  return sendImage(msg.from.id, img)
   if (text) {
-    return sendMessage(msg.from.id, text)
+    return Promise.all([sendImage(msg.from.id, img, allKeyboardOpts), sendMessage(msg.from.id, text, allKeyboardOpts)])
   }
+  return sendImage(msg.from.id, img)
 }
