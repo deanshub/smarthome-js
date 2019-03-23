@@ -78,8 +78,7 @@
       "youtube": {
         "displayName": "Youtube 📽️",
         "module": "web",
-        "function": "youtube",
-        "disabled": true
+        "function": "youtube"
       }
     }
   },

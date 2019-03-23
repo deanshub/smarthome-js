@@ -5,31 +5,47 @@ import {sendImage, sendMessage, getMessage, editMessage, editMessageText, runCom
 const width = 2400
 const height = 600
 
-export async function youtube({msg}) {
-  await editMessage('What?', undefined, {
-    chat_id: msg.message.chat.id,
-    message_id: msg.message.message_id,
-  })
-  const searchTerm = (await getMessage()).text.trim()
+export async function youtube(data, args) {
+  const msg = data.msg || data
+  let searchTerm
 
-  const browser = await puppeteer.launch({headless: false})
-  const page = await browser.newPage()
-  const searchUrl = `https://www.youtube.com/results?search_query=${searchTerm}`
-  await page.goto(searchUrl)
-  const href = await page.$eval('ytd-search #contents a', a => a.getAttribute('href'))
+  if (data.msg) {
+    // msg from button
+    await editMessage('What?', undefined, {
+      chat_id: msg.message.chat.id,
+      message_id: msg.message.message_id,
+    })
+    searchTerm = (await getMessage()).text.trim()
+  } else {
+    // msg from inline command /search
+    searchTerm = args[1]
+  }
+
+  // const browser = await puppeteer.launch({headless: false})
+  // const page = await browser.newPage()
+  // const searchUrl = `https://www.youtube.com/results?search_query=${searchTerm}`
+  // await page.goto(searchUrl)
+  // const href = await page.$eval('ytd-search #contents a', a => a.getAttribute('href'))
   // await browser.close()
-  const url = `https://www.youtube.com${href}`
-
-  console.log(url);
+  const url = `https://www.youtube.com/embed?autoplay=true&listType=search&list=${searchTerm}`
   return opn(encodeURI(url))
 }
 
-export async function google({msg}) {
-  await editMessage('What?', undefined, {
-    chat_id: msg.message.chat.id,
-    message_id: msg.message.message_id,
-  })
-  const searchTerm = (await getMessage()).text.trim()
+export async function google(data, args) {
+  const msg = data.msg || data
+  let searchTerm
+
+  if (data.msg) {
+    // msg from button
+    await editMessage('What?', undefined, {
+      chat_id: msg.message.chat.id,
+      message_id: msg.message.message_id,
+    })
+    searchTerm = (await getMessage()).text.trim()
+  } else {
+    // msg from inline command /search
+    searchTerm = args[1]
+  }
 
   const browser = await puppeteer.launch()
   const page = await browser.newPage()

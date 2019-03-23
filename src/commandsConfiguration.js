@@ -14,26 +14,18 @@ export default [{
   disabled: false,
   description: 'get the log of the last hour',
 },{
-//   name: 'cold',
-//   regex: /\/cold/,
-//   disabled: false,
-//   description: 'make it 17 degrees',
-// },{
-//   name: 'hot',
-//   regex: /\/hot/,
-//   disabled: false,
-//   description: 'make it 30 degrees',
-// },{
-//   name: 'off',
-//   regex: /\/off/,
-//   disabled: false,
-//   description: 'turn ac off',
-// },{
-//   name: 'temp',
-//   regex: /\/temp/,
-//   disabled: false,
-//   description: 'check temperature',
-// },{
+  name: 'web',
+  regex: /\/search (.+)/,
+  disabled: false,
+  description: 'Google search',
+  fn: 'google'
+},{
+  name: 'web',
+  regex: /\/youtube (.+)/,
+  disabled: false,
+  description: 'Youtube search',
+  fn: 'youtube'
+},{
   name: 'help',
   regex: /\/help/,
   disabled: false,
