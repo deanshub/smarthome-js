@@ -31,7 +31,7 @@ function getSocket(ip) {
       }
       // console.log(data)
       if (message.manifest) {
-        resolve({...message, device: ws})
+        resolve({...message.manifest, device: ws})
       // TODO: handle errors and acks
       } else {
         triggerCommand(ws, message)
@@ -65,7 +65,7 @@ export function createServer() {
       // console.log(data)
       const message = JSON.parse(data)
       if (message.manifest) {
-        devices[message.name] = {...message, device: ws}
+        devices[message.name] = {...message.manifest, device: ws}
       // TODO: handle errors and acks
       }else {
         triggerCommand(ws, message)
@@ -85,8 +85,10 @@ async function getManifest() {
   const myDevices = await getMyDevices()
 
   return {
-    name: myDevices[config.NAME].propName,
-    ...myDevices[config.NAME],
+    manifest: {
+      name: myDevices[config.NAME].propName,
+      ...myDevices[config.NAME],
+    },
   }
 }
 
