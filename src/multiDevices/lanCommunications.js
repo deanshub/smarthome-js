@@ -65,7 +65,7 @@ export function createServer() {
       // console.log(data)
       const message = JSON.parse(data)
       if (message.manifest) {
-        devices[message.name] = {...message.manifest, ws}
+        devices[message.manifest.name] = {...message.manifest, ws}
       // TODO: handle errors and acks
       }else {
         triggerCommand(ws, message)
