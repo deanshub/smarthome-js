@@ -39,6 +39,12 @@
           "salon30.deg",
           "salonTv.deg"
         ]
+      },
+      "youtube": {
+        "displayName": "Youtube 📽️",
+        "module": "web",
+        "function": "youtube",
+        "remote": true
       }
     }
   },

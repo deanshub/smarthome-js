@@ -20,7 +20,7 @@ function getSocket(ip) {
     })
     ws.on('close', reject)
     ws.on('error', reject)
-    ws.on('message', ({data}) => {
+    ws.on('message', (data) => {
       let message = {}
       try {
         message = JSON.parse(data)
@@ -31,7 +31,7 @@ function getSocket(ip) {
       }
       // console.log(data)
       if (message.manifest) {
-        resolve({...message.manifest, device: ws})
+        resolve({...message.manifest, ws})
       // TODO: handle errors and acks
       } else {
         triggerCommand(ws, message)
@@ -65,7 +65,7 @@ export function createServer() {
       // console.log(data)
       const message = JSON.parse(data)
       if (message.manifest) {
-        devices[message.name] = {...message.manifest, device: ws}
+        devices[message.name] = {...message.manifest, ws}
       // TODO: handle errors and acks
       }else {
         triggerCommand(ws, message)
@@ -104,6 +104,6 @@ async function triggerCommand(ws, message) {
 }
 
 export async function excecuteRemoteCommand(room, cmd, msg, args) {
-  devices[room].send(JSON.stringify({room, cmd, msg, args}))
+  devices[room].ws.send(JSON.stringify({room, cmd, msg, args}))
   // TODO: handle ack? not sure if possible here
 }
