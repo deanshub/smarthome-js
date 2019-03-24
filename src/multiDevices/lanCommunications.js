@@ -14,14 +14,21 @@ const devices = {}
 
 function getSocket(ip) {
   return new Promise((resolve, reject) => {
-    const ws = new WebSocket(`${ip}:${PORT}`)
+    const ws = new WebSocket(`ws://${ip}:${PORT}`)
     ws.on('open', async() => {
       ws.send(JSON.stringify(await getManifest()))
     })
     ws.on('close', reject)
     ws.on('error', reject)
     ws.on('message', ({data}) => {
-      const message = JSON.parse(data)
+      let message = {}
+      try {
+        message = JSON.parse(data)
+      }catch (e) {
+        logger.error('Unknown message received:')
+        logger.error(data)
+        logger.error(e)
+      }
       // console.log(data)
       if (message.manifest) {
         resolve({...message, device: ws})
@@ -67,9 +74,9 @@ export function createServer() {
     logger.info('A new connection appeared')
     ws.send(JSON.stringify(await getManifest()))
   })
-  server.listen(PORT, scanner.getInternalIP(),() => {
+  server.listen(PORT, scanner.getInternalIP(), () => {
     // TODO: get local IP and present a url
-    console.log(`Remote command server listening on port ${PORT}`)
+    console.log(`Remote command server started on\nws://${scanner.getInternalIP()}:${PORT}/`)
   })
   return {server, wss}
 }
