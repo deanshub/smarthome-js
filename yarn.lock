@@ -2688,6 +2688,13 @@ kuler@1.0.x:
   dependencies:
     colornames "^1.1.1"
 
+lanscanner@^0.0.5:
+  version "0.0.5"
+  resolved "https://registry.yarnpkg.com/lanscanner/-/lanscanner-0.0.5.tgz#dc8bc6ff8704f658ed7b0a2051a3831209020c27"
+  integrity sha512-utBFGBTnOc8b7LjImwcAGKvNd1Yg1vKVxXrkx7T4qKAvkdrBZoDLZPrFPu3nZl9HFUICTlWWwJ52oMAtIvpTVA==
+  dependencies:
+    cross-spawn "^6.0.5"
+
 later@^1.2.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/later/-/later-1.2.0.tgz#f2cf6c4dd7956dd2f520adf0329836e9876bad0f"
@@ -4365,7 +4372,7 @@ write@^0.2.1:
   dependencies:
     mkdirp "^0.5.1"
 
-ws@^6.1.0:
+ws@^6.1.0, ws@^6.2.0:
   version "6.2.0"
   resolved "https://registry.yarnpkg.com/ws/-/ws-6.2.0.tgz#13806d9913b2a5f3cbb9ba47b563c002cbc7c526"
   integrity sha512-deZYUNlt2O4buFCa3t5bKLf8A7FPP/TVjwOeVNpw818Ma5nk4MLXls2eoEGS39o8119QIYxTrTDoPQ5B/gTD6w==

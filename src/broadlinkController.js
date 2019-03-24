@@ -1,8 +1,10 @@
+import config from 'config'
 import fs from 'fs-extra'
 import path from 'path'
 import Broadlink from './Broadlink'
 import logger from './logger'
-import {getMyDevices} from './devicesHelper'
+import {getMyDevices} from './multiDevices/devicesHelper'
+import {excecuteRemoteCommand} from './multiDevices/lanCommunications'
 let b = new Broadlink()
 
 const discoverDevices = () =>  new Promise(async (resolve) => {
@@ -53,11 +55,16 @@ export async function getCommandConfiguration(room, cmd) {
   return roomConfig.commands[cmd]
 }
 
-export async function executeCommand(room, cmd, msg) {
+export async function executeCommand(room, cmd, msg, args) {
   const roomConfig = await getRoomConfiguration(room)
   const commandConfig = await getCommandConfiguration(room, cmd)
-  const module = require(commandConfig.module ? `./commands/${commandConfig.module}` : './broadlinkController')
-  return module[commandConfig.function||'default'].call(module, {...commandConfig, device: roomConfig.device, room, msg})
+  // if remote command use excecuteRemoteCommand
+  if (commandConfig.remote && config.name !== room) {
+    excecuteRemoteCommand(room, cmd, msg, args)
+  } else {
+    const module = require(commandConfig.module ? `./commands/${commandConfig.module}` : './broadlinkController')
+    return module[commandConfig.function||'default'].call(module, {...commandConfig, device: roomConfig.device, room, msg}, args)
+  }
 }
 
 export const sendSignal = async ({signal, device}) => {

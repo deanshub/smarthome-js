@@ -1,6 +1,7 @@
 import logger from './logger'
 import {addCommand, subscribeToMessages} from './botCommander'
 import commandsConfig from './commandsConfiguration'
+import {createServer, scanForDevices} from './multiDevices/lanCommunications'
 
 logger.info('Device Restarted')
 
@@ -12,7 +13,5 @@ commandsConfig
 
 subscribeToMessages()
 
-// setTimeout(()=>{
-//   console.log('offing');
-//   botCommander.runCommand('off', {from:{id:'124'}})
-// }, 3000)
+createServer()
+scanForDevices()

@@ -78,7 +78,8 @@
       "youtube": {
         "displayName": "Youtube 📽️",
         "module": "web",
-        "function": "youtube"
+        "function": "youtube",
+        "remote": true
       }
     }
   },

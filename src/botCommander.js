@@ -11,6 +11,10 @@ const options = {
   //   cert: `${__dirname}/crt.pem`,
   // },
 }
+
+if (!config.BOT_TOKEN) {
+  logger.warn('BOT_TOKEN is not set')
+}
 const bot = new TelegramBot(config.BOT_TOKEN, options)
 
 function reconnect() {
@@ -24,7 +28,9 @@ bot.on('polling_error', error => {
   logger.error(error.Error || error)
   console.error(error)
   bot.stopPolling()
-  setTimeout(reconnect, 3000)
+  if (config.BOT_TOKEN) {
+    setTimeout(reconnect, 3000)
+  }
 })
 // bot.on('webhook_error', (error) => {
 //   logger.error(error.code)
@@ -147,7 +153,7 @@ export function onlyAdmins(fn) {
 
 export function withLog(command, fn) {
   return (...args)=>{
-    logger.info(`${getUserFriendlyName(args[0])} activated "${command.name}" module's "${command.fn}" function`)
+    logger.info(`${getUserFriendlyName(args[0])} activated "${command.name}" module's "${command.fn||'default'}" function`)
     logger.info(JSON.stringify(args))
     return fn.apply(fn, args)
   }
