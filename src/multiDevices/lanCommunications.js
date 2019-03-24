@@ -7,7 +7,9 @@ import {getMyDevices} from './devicesHelper'
 import {executeCommand} from '../broadlinkController'
 
 const PORT = config.REMOTE_COMMANDS_PORT || 13975
-
+if (!config.NAME) {
+  logger.warn('device name not configured!')
+}
 const devices = {}
 
 function getSocket(ip) {
@@ -65,7 +67,7 @@ export function createServer() {
     logger.info('A new connection appeared')
     ws.send(JSON.stringify(await getManifest()))
   })
-  server.listen(PORT, '0.0.0.0',() => {
+  server.listen(PORT, scanner.getInternalIP(),() => {
     // TODO: get local IP and present a url
     console.log(`Remote command server listening on port ${PORT}`)
   })
@@ -76,8 +78,8 @@ async function getManifest() {
   const myDevices = await getMyDevices()
 
   return {
-    name: myDevices[config.name].propName,
-    ...myDevices[config.name],
+    name: myDevices[config.NAME].propName,
+    ...myDevices[config.NAME],
   }
 }
 
