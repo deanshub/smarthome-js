@@ -19,7 +19,7 @@ const bot = new TelegramBot(config.BOT_TOKEN, options)
 
 function reconnect() {
   logger.info('reconnecting')
-  bot.startPolling({restart: true})
+  bot.startPolling({ restart: true })
 }
 
 bot.on('polling_error', error => {
@@ -44,9 +44,7 @@ bot.on('error', error => {
 
 const allKeyboardOpts = {
   reply_markup: JSON.stringify({
-    keyboard: [
-      ['/start', '/rediscover', '/help'],
-    ],
+    keyboard: [['/start', '/remind'], ['/rediscover', '/help']],
     resize_keyboard: true,
     one_time_keyboard: true,
   }),
@@ -68,7 +66,9 @@ export function sendImage(id, img, extraOps, fileOps) {
 
 let commands = {}
 export function addCommand(command, fn) {
-  const wrappedFn = command.auth?withLog(command, onlyAdmins(fn)):withLog(command, fn)
+  const wrappedFn = command.auth
+    ? withLog(command, onlyAdmins(fn))
+    : withLog(command, fn)
   commands[`${command.name}.${command.fn || 'default'}`] = wrappedFn
   if (command.regex) {
     bot.onText(command.regex, wrappedFn)
@@ -93,8 +93,8 @@ export async function editMessage(text, replyMarkup, options) {
 }
 
 let cb
-export function subscribeToMessages(){
-  bot.on('message', (msg) => {
+export function subscribeToMessages() {
+  bot.on('message', msg => {
     if (cb) {
       cb(msg)
     }
@@ -102,8 +102,11 @@ export function subscribeToMessages(){
 }
 export function getMessage() {
   return new Promise((resolve, reject) => {
-    const getMessageTimeout = setTimeout(()=>reject(new Error('Message not received in time')), 20000)
-    cb = (msg) => {
+    const getMessageTimeout = setTimeout(
+      () => reject(new Error('Message not received in time')),
+      20000
+    )
+    cb = msg => {
       clearTimeout(getMessageTimeout)
       resolve(msg)
     }
@@ -121,18 +124,18 @@ export function deleteMessage(chatId, messageId) {
 export function getUserFriendlyName(msg) {
   let friendlyName = ''
   if (msg.from.is_bot) {
-    friendlyName+='BOT '
+    friendlyName += 'BOT '
   }
 
   if (msg.from.username) {
-    friendlyName+=`@${msg.from.username} `
+    friendlyName += `@${msg.from.username} `
   }
 
   if (msg.from.first_name) {
-    friendlyName+=`${msg.from.first_name} `
+    friendlyName += `${msg.from.first_name} `
   }
   if (msg.from.last_name) {
-    friendlyName+=`${msg.from.last_name} `
+    friendlyName += `${msg.from.last_name} `
   }
 
   return `${friendlyName}(${msg.from.id})`
@@ -143,7 +146,7 @@ export function isAdmin(msg) {
 }
 
 export function onlyAdmins(fn) {
-  return (...args)=>{
+  return (...args) => {
     if (isAdmin(args[0])) {
       return fn.apply(fn, args)
     }
@@ -152,8 +155,12 @@ export function onlyAdmins(fn) {
 }
 
 export function withLog(command, fn) {
-  return (...args)=>{
-    logger.info(`${getUserFriendlyName(args[0])} activated "${command.name}" module's "${command.fn||'default'}" function`)
+  return (...args) => {
+    logger.info(
+      `${getUserFriendlyName(args[0])} activated "${
+        command.name
+      }" module's "${command.fn || 'default'}" function`
+    )
     logger.info(JSON.stringify(args))
     return fn.apply(fn, args)
   }
