@@ -82,6 +82,9 @@ export function createServer() {
       if (message.manifest) {
         devices[message.manifest.name] = { ...message.manifest, ws }
         // TODO: handle errors and acks
+      } else if (message.messageIdAnswered) {
+        const { messageIdAnswered, result } = message
+        publishMessageResult(messageIdAnswered, result)
       } else {
         triggerCommand(ws, message)
       }
@@ -115,11 +118,14 @@ async function triggerCommand(ws, message) {
   let result
   if (botCommand) {
     result = await botCommander[commandName].apply(botCommander, data)
-  } else if (devices[data.room]) {
+  } else if (data && data.room && devices[data.room]) {
     const { room, cmd, msg, args } = data
     result = await executeCommand(room, cmd, msg, args)
   }
-  return ws.send(JSON.stringify({ messageIdAnswered: messageId, result }))
+
+  if (result) {
+    return ws.send(JSON.stringify({ messageIdAnswered: messageId, result }))
+  }
   // return ws.send(failed)
 }
 
