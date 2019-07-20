@@ -114,10 +114,7 @@ async function triggerCommand(ws, message) {
   const { messageId, botCommand, commandName, data } = message
   let result
   if (botCommand) {
-    result = botCommander[commandName].apply(
-      botCommander,
-      data.map(item => (item === null ? undefined : item))
-    )
+    result = await botCommander[commandName].apply(botCommander, data)
   } else if (devices[data.room]) {
     const { room, cmd, msg, args } = data
     result = await executeCommand(room, cmd, msg, args)
