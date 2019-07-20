@@ -112,16 +112,17 @@ async function getManifest() {
 async function triggerCommand(ws, message) {
   // check that the name is farmiliar
   const { messageId, botCommand, commandName, data } = message
+  let result
   if (botCommand) {
-    return botCommander[commandName].apply(
+    result = botCommander[commandName].apply(
       botCommander,
       data.map(item => (item === null ? undefined : item))
     )
   } else if (devices[data.room]) {
     const { room, cmd, msg, args } = data
-    const result = await executeCommand(room, cmd, msg, args)
-    return ws.send(JSON.stringify({ messageIdAnswered: messageId, result }))
+    result = await executeCommand(room, cmd, msg, args)
   }
+  return ws.send(JSON.stringify({ messageIdAnswered: messageId, result }))
   // return ws.send(failed)
 }
 
