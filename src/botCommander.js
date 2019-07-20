@@ -2,6 +2,8 @@ import config from 'config'
 import TelegramBot from 'node-telegram-bot-api'
 import logger from './logger'
 import {DEFAULT_COMMANDS} from './commandsConfiguration'
+import {isMaster} from './multiDevices/devicesHelper'
+import {executeBotRemoteCommand} from './multiDevices/lanCommunications'
 
 const options = {
   polling: true,
@@ -66,9 +68,17 @@ bot.on('callback_query', callbackQuery => {
   runCommand('callback', callbackQuery, callbackQuery.data)
 })
 
-export function sendMessage(id, message, extraOps) {
-  return bot.sendMessage(id, message, { ...allKeyboardOpts, ...extraOps })
+async function sendCommandToMaster(fn, commandName) {
+  if (await isMaster(config.NAME)) {
+    return fn
+  }else {
+    return (...args)=> executeBotRemoteCommand(commandName, ...args)
+  }
 }
+
+export const sendMessage = sendCommandToMaster((id, message, extraOps) => {
+  return bot.sendMessage(id, message, { ...allKeyboardOpts, ...extraOps })
+}, 'sendMessage')
 
 export function sendImage(id, img, extraOps, fileOps) {
   return bot.sendPhoto(id, img, { ...allKeyboardOpts, ...extraOps }, fileOps)
@@ -76,7 +86,6 @@ export function sendImage(id, img, extraOps, fileOps) {
 
 let commands = {}
 export function addCommand(command, fn) {
-  console.log(command)
   const wrappedFn = command.auth
     ? withLog(command, onlyAdmins(fn))
     : withLog(command, fn)

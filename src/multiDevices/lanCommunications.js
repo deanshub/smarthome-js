@@ -3,8 +3,9 @@ import scanner from 'lanscanner'
 import http from 'http'
 import WebSocket from 'ws'
 import logger from '../logger'
-import {getMyDevices} from './devicesHelper'
+import {getMyDevices, getMasterRoom} from './devicesHelper'
 import {executeCommand} from '../broadlinkController'
+import * as botCommander from '../botCommander'
 
 const PORT = config.REMOTE_COMMANDS_PORT || 13975
 if (!config.NAME) {
@@ -94,16 +95,24 @@ async function getManifest() {
 
 async function triggerCommand(ws, message) {
   // console.log(message)
-  const {name, room, cmd, msg, args} = message
   // check that the name is farmiliar
-  // if (devices[name]) {
-  await executeCommand(room, cmd, msg, args)
+  const {name, botCommand, commandName, ...rest} = message
+  if (botCommand) {
+    return botCommander[commandName].apply(botCommander, ...rest)
+  }else if (devices[name]) {
+    const {room, cmd, msg, args} = message
+    await executeCommand(room, cmd, msg, args)
   // return ws.send(ack)
-  // }
+  }
   // return ws.send(failed)
 }
 
 export async function excecuteRemoteCommand(room, cmd, msg, args) {
   devices[room].ws.send(JSON.stringify({room, cmd, msg, args}))
   // TODO: handle ack? not sure if possible here
+}
+
+export async function executeBotRemoteCommand(commandName, msg) {
+  const masterRoom = await getMasterRoom()
+  return devices[masterRoom].ws.send(JSON.stringify({botCommand: true, name: masterRoom, commandName, ...msg}))
 }

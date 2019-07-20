@@ -49,6 +49,7 @@
     }
   },
   "workroom": {
+    "master": true,
     "displayName": "Workroom",
     "keyName": "Broadlink RM Mini2",
     "commands": {
