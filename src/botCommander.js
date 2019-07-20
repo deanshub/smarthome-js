@@ -119,7 +119,11 @@ export const editMessage = sendCommandToMaster(async function editMessage(
   replyMarkup,
   options
 ) {
-  await editMessageReplyMarkup(replyMarkup, options)
+  try {
+    await editMessageReplyMarkup(replyMarkup, options)
+  } catch (e) {
+    //
+  }
   return editMessageText(text, options)
 },
 'editMessage')
@@ -135,7 +139,7 @@ export function subscribeToMessages() {
     }
   })
 }
-export function getMessage() {
+export const getMessage = sendCommandToMaster(() => {
   return new Promise((resolve, reject) => {
     const getMessageTimeout = setTimeout(() => {
       cb = null
@@ -147,7 +151,7 @@ export function getMessage() {
       resolve(msg)
     }
   })
-}
+}, 'getMessage')
 
 export function getChat(chatId) {
   return bot.getChat(chatId)
