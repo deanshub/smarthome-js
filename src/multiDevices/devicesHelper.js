@@ -22,16 +22,10 @@ export async function getMyDevices() {
   return cachedDevices
 }
 
-export async function isMaster(device) {
-  if (!cachedDevices) {
-    await getMyDevices()
-  }
-  return cachedDevices[device].master
+export function isMaster(device) {
+  return devices[device].master
 }
 
-export async function getMasterRoom() {
-  if (!cachedDevices) {
-    await getMyDevices()
-  }
-  return Object.values(cachedDevices).find(device => device.master).propName
+export function getMasterRoom() {
+  return Object.values(devices).find(device => device.master).propName
 }

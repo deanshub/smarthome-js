@@ -68,8 +68,8 @@ bot.on('callback_query', callbackQuery => {
   runCommand('callback', callbackQuery, callbackQuery.data)
 })
 
-async function sendCommandToMaster(fn, commandName) {
-  if (await isMaster(config.NAME)) {
+function sendCommandToMaster(fn, commandName) {
+  if (isMaster(config.NAME)) {
     return fn
   }else {
     return (...args)=> executeBotRemoteCommand(commandName, ...args)
