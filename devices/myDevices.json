@@ -48,6 +48,12 @@
         "module": "windows",
         "function": "mute",
         "remote": true
+      },
+      "lock": {
+        "displayName": "lock 🔒️",
+        "module": "windows",
+        "function": "lock",
+        "remote": true
       }
     }
   },
@@ -95,6 +101,12 @@
         "displayName": "mute 🔇️",
         "module": "windows",
         "function": "mute",
+        "remote": true
+      },
+      "lock": {
+        "displayName": "lock 🔒️",
+        "module": "windows",
+        "function": "lock",
         "remote": true
       }
     }

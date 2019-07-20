@@ -2567,6 +2567,11 @@ locate-path@^3.0.0:
     p-locate "^3.0.0"
     path-exists "^3.0.0"
 
+lock-system@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/lock-system/-/lock-system-2.0.0.tgz#726f61288f00e96f55d97bb31c2f5f9e37805cea"
+  integrity sha512-ZGBsQmcMO4gvHa2nBtvP8SCrPU02JKth90bgcIwEi62fOljMAclFoMRwCwr4pD0b8iyYUq+WwivgDR2eloOLwg==
+
 lodash@^4.17.11, lodash@^4.17.12, lodash@^4.17.13, lodash@^4.17.14:
   version "4.17.15"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.15.tgz#b447f6670a0455bbfeedd11392eff330ea097548"

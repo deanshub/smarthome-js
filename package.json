@@ -38,6 +38,7 @@
     "fs-extra": "^8.1.0",
     "lanscanner": "^0.0.5",
     "later": "^1.2.0",
+    "lock-system": "^2.0.0",
     "node-telegram-bot-api": "^0.30.0",
     "opn": "^6.0.0",
     "puppeteer": "^1.18.1",
