@@ -98,10 +98,11 @@ async function getManifest() {
 async function triggerCommand(ws, message) {
   // check that the name is farmiliar
   const { botCommand, commandName, ...rest } = message
+  // console.log(message)
   if (botCommand) {
-    return botCommander[commandName].apply(botCommander, ...rest)
+    return botCommander[commandName].apply(botCommander, rest.msg)
   } else if (devices[rest.room]) {
-    const { room, cmd, msg, args } = message
+    const { room, cmd, msg, args } = rest.msg
     await executeCommand(room, cmd, msg, args)
     // return ws.send(ack)
   }
@@ -116,6 +117,6 @@ export async function excecuteRemoteCommand(room, cmd, msg, args) {
 export async function executeBotRemoteCommand(commandName, msg) {
   const masterRoom = await getMasterRoom()
   return devices[masterRoom].ws.send(
-    JSON.stringify({ botCommand: true, commandName, ...msg })
+    JSON.stringify({ botCommand: true, commandName, msg })
   )
 }
