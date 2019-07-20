@@ -6,11 +6,15 @@ let cachedDevices = null
 
 export async function getMyDevices() {
   const devicesProps = Object.keys(devices)
-  const keys = await Promise.all(devicesProps.map(deviceProp=>
-    fs.readFile(path.join(__dirname, '../../devices', devices[deviceProp].keyName))
-  ))
+  const keys = await Promise.all(
+    devicesProps.map(deviceProp =>
+      fs.readFile(
+        path.join(__dirname, '../../devices', devices[deviceProp].keyName)
+      )
+    )
+  )
 
-  cachedDevices = devicesProps.reduce((res, deviceProp, index)=>{
+  cachedDevices = devicesProps.reduce((res, deviceProp, index) => {
     res[deviceProp] = {
       ...devices[deviceProp],
       key: keys[index],
@@ -27,5 +31,5 @@ export function isMaster(device) {
 }
 
 export function getMasterRoom() {
-  return Object.values(devices).find(device => device.master).propName
+  return Object.values(cachedDevices).find(device => device.master).propName
 }

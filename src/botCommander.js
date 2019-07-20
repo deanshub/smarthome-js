@@ -1,9 +1,9 @@
 import config from 'config'
 import TelegramBot from 'node-telegram-bot-api'
 import logger from './logger'
-import {DEFAULT_COMMANDS} from './commandsConfiguration'
-import {isMaster} from './multiDevices/devicesHelper'
-import {executeBotRemoteCommand} from './multiDevices/lanCommunications'
+import { DEFAULT_COMMANDS } from './commandsConfiguration'
+import { isMaster } from './multiDevices/devicesHelper'
+import { executeBotRemoteCommand } from './multiDevices/lanCommunications'
 
 const options = {
   polling: true,
@@ -18,14 +18,17 @@ const options = {
 let bot
 if (!config.BOT_TOKEN) {
   logger.warn('BOT_TOKEN is not set')
-  bot = new Proxy({}, {
-    get(target, prop) {
-      return ()=>{
-        console.warn(`bot is not initialized "${prop}" will not be called`)
-      }
-    },
-  })
-}else {
+  bot = new Proxy(
+    {},
+    {
+      get(target, prop) {
+        return () => {
+          console.warn(`bot is not initialized "${prop}" will not be called`)
+        }
+      },
+    }
+  )
+} else {
   bot = new TelegramBot(config.BOT_TOKEN, options)
 }
 
@@ -71,8 +74,8 @@ bot.on('callback_query', callbackQuery => {
 function sendCommandToMaster(fn, commandName) {
   if (isMaster(config.NAME)) {
     return fn
-  }else {
-    return (...args)=> executeBotRemoteCommand(commandName, ...args)
+  } else {
+    return (...args) => executeBotRemoteCommand(commandName, ...args)
   }
 }
 
@@ -107,17 +110,21 @@ export function editMessageText(text, options) {
   return bot.editMessageText(text, options)
 }
 
-export async function editMessage(text, replyMarkup, options) {
+export const editMessage = sendCommandToMaster(async function editMessage(
+  text,
+  replyMarkup,
+  options
+) {
   await editMessageReplyMarkup(replyMarkup, options)
   return editMessageText(text, options)
-}
+})
 
 let cb = null
 export function subscribeToMessages() {
   bot.on('message', msg => {
     if (cb) {
       return cb(msg)
-    } else if (msg.text[0]!=='/'){
+    } else if (msg.text[0] !== '/') {
       // TODO: intergate reminders
       // should I remind you?
     }
@@ -125,13 +132,10 @@ export function subscribeToMessages() {
 }
 export function getMessage() {
   return new Promise((resolve, reject) => {
-    const getMessageTimeout = setTimeout(
-      () => {
-        cb = null
-        reject(new Error('Message not received in time'))
-      },
-      20000
-    )
+    const getMessageTimeout = setTimeout(() => {
+      cb = null
+      reject(new Error('Message not received in time'))
+    }, 20000)
     cb = msg => {
       clearTimeout(getMessageTimeout)
       cb = null
@@ -189,9 +193,9 @@ export function withLog(command, fn) {
       }" module's "${command.fn || 'default'}" function`
     )
     logger.info(JSON.stringify(args))
-    try{
+    try {
       return fn.apply(fn, args)
-    }catch(err) {
+    } catch (err) {
       logger.error(err)
     }
   }
