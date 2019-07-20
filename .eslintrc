@@ -21,6 +21,7 @@
     "no-const-assign": 2,
     "no-dupe-class-members": 2,
     "no-this-before-super": 2,
+    "no-useless-class": 0,
     "require-yield": 2
   },
   "extends": "eslint:recommended"

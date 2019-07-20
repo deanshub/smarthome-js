@@ -1,6 +1,7 @@
 import config from 'config'
 import TelegramBot from 'node-telegram-bot-api'
 import logger from './logger'
+import {DEFAULT_COMMANDS} from './commandsConfiguration'
 
 const options = {
   polling: true,
@@ -18,9 +19,9 @@ if (!config.BOT_TOKEN) {
   bot = new Proxy({}, {
     get(target, prop) {
       return ()=>{
-        console.warn(`bot is not initialized "${prop}" will not be called`);
+        console.warn(`bot is not initialized "${prop}" will not be called`)
       }
-    }
+    },
   })
 }else {
   bot = new TelegramBot(config.BOT_TOKEN, options)
@@ -53,7 +54,7 @@ bot.on('error', error => {
 
 const allKeyboardOpts = {
   reply_markup: JSON.stringify({
-    keyboard: [['/start', '/allreminders', '/remind'], ['/rediscover', '/help']],
+    keyboard: DEFAULT_COMMANDS,
     resize_keyboard: true,
     one_time_keyboard: true,
   }),
@@ -75,6 +76,7 @@ export function sendImage(id, img, extraOps, fileOps) {
 
 let commands = {}
 export function addCommand(command, fn) {
+  console.log(command)
   const wrappedFn = command.auth
     ? withLog(command, onlyAdmins(fn))
     : withLog(command, fn)
@@ -104,7 +106,6 @@ export async function editMessage(text, replyMarkup, options) {
 let cb = null
 export function subscribeToMessages() {
   bot.on('message', msg => {
-    console.log(cb, msg);
     if (cb) {
       return cb(msg)
     } else if (msg.text[0]!=='/'){
