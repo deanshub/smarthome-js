@@ -46,6 +46,13 @@ export default [
     description: 'set a reminder',
   },
   {
+    name: 'reminder',
+    fn: 'getAllReminders',
+    regex: /\/allreminders/,
+    disabled: false,
+    description: 'set a reminder',
+  },
+  {
     name: 'callback',
     disabled: false,
   },

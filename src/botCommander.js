@@ -12,10 +12,19 @@ const options = {
   // },
 }
 
+let bot
 if (!config.BOT_TOKEN) {
   logger.warn('BOT_TOKEN is not set')
+  bot = new Proxy({}, {
+    get(target, prop) {
+      return ()=>{
+        console.warn(`bot is not initialized "${prop}" will not be called`);
+      }
+    }
+  })
+}else {
+  bot = new TelegramBot(config.BOT_TOKEN, options)
 }
-const bot = new TelegramBot(config.BOT_TOKEN, options)
 
 function reconnect() {
   logger.info('reconnecting')
@@ -44,7 +53,7 @@ bot.on('error', error => {
 
 const allKeyboardOpts = {
   reply_markup: JSON.stringify({
-    keyboard: [['/start', '/remind'], ['/rediscover', '/help']],
+    keyboard: [['/start', '/allreminders', '/remind'], ['/rediscover', '/help']],
     resize_keyboard: true,
     one_time_keyboard: true,
   }),
@@ -92,22 +101,30 @@ export async function editMessage(text, replyMarkup, options) {
   return editMessageText(text, options)
 }
 
-let cb
+let cb = null
 export function subscribeToMessages() {
   bot.on('message', msg => {
+    console.log(cb, msg);
     if (cb) {
-      cb(msg)
+      return cb(msg)
+    } else if (msg.text[0]!=='/'){
+      // TODO: intergate reminders
+      // should I remind you?
     }
   })
 }
 export function getMessage() {
   return new Promise((resolve, reject) => {
     const getMessageTimeout = setTimeout(
-      () => reject(new Error('Message not received in time')),
+      () => {
+        cb = null
+        reject(new Error('Message not received in time'))
+      },
       20000
     )
     cb = msg => {
       clearTimeout(getMessageTimeout)
+      cb = null
       resolve(msg)
     }
   })
@@ -162,6 +179,10 @@ export function withLog(command, fn) {
       }" module's "${command.fn || 'default'}" function`
     )
     logger.info(JSON.stringify(args))
-    return fn.apply(fn, args)
+    try{
+      return fn.apply(fn, args)
+    }catch(err) {
+      logger.error(err)
+    }
   }
 }
