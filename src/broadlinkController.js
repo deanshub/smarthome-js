@@ -58,13 +58,8 @@ export async function getCommandConfiguration(room, cmd) {
 export async function executeCommand(room, cmd, msg, args) {
   const roomConfig = await getRoomConfiguration(room)
   const commandConfig = await getCommandConfiguration(room, cmd)
-  // if remote command use excecuteRemoteCommand
-  if (commandConfig.remote && config.NAME !== room) {
-    excecuteRemoteCommand(room, cmd, msg, args)
-  } else {
-    const module = require(commandConfig.module ? `./commands/${commandConfig.module}` : './broadlinkController')
-    return module[commandConfig.function||'default'].call(module, {...commandConfig, device: roomConfig.device, room, msg}, args)
-  }
+  const module = require(commandConfig.module ? `./commands/${commandConfig.module}` : './broadlinkController')
+  return module[commandConfig.function||'default'].call(module, {...commandConfig, device: roomConfig.device, room, msg}, args)
 }
 
 export const sendSignal = async ({signal, device}) => {
