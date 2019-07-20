@@ -100,9 +100,9 @@ async function triggerCommand(ws, message) {
   const { botCommand, commandName, ...rest } = message
   // console.log(message)
   if (botCommand) {
-    return botCommander[commandName].apply(botCommander, rest.msg)
-  } else if (devices[rest.room]) {
-    const { room, cmd, msg, args } = rest.msg
+    return botCommander[commandName].apply(botCommander, rest.data)
+  } else if (devices[rest.data.room]) {
+    const { room, cmd, msg, args } = rest.data
     await executeCommand(room, cmd, msg, args)
     // return ws.send(ack)
   }
@@ -111,14 +111,15 @@ async function triggerCommand(ws, message) {
 
 export async function excecuteRemoteCommand(room, cmd, msg, args) {
   return devices[room].ws.send(
-    JSON.stringify({ msg: { room, cmd, msg, args } })
+    JSON.stringify({ data: { room, cmd, msg, args } })
   )
   // TODO: handle ack? not sure if possible here
 }
 
 export async function executeBotRemoteCommand(commandName, msg) {
+  // console.log(commandName)
   const masterRoom = await getMasterRoom()
   return devices[masterRoom].ws.send(
-    JSON.stringify({ botCommand: true, commandName, msg })
+    JSON.stringify({ botCommand: true, commandName, data: msg })
   )
 }
