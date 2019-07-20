@@ -7,6 +7,17 @@ import { getMyDevices, getMasterRoom } from './devicesHelper'
 import { executeCommand } from '../broadlinkController'
 import * as botCommander from '../botCommander'
 
+function generateId(length = 24) {
+  let result = ''
+  const characters =
+    'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+  const charactersLength = characters.length
+  for (var i = 0; i < length; i++) {
+    result += characters.charAt(Math.floor(Math.random() * charactersLength))
+  }
+  return result
+}
+
 const PORT = config.REMOTE_COMMANDS_PORT || 13975
 if (!config.NAME) {
   logger.warn('device name not configured!')
@@ -33,8 +44,11 @@ function getSocket(ip) {
       // console.log(data)
       if (message.manifest) {
         resolve({ ...message.manifest, ws })
-        // TODO: handle errors and acks
+      } else if (message.messageId) {
+        const { messageId, result } = message
+        publishMessageResult(messageId, result)
       } else {
+        // TODO: handle errors and acks
         triggerCommand(ws, message)
         // ws.send(ack)
       }
@@ -97,7 +111,7 @@ async function getManifest() {
 
 async function triggerCommand(ws, message) {
   // check that the name is farmiliar
-  const { botCommand, commandName, data } = message
+  const { messageId, botCommand, commandName, data } = message
   if (botCommand) {
     return botCommander[commandName].apply(
       botCommander,
@@ -105,22 +119,47 @@ async function triggerCommand(ws, message) {
     )
   } else if (devices[data.room]) {
     const { room, cmd, msg, args } = data
-    await executeCommand(room, cmd, msg, args)
-    // return ws.send(ack)
+    const result = await executeCommand(room, cmd, msg, args)
+    return ws.send(JSON.stringify({ messageId, result }))
   }
   // return ws.send(failed)
 }
 
 export async function excecuteRemoteCommand(room, cmd, msg, args) {
-  return devices[room].ws.send(
-    JSON.stringify({ data: { room, cmd, msg, args } })
+  const messageId = generateId()
+  devices[room].ws.send(
+    JSON.stringify({ messageId, data: { room, cmd, msg, args } })
   )
+  return getMessageResult(messageId)
   // TODO: handle ack? not sure if possible here
 }
 
 export async function executeBotRemoteCommand(commandName, msg) {
   const masterRoom = await getMasterRoom()
-  return devices[masterRoom].ws.send(
-    JSON.stringify({ botCommand: true, commandName, data: msg })
+  const messageId = generateId()
+  devices[masterRoom].ws.send(
+    JSON.stringify({ messageId, botCommand: true, commandName, data: msg })
   )
+  return getMessageResult(messageId)
+}
+
+const messageResults = new Map()
+function getMessageResult(messageId) {
+  return new Promise((resolve, reject) => {
+    const timeoutId = setTimeout(() => {
+      if (messageResults.has(messageId)) {
+        messageResults.delete(messageId)
+        reject(`timeout for message "${messageId}"`)
+      }
+    }, 2000)
+    messageResults.set(messageId, result => {
+      clearTimeout(timeoutId)
+      resolve(result)
+    })
+  })
+}
+function publishMessageResult(messageId, result) {
+  const cb = messageResults.get(messageId)
+  cb(result)
+  messageResults.delete(messageId)
 }
