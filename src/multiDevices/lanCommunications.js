@@ -151,7 +151,7 @@ function getMessageResult(messageId) {
         messageResults.delete(messageId)
         reject(`timeout for message "${messageId}"`)
       }
-    }, 2000)
+    }, config.MESSAGE_RESULT_TIMEOUT)
     messageResults.set(messageId, result => {
       clearTimeout(timeoutId)
       resolve(result)

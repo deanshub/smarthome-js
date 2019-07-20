@@ -144,7 +144,7 @@ export const getMessage = sendCommandToMaster(() => {
     const getMessageTimeout = setTimeout(() => {
       cb = null
       reject(new Error('Message not received in time'))
-    }, 20000)
+    }, config.MESSAGE_RESULT_TIMEOUT)
     cb = msg => {
       clearTimeout(getMessageTimeout)
       cb = null
