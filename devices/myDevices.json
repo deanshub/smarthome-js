@@ -35,15 +35,18 @@
       "mood": {
         "displayName": "TV&AC 🌅",
         "module": "multi",
-        "signals": [
-          "salon30.deg",
-          "salonTv.deg"
-        ]
+        "signals": ["salon30.deg", "salonTv.deg"]
       },
       "youtube": {
         "displayName": "Youtube 📽️",
         "module": "web",
         "function": "youtube",
+        "remote": true
+      },
+      "mute": {
+        "displayName": "mute 🔇️",
+        "module": "windows",
+        "function": "mute",
         "remote": true
       }
     }
@@ -86,6 +89,12 @@
         "displayName": "Youtube 📽️",
         "module": "web",
         "function": "youtube",
+        "remote": true
+      },
+      "mute": {
+        "displayName": "mute 🔇️",
+        "module": "windows",
+        "function": "mute",
         "remote": true
       }
     }
@@ -133,10 +142,7 @@
       "mood": {
         "displayName": "TV&AC 🌅",
         "module": "multi",
-        "signals": [
-          "bed30.deg",
-          "bedTv.deg"
-        ]
+        "signals": ["bed30.deg", "bedTv.deg"]
       }
     }
   }
