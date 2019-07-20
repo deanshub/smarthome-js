@@ -110,7 +110,9 @@ async function triggerCommand(ws, message) {
 }
 
 export async function excecuteRemoteCommand(room, cmd, msg, args) {
-  return devices[room].ws.send(JSON.stringify({ room, cmd, msg, args }))
+  return devices[room].ws.send(
+    JSON.stringify({ msg: { room, cmd, msg, args } })
+  )
   // TODO: handle ack? not sure if possible here
 }
 
