@@ -74,8 +74,10 @@ bot.on('callback_query', callbackQuery => {
 function sendCommandToMaster(fn, commandName) {
   if (isMaster(config.NAME)) {
     return fn
-  } else {
+  } else if(commandName) {
     return (...args) => executeBotRemoteCommand(commandName, ...args)
+  }else {
+    logger.error('no command name set when trying to send bot command to master')
   }
 }
 
@@ -117,7 +119,7 @@ export const editMessage = sendCommandToMaster(async function editMessage(
 ) {
   await editMessageReplyMarkup(replyMarkup, options)
   return editMessageText(text, options)
-})
+}, 'editMessage')
 
 let cb = null
 export function subscribeToMessages() {
