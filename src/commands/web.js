@@ -1,6 +1,11 @@
 import opn from 'opn'
 import puppeteer from 'puppeteer'
-import {sendImage, sendMessage, getMessage, editMessage} from '../botCommander'
+import {
+  sendImage,
+  sendMessage,
+  getMessage,
+  editMessage,
+} from '../botCommander'
 
 const width = 2400
 const height = 600
@@ -8,9 +13,7 @@ const headless = true
 
 const allKeyboardOpts = {
   reply_markup: JSON.stringify({
-    keyboard: [
-      ['/start', '/rediscover', '/help'],
-    ],
+    keyboard: [['/start', '/rediscover', '/help']],
     resize_keyboard: true,
   }),
   parse_mode: '',
@@ -58,16 +61,41 @@ export async function google(data, args) {
     searchTerm = args[1]
   }
 
-  const browser = await puppeteer.launch({headless})
+  const browser = await puppeteer.launch({ headless })
   const page = await browser.newPage()
-  await page.setViewport({width, height})
+  await page.setViewport({ width, height })
   const searchUrl = `https://www.google.com/search?q=${searchTerm}`
   await page.goto(searchUrl)
-  const text = (await page.$eval('#search [data-hveid]', a => a.textContent)).slice(0,1500)
+  const text = (await page.$eval(
+    '#search [data-hveid]',
+    a => a.textContent
+  )).slice(0, 1500)
   const img = await (await page.$('#search [data-hveid]')).screenshot()
   await browser.close()
   if (text) {
-    return Promise.all([sendImage(msg.from.id, img, allKeyboardOpts), sendMessage(msg.from.id, text, allKeyboardOpts)])
+    return Promise.all([
+      sendImage(msg.from.id, img, allKeyboardOpts),
+      sendMessage(msg.from.id, text, allKeyboardOpts),
+    ])
   }
   return sendImage(msg.from.id, img)
+}
+
+export async function browser(data, args) {
+  const msg = data.msg || data
+  let url
+
+  if (data.msg) {
+    // msg from button
+    await editMessage('What?', undefined, {
+      chat_id: msg.message.chat.id,
+      message_id: msg.message.message_id,
+    })
+    url = (await getMessage()).text.trim()
+  } else {
+    // msg from inline command /search
+    url = args[1]
+  }
+
+  return opn(encodeURI(url))
 }

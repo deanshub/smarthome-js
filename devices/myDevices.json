@@ -43,6 +43,12 @@
         "function": "youtube",
         "remote": true
       },
+      "browser": {
+        "displayName": "Browser 🌐️",
+        "module": "web",
+        "function": "browser",
+        "remote": true
+      },
       "mute": {
         "displayName": "mute 🔇️",
         "module": "windows",
@@ -95,6 +101,12 @@
         "displayName": "Youtube 📽️",
         "module": "web",
         "function": "youtube",
+        "remote": true
+      },
+      "browser": {
+        "displayName": "Browser 🌐️",
+        "module": "web",
+        "function": "browser",
         "remote": true
       },
       "mute": {
