@@ -4,6 +4,8 @@ import * as broadlinkController from '../broadlinkController'
 import CONSTS from '../consts'
 import logger from '../logger'
 import later from 'later'
+import {excecuteRemoteCommand} from '../multiDevices/lanCommunications'
+
 later.date.localTime()
 
 function getRoomFromData(data) {
@@ -74,7 +76,14 @@ async function executeCommand(msg, data, cmd){
     const room = getRoomFromData(data)
     logAction(msg, room, cmd)
     try {
-      await broadlinkController.executeCommand(room, cmd, msg)
+      const cmdConfig = await broadlinkController.getCommandConfiguration(room, cmd)      // if remote command use excecuteRemoteCommand
+
+      // if remote command use excecuteRemoteCommand
+      if (cmdConfig.remote && config.NAME !== room) {
+        await excecuteRemoteCommand(room, cmd, msg)
+      } else {
+        await broadlinkController.executeCommand(room, cmd, msg)
+      }
     } catch (e) {
       logger.error(e)
       logger.error(e.stack)

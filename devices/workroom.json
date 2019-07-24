@@ -1,0 +1,60 @@
+{
+  "master": true,
+  "displayName": "Workroom",
+  "keyName": "Broadlink RM Mini2",
+  "commands": {
+    "hot": {
+      "displayName": "Hot ☀️",
+      "function": "sendSignal",
+      "signal": "work30.deg"
+    },
+    "cold": {
+      "displayName": "Cold ❄️",
+      "function": "sendSignal",
+      "signal": "work17.deg"
+    },
+    "off": {
+      "displayName": "Off 💀",
+      "function": "sendSignal",
+      "signal": "workoff.deg"
+    },
+    "temprature": {
+      "displayName": "Temprature 🌡️",
+      "module": "temprature",
+      "disabled": true
+    },
+    "learn": {
+      "displayName": "Learn 🎓",
+      "module": "learn"
+    },
+    "google": {
+      "displayName": "Google 🔍",
+      "module": "web",
+      "function": "google"
+    },
+    "youtube": {
+      "displayName": "Youtube 📽️",
+      "module": "web",
+      "function": "youtube",
+      "remote": true
+    },
+    "browser": {
+      "displayName": "Browser 🌐️",
+      "module": "web",
+      "function": "browser",
+      "remote": true
+    },
+    "mute": {
+      "displayName": "mute 🔇️",
+      "module": "windows",
+      "function": "mute",
+      "remote": true
+    },
+    "lock": {
+      "displayName": "lock 🔒️",
+      "module": "windows",
+      "function": "lock",
+      "remote": true
+    }
+  }
+}

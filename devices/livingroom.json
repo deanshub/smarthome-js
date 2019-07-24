@@ -1,0 +1,64 @@
+{
+  "displayName": "Livingroom",
+  "keyName": "Broadlink RM Mini1",
+  "commands": {
+    "hot": {
+      "displayName": "Hot ☀️",
+      "function": "sendSignal",
+      "signal": "salon30.deg"
+    },
+    "cold": {
+      "displayName": "Cold ❄️",
+      "function": "sendSignal",
+      "signal": "salon22.deg"
+    },
+    "tv": {
+      "displayName": "TV 📺",
+      "function": "sendSignal",
+      "signal": "salonTv.deg"
+    },
+    "off": {
+      "displayName": "Off 💀",
+      "function": "sendSignal",
+      "signal": "salonoff.deg"
+    },
+    "temprature": {
+      "displayName": "Temprature 🌡️",
+      "module": "temprature",
+      "disabled": true
+    },
+    "learn": {
+      "displayName": "Learn 🎓",
+      "module": "learn"
+    },
+    "mood": {
+      "displayName": "TV&AC 🌅",
+      "module": "multi",
+      "signals": ["salon30.deg", "salonTv.deg"]
+    },
+    "youtube": {
+      "displayName": "Youtube 📽️",
+      "module": "web",
+      "function": "youtube",
+      "remote": true
+    },
+    "browser": {
+      "displayName": "Browser 🌐️",
+      "module": "web",
+      "function": "browser",
+      "remote": true
+    },
+    "mute": {
+      "displayName": "mute 🔇️",
+      "module": "windows",
+      "function": "mute",
+      "remote": true
+    },
+    "lock": {
+      "displayName": "lock 🔒️",
+      "module": "windows",
+      "function": "lock",
+      "remote": true
+    }
+  }
+}

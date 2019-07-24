@@ -1,0 +1,47 @@
+{
+  "displayName": "Bedroom",
+  "keyName": "Broadlink RM2 Pro Plus v23",
+  "commands": {
+    "hot": {
+      "displayName": "Hot ☀️",
+      "signal": "bed30.deg",
+      "module": "bedAc",
+      "function": "on"
+    },
+    "cold": {
+      "displayName": "Cold ❄️",
+      "signal": "bed16.deg",
+      "module": "bedAc",
+      "function": "on"
+    },
+    "tv": {
+      "displayName": "TV 📺",
+      "function": "sendSignal",
+      "signal": "bedTv.deg"
+    },
+    "off": {
+      "displayName": "Off 💀",
+      "module": "bedAc",
+      "function": "off"
+    },
+    "temprature": {
+      "displayName": "Temprature 🌡️",
+      "module": "temprature"
+    },
+    "lights": {
+      "displayName": "Lights 💡",
+      "function": "sendSignal",
+      "signal": "bedLights.deg",
+      "disabled": true
+    },
+    "learn": {
+      "displayName": "Learn 🎓",
+      "module": "learn"
+    },
+    "mood": {
+      "displayName": "TV&AC 🌅",
+      "module": "multi",
+      "signals": ["bed30.deg", "bedTv.deg"]
+    }
+  }
+}

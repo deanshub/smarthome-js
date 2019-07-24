@@ -2,38 +2,39 @@ import fs from 'fs-extra'
 import path from 'path'
 import Broadlink from './Broadlink'
 import logger from './logger'
-import {getMyDevices} from './devicesHelper'
+import { getMyDevices } from './multiDevices/devicesHelper'
 let b = new Broadlink()
 
-const discoverDevices = () =>  new Promise(async (resolve) => {
-  const savedDevices = await getMyDevices()
+const discoverDevices = () =>
+  new Promise(async resolve => {
+    const savedDevices = await getMyDevices()
 
-  let unkownIndex = 0
-  b.on('deviceReady', dev => {
-    dev.checkData()
-    // fs.writeFile(path.join(__dirname, '../devices', `${dev.model}${index}`), dev.key)
-    const deviceConfiguration = Object.values(savedDevices).find(
-      savedDevice => savedDevice.key.toString() === dev.key.toString()
-    )
-    if (deviceConfiguration) {
-      if (!deviceConfiguration.displayName) {
-        deviceConfiguration.displayName = deviceConfiguration.propName
+    let unkownIndex = 0
+    b.on('deviceReady', dev => {
+      dev.checkData()
+      // fs.writeFile(path.join(__dirname, '../devices', `${dev.model}${index}`), dev.key)
+      const deviceConfiguration = Object.values(savedDevices).find(
+        savedDevice => savedDevice.key.toString() === dev.key.toString()
+      )
+      if (deviceConfiguration) {
+        if (!deviceConfiguration.displayName) {
+          deviceConfiguration.displayName = deviceConfiguration.propName
+        }
+        logger.info(`device "${deviceConfiguration.displayName}" found`)
+        deviceConfiguration.device = dev
+      } else {
+        const unknownDeviceProp = `Unkown${unkownIndex++}`
+        savedDevices[unknownDeviceProp].device = dev
+        savedDevices[unknownDeviceProp].propName = unknownDeviceProp
+        savedDevices[unknownDeviceProp].displayName = unknownDeviceProp
       }
-      logger.info(`device "${deviceConfiguration.displayName}" found`)
-      deviceConfiguration.device = dev
-    }else{
-      const unknownDeviceProp = `Unkown${unkownIndex++}`
-      savedDevices[unknownDeviceProp].device = dev
-      savedDevices[unknownDeviceProp].propName = unknownDeviceProp
-      savedDevices[unknownDeviceProp].displayName = unknownDeviceProp
-    }
-    setTimeout(() => {
-      resolve(savedDevices)
-    }, 200)
+      setTimeout(() => {
+        resolve(savedDevices)
+      }, 200)
+    })
+    logger.info('Discovering devices...')
+    b.discover()
   })
-  logger.info('Discovering devices...')
-  b.discover()
-})
 
 let devicesReady = discoverDevices()
 
@@ -53,23 +54,29 @@ export async function getCommandConfiguration(room, cmd) {
   return roomConfig.commands[cmd]
 }
 
-export async function executeCommand(room, cmd, msg) {
+export async function executeCommand(room, cmd, msg, args) {
   const roomConfig = await getRoomConfiguration(room)
   const commandConfig = await getCommandConfiguration(room, cmd)
-  const module = require(commandConfig.module ? `./commands/${commandConfig.module}` : './broadlinkController')
-  return module[commandConfig.function||'default'].call(module, {...commandConfig, device: roomConfig.device, room, msg})
+  const module = require(commandConfig.module
+    ? `./commands/${commandConfig.module}`
+    : './broadlinkController')
+  return module[commandConfig.function || 'default'].call(
+    module,
+    { ...commandConfig, device: roomConfig.device, room, msg },
+    args
+  )
 }
 
-export const sendSignal = async ({signal, device}) => {
+export const sendSignal = async ({ signal, device }) => {
   const signalData = await fs.readFile(
     path.join(__dirname, '../signals', signal)
   )
   return device.sendData(signalData)
 }
 
-export const learnSignal = async ({device, signalName}) => {
+export const learnSignal = async ({ device, signalName }) => {
   return new Promise((resolve, reject) => {
-    const cancelTimeout = setTimeout(()=>{
+    const cancelTimeout = setTimeout(() => {
       device.cancelLearn()
       reject(new Error('no signal found to learn'))
     }, 10000)
@@ -91,24 +98,24 @@ export const learnSignal = async ({device, signalName}) => {
     device.enterLearning()
     setTimeout(() => {
       device.checkData()
-    },3000)
+    }, 3000)
     setTimeout(() => {
       device.checkData()
-    },6000)
+    }, 6000)
     setTimeout(() => {
       device.checkData()
-    },9000)
+    }, 9000)
   })
 }
 
-export const checkSingleTemperature = ({device}) => {
+export const checkSingleTemperature = ({ device }) => {
   return new Promise((resolve, reject) => {
     // const temperatureFn = (temp)=>{
     //   // dev.off('temperature', temperatureFn)
     //   resolve(temp)
     // }
     const timeoutId = setTimeout(reject, 3000)
-    device.on('temperature', t=>{
+    device.on('temperature', t => {
       clearTimeout(timeoutId)
       resolve(t)
     })
