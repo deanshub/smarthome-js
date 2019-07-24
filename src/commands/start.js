@@ -1,5 +1,10 @@
-import {getDevices} from '../broadlinkController'
-import {editMessageText, editMessageReplyMarkup, sendMessage} from '../botCommander'
+import { getDevices } from '../broadlinkController'
+import {
+  editMessageText,
+  editMessageReplyMarkup,
+  sendMessage,
+  addCallbackRunCommand,
+} from '../botCommander'
 import CONSTS from '../consts'
 
 export default async function(msg) {
@@ -12,13 +17,15 @@ export default async function(msg) {
     Object.values(devices).map(device => {
       return {
         text: device.displayName,
-        callback_data: msg.timer ? `${device.propName}${CONSTS.TIME_KEY}${msg.timer}`: device.propName,
+        callback_data: msg.timer
+          ? `${device.propName}${CONSTS.TIME_KEY}${msg.timer}`
+          : device.propName,
       }
     }),
   ]
 
   if (!msg.timer) {
-    inline_keyboard.unshift([{text: '⏲ Timer', callback_data: CONSTS.TIMER}])
+    inline_keyboard.unshift([{ text: '⏲ Timer', callback_data: CONSTS.TIMER }])
   }
 
   const keyboardOpts = {
@@ -48,10 +55,10 @@ export default async function(msg) {
     )
   }
 
-  const startText = msg.timer ? `What do you want to do ${msg.timer}` : `Hi ${name}, what do you want to do?`
-  return sendMessage(
-    id,
-    startText,
-    keyboardOpts
-  )
+  const startText = msg.timer
+    ? `What do you want to do ${msg.timer}`
+    : `Hi ${name}, what do you want to do?`
+  return sendMessage(id, startText, keyboardOpts)
 }
+
+addCallbackRunCommand(CONSTS.BACK, 'start')

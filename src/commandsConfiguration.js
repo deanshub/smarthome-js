@@ -52,6 +52,13 @@ export default [
     disabled: false,
     description: 'set a reminder',
   },
+  {
+    name: 'callbackButtons',
+    disabled: false,
+  },
 ]
 
-export const DEFAULT_COMMANDS = [['/start', '/allreminders', '/remind'], ['/rediscover', '/help']]
+export const DEFAULT_COMMANDS = [
+  ['/start', '/allreminders', '/remind'],
+  ['/rediscover', '/help'],
+]

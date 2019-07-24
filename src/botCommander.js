@@ -67,9 +67,46 @@ const allKeyboardOpts = {
   disable_web_page_preview: true,
 }
 
-bot.on('callback_query', callbackQuery => {
-  runCommand('callback', callbackQuery, callbackQuery.data)
-})
+const callbackActions = new Map()
+export function addCallbackAction(key, action) {
+  callbackActions.set(key, action)
+}
+const callbackMatchers = []
+export function addCallbackActionUsingMatcher(matcher, action) {
+  const key = Math.random()
+  addCallbackAction(key, action)
+  callbackMatchers.push({ matcher, key })
+}
+
+export function addCallbackRunCommand(key, commandName) {
+  return addCallbackAction(key, ({ msg, data }) =>
+    runCommand(commandName, msg, data)
+  )
+}
+
+export async function runCallback(callbackQuery) {
+  const data = callbackQuery.data
+  if (callbackActions.has(data)) {
+    const action = callbackActions.get(data)
+    return action({ msg: callbackQuery, data })
+  } else {
+    const matchers = await Promise.all(
+      callbackMatchers.map(({ matcher }) =>
+        matcher({ msg: callbackQuery, data })
+      )
+    )
+    const matcherIndex = matchers.findIndex(matcher => matcher)
+    if (matcherIndex > -1) {
+      const action = callbackActions.get(callbackMatchers[matcherIndex].key)
+      return action({ msg: callbackQuery, data })
+    } else {
+      logger.error(`callback not found for "${data}" of ${callbackQuery}`)
+      // return runCommand('callback', callbackQuery, data)
+    }
+  }
+}
+
+bot.on('callback_query', runCallback)
 
 function sendCommandToMaster(fn, commandName) {
   if (isMaster(config.NAME)) {
