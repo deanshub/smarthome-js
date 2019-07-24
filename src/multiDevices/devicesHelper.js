@@ -26,6 +26,25 @@ export async function getMyDevices() {
   return cachedDevices
 }
 
+export async function saveSignalCommandToManifest({
+  room,
+  signalName,
+  displayName,
+}) {
+  const devicesPath = '../../devices/myDevices.json'
+  const myDevices = await import(devicesPath)
+  myDevices[room].commands[signalName] = {
+    displayName,
+    function: 'sendSignal',
+    signal: `${signalName}.deg`,
+  }
+
+  return fs.writeFile(
+    path.join(__dirname, devicesPath),
+    JSON.stringify(myDevices, null, 2)
+  )
+}
+
 export function isMaster(device) {
   return devices[device].master
 }
