@@ -2,6 +2,16 @@
   "displayName": "Bedroom",
   "keyName": "Broadlink RM2 Pro Plus v23",
   "commands": {
+    "24": {
+      "displayName": "24",
+      "function": "sendSignal",
+      "signal": "24.deg"
+    },
+    "25": {
+      "displayName": "25",
+      "function": "sendSignal",
+      "signal": "25.deg"
+    },
     "hot": {
       "displayName": "Hot ☀️",
       "signal": "bed30.deg",
