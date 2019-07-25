@@ -17,7 +17,7 @@ const options = {
 
 let bot
 if (!config.BOT_TOKEN) {
-  logger.warn('BOT_TOKEN is not set')
+  console.warn('BOT_TOKEN is not set')
   bot = new Proxy(
     {},
     {
