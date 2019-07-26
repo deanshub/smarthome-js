@@ -101,6 +101,10 @@ export function createServer() {
   return { server, wss }
 }
 
+// function handleMessage(data) {
+//
+// }
+
 async function getManifest() {
   const myDevices = await getMyDevices()
 
@@ -131,10 +135,15 @@ async function triggerCommand(ws, message) {
 
 export async function excecuteRemoteCommand(room, cmd, msg, args) {
   const messageId = generateId()
-  devices[room].ws.send(
-    JSON.stringify({ messageId, data: { room, cmd, msg, args } })
-  )
-  return getMessageResult(messageId)
+  if (devices[room] && devices[room].ws) {
+    devices[room].ws.send(
+      JSON.stringify({ messageId, data: { room, cmd, msg, args } })
+    )
+    return getMessageResult(messageId)
+  } else {
+    logger.error(`can't locate "${room}" didn't receive it's manifest`)
+    return Promise.reject(`can't locate "${room}" didn't receive it's manifest`)
+  }
   // TODO: handle ack? not sure if possible here
 }
 
