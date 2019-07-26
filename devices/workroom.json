@@ -36,7 +36,8 @@
       "displayName": "Youtube 📽️",
       "module": "web",
       "function": "youtube",
-      "remote": true
+      "remote": true,
+      "disabled": true
     },
     "browser": {
       "displayName": "Browser 🌐️",
@@ -56,7 +57,7 @@
       "function": "volUp",
       "remote": true
     },
-    "volup": {
+    "voldown": {
       "displayName": "lower 🔈",
       "module": "windows",
       "function": "volDown",
