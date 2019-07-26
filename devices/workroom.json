@@ -50,6 +50,18 @@
       "function": "mute",
       "remote": true
     },
+    "volup": {
+      "displayName": "higher 🔊",
+      "module": "windows",
+      "function": "volUp",
+      "remote": true
+    },
+    "volup": {
+      "displayName": "lower 🔈",
+      "module": "windows",
+      "function": "volDown",
+      "remote": true
+    },
     "lock": {
       "displayName": "lock 🔒️",
       "module": "windows",

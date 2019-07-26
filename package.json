@@ -11,8 +11,21 @@
     "build": "npm run clean && cross-env NODE_ENV=production babel src -d dist",
     "clean": "rm -rf dist/*",
     "clean-all": "rm -rf dist/* logs/*",
+    "pkg": "pkg . --targets win --out-path dist",
     "install-service": "npm run build && winser -a -i --env NODE_ENV=production --startcmd \"node dist/index.js\"",
     "uninstall-service": "winser -x -r"
+  },
+  "bin": "index.js",
+  "pkg": {
+    "scripts": "dist/**/*.js",
+    "assets": [
+      "devices/**/*",
+      "signals/**/*",
+      "config/**/*",
+      "node_modules/opn/xdg-open",
+      "node_modules/puppeteer/.local-chromium/**/*",
+      "node_modules/win-audio/build/Release/audio.node"
+    ]
   },
   "repository": {
     "type": "git",
@@ -43,7 +56,6 @@
     "opn": "^6.0.0",
     "puppeteer": "^1.18.1",
     "win-audio": "^2.0.2",
-    "winser": "^1.0.3",
     "winston": "^3.2.1",
     "winston-daily-rotate-file": "^3.10.0",
     "ws": "^7.1.1"
@@ -62,6 +74,7 @@
     "babel-plugin-dynamic-import-node-babel-7": "^2.0.7",
     "eslint": "^6.0.1",
     "nodemon": "^1.18.10",
+    "pkg": "^4.4.0",
     "prettier": "^1.18.2"
   }
 }
