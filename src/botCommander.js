@@ -167,12 +167,12 @@ export const editMessage = sendCommandToMaster(async function editMessage(
 
 let cb = null
 export function subscribeToMessages() {
-  bot.on('message', msg => {
+  bot.on('message', async msg => {
     if (cb) {
       return cb(msg)
     } else if (msg.text[0] !== '/') {
-      // TODO: intergate reminders
-      // should I remind you?
+      const reminderModule = await import('./commands/reminder')
+      return reminderModule.randomMessageReminder(msg)
     }
   })
 }

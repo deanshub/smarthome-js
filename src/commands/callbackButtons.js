@@ -232,8 +232,7 @@ async function executeDeviceCommand({ msg, data }) {
     const cmdConfig = await broadlinkController.getCommandConfiguration(
       room,
       cmd
-    ) // if remote command use excecuteRemoteCommand
-
+    )
     // if remote command use excecuteRemoteCommand
     if (cmdConfig.remote && config.NAME !== room) {
       await excecuteRemoteCommand(room, cmd, msg)
