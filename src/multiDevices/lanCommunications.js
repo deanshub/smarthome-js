@@ -43,6 +43,10 @@ function getSocket(ip) {
       }
       // console.log({ data })
       if (message.manifest) {
+        if (config.NAME !== message.manifest.name) {
+          logger.info(`Got "${message.manifest.name}'s" manifest'`)
+          devices[message.manifest.name] = { ...message.manifest, ws }
+        }
         resolve({ ...message.manifest, ws })
       } else if (message.messageIdAnswered) {
         const { messageIdAnswered, result } = message
@@ -60,8 +64,9 @@ export async function scanForDevices() {
   const ips = await scanner.scan('ip')
   for (let i = 0; i < ips.length; i++) {
     try {
-      const ws = await getSocket(ips[i])
-      devices[ws.name] = ws
+      await getSocket(ips[i])
+      // const ws = await getSocket(ips[i])
+      // devices[ws.name] = ws
     } catch (e) {
       //
     }
@@ -77,7 +82,7 @@ export function createServer() {
   const wss = new WebSocket.Server({ server })
   wss.on('connection', async ws => {
     ws.on('message', data => {
-      // console.log(data)
+      // console.log({ data })
       const message = JSON.parse(data)
       if (message.manifest) {
         if (config.NAME !== message.manifest.name) {
