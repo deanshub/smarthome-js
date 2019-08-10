@@ -4,13 +4,15 @@
   "commands": {
     "24": {
       "displayName": "24",
-      "function": "sendSignal",
-      "signal": "24.deg"
+      "signal": "24.deg",
+      "module": "bedAc",
+      "function": "on"
     },
     "25": {
       "displayName": "25",
-      "function": "sendSignal",
-      "signal": "25.deg"
+      "signal": "25.deg",
+      "module": "bedAc",
+      "function": "on"
     },
     "hot": {
       "displayName": "Hot ☀️",

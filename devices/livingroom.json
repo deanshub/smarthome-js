@@ -2,6 +2,11 @@
   "displayName": "Livingroom",
   "keyName": "Broadlink RM Mini1",
   "commands": {
+    "25": {
+      "displayName": "25",
+      "function": "sendSignal",
+      "signal": "25.deg"
+    },
     "hot": {
       "displayName": "Hot ☀️",
       "function": "sendSignal",
@@ -34,14 +39,16 @@
     "mood": {
       "displayName": "TV&AC 🌅",
       "module": "multi",
-      "signals": ["salon30.deg", "salonTv.deg"]
+      "signals": [
+        "salon30.deg",
+        "salonTv.deg"
+      ]
     },
     "youtube": {
       "displayName": "Youtube 📽️",
       "module": "web",
       "function": "youtube",
-      "remote": true,
-      "disabled": true
+      "remote": true
     },
     "browser": {
       "displayName": "Browser 🌐️",

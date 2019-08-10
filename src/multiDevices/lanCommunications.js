@@ -41,7 +41,7 @@ function getSocket(ip) {
         logger.error(data)
         logger.error(e)
       }
-      // console.log(data)
+      // console.log({ data })
       if (message.manifest) {
         resolve({ ...message.manifest, ws })
       } else if (message.messageIdAnswered) {
@@ -80,7 +80,10 @@ export function createServer() {
       // console.log(data)
       const message = JSON.parse(data)
       if (message.manifest) {
-        devices[message.manifest.name] = { ...message.manifest, ws }
+        if (config.NAME !== message.manifest.name) {
+          logger.info(`Got "${message.manifest.name}'s" manifest'`)
+          devices[message.manifest.name] = { ...message.manifest, ws }
+        }
         // TODO: handle errors and acks
       } else if (message.messageIdAnswered) {
         const { messageIdAnswered, result } = message
