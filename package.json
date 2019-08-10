@@ -12,6 +12,8 @@
     "clean": "rm -rf dist/*",
     "clean-all": "rm -rf dist/* logs/*",
     "pkg": "pkg . --targets win --out-path dist",
+    "install": "node installer.js install",
+    "uninstall": "node installer.js uninstall",
     "install-service": "npm run build && winser -a -i --env NODE_ENV=production --startcmd \"node dist/index.js\"",
     "uninstall-service": "winser -x -r"
   },
@@ -44,6 +46,7 @@
   },
   "homepage": "https://github.com/deanshub/smarthome-js#readme",
   "dependencies": {
+    "auto-launch": "^5.0.5",
     "broadlinkjs": "^0.1.0",
     "config": "^3.2.1",
     "cross-env": "^5.2.0",
