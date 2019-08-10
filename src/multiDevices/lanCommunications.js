@@ -12,7 +12,7 @@ function generateId(length = 24) {
   const characters =
     'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
   const charactersLength = characters.length
-  for (var i = 0; i < length; i++) {
+  for (let i = 0; i < length; i++) {
     result += characters.charAt(Math.floor(Math.random() * charactersLength))
   }
   return result
@@ -24,39 +24,41 @@ if (!config.NAME) {
 }
 const devices = {}
 
+function handleMessage(ws, data) {
+  let message = {}
+  try {
+    message = JSON.parse(data)
+  } catch (e) {
+    logger.error('Unknown message received:')
+    logger.error(data)
+    logger.error(e)
+  }
+  // console.log({ data })
+  if (message.manifest) {
+    if (config.NAME !== message.manifest.name) {
+      logger.info(`Got "${message.manifest.name}'s" manifest'`)
+      devices[message.manifest.name] = { ...message.manifest, ws }
+    }
+  } else if (message.messageIdAnswered) {
+    const { messageIdAnswered, result } = message
+    publishMessageResult(messageIdAnswered, result)
+  } else {
+    // TODO: handle errors and acks
+    triggerCommand(ws, message)
+    // ws.send(ack)
+  }
+}
+
 function getSocket(ip) {
   return new Promise((resolve, reject) => {
     const ws = new WebSocket(`ws://${ip}:${PORT}`)
+    ws.on('message', data => handleMessage(ws, data))
     ws.on('open', async () => {
+      resolve()
       ws.send(JSON.stringify(await getManifest()))
     })
     ws.on('close', reject)
     ws.on('error', reject)
-    ws.on('message', data => {
-      let message = {}
-      try {
-        message = JSON.parse(data)
-      } catch (e) {
-        logger.error('Unknown message received:')
-        logger.error(data)
-        logger.error(e)
-      }
-      // console.log({ data })
-      if (message.manifest) {
-        if (config.NAME !== message.manifest.name) {
-          logger.info(`Got "${message.manifest.name}'s" manifest'`)
-          devices[message.manifest.name] = { ...message.manifest, ws }
-        }
-        resolve({ ...message.manifest, ws })
-      } else if (message.messageIdAnswered) {
-        const { messageIdAnswered, result } = message
-        publishMessageResult(messageIdAnswered, result)
-      } else {
-        // TODO: handle errors and acks
-        triggerCommand(ws, message)
-        // ws.send(ack)
-      }
-    })
   })
 }
 
@@ -81,22 +83,7 @@ export function createServer() {
   const server = http.createServer()
   const wss = new WebSocket.Server({ server })
   wss.on('connection', async ws => {
-    ws.on('message', data => {
-      // console.log({ data })
-      const message = JSON.parse(data)
-      if (message.manifest) {
-        if (config.NAME !== message.manifest.name) {
-          logger.info(`Got "${message.manifest.name}'s" manifest'`)
-          devices[message.manifest.name] = { ...message.manifest, ws }
-        }
-        // TODO: handle errors and acks
-      } else if (message.messageIdAnswered) {
-        const { messageIdAnswered, result } = message
-        publishMessageResult(messageIdAnswered, result)
-      } else {
-        triggerCommand(ws, message)
-      }
-    })
+    ws.on('message', data => handleMessage(ws, data))
     logger.info('A new connection appeared')
     ws.send(JSON.stringify(await getManifest()))
   })
@@ -108,10 +95,6 @@ export function createServer() {
   })
   return { server, wss }
 }
-
-// function handleMessage(data) {
-//
-// }
 
 async function getManifest() {
   const myDevices = await getMyDevices()
