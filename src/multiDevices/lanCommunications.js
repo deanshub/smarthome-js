@@ -33,12 +33,12 @@ function handleMessage(ws, data) {
     logger.error(data)
     logger.error(e)
   }
-  // console.log({ data })
+  // console.log(message)
   if (message.manifest) {
     if (config.NAME !== message.manifest.name) {
       logger.info(`Got "${message.manifest.name}'s" manifest'`)
-      devices[message.manifest.name] = { ...message.manifest, ws }
     }
+    devices[message.manifest.name] = { ...message.manifest, ws }
   } else if (message.messageIdAnswered) {
     const { messageIdAnswered, result } = message
     publishMessageResult(messageIdAnswered, result)
@@ -112,15 +112,13 @@ async function triggerCommand(ws, message) {
   const { messageId, botCommand, commandName, data } = message
   let result
   if (botCommand) {
-    result = await botCommander[commandName].apply(botCommander, data)
+    result = await botCommander[commandName](...data)
   } else if (data && data.room && devices[data.room]) {
     const { room, cmd, msg, args } = data
     result = await executeCommand(room, cmd, msg, args)
   }
 
-  if (result) {
-    return ws.send(JSON.stringify({ messageIdAnswered: messageId, result }))
-  }
+  return ws.send(JSON.stringify({ messageIdAnswered: messageId, result }))
   // return ws.send(failed)
 }
 
