@@ -37,3 +37,4 @@ jspm_packages
 
 config/production.json
 tmp/
+img.*

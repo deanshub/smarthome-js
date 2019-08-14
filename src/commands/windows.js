@@ -1,5 +1,15 @@
 import { speaker } from 'win-audio'
 import lockSystem from 'lock-system'
+import Camera from 'node-webcam'
+import Webcam from 'node-webcam/src/Webcam'
+import { sendImage } from '../botCommander'
+
+const webcamOptions = {
+  output: 'jpeg',
+  callbackReturn: Webcam.CallbackReturnTypes.buffer,
+  // verbose: true,
+}
+const webcam = Camera.create(webcamOptions)
 
 // speaker.polling(200)
 //
@@ -23,4 +33,13 @@ export async function volDown() {
 
 export async function lock() {
   return lockSystem()
+}
+
+export async function snapshot({ msg }) {
+  return new Promise((resolve, reject) => {
+    webcam.capture('img', (err, buffer) => {
+      if (err) return reject(err)
+      return sendImage(msg.from.id, buffer)
+    })
+  })
 }

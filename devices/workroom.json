@@ -45,6 +45,12 @@
       "function": "browser",
       "remote": true
     },
+    "voldown": {
+      "displayName": "lower 🔈",
+      "module": "windows",
+      "function": "volDown",
+      "remote": true
+    },
     "mute": {
       "displayName": "mute 🔇️",
       "module": "windows",
@@ -57,10 +63,10 @@
       "function": "volUp",
       "remote": true
     },
-    "voldown": {
-      "displayName": "lower 🔈",
+    "snapshot": {
+      "displayName": "️picture 📸",
       "module": "windows",
-      "function": "volDown",
+      "function": "snapshot",
       "remote": true
     },
     "lock": {

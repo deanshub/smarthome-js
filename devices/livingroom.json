@@ -39,10 +39,7 @@
     "mood": {
       "displayName": "TV&AC 🌅",
       "module": "multi",
-      "signals": [
-        "salon30.deg",
-        "salonTv.deg"
-      ]
+      "signals": ["salon30.deg", "salonTv.deg"]
     },
     "youtube": {
       "displayName": "Youtube 📽️",
@@ -54,6 +51,12 @@
       "displayName": "Browser 🌐️",
       "module": "web",
       "function": "browser",
+      "remote": true
+    },
+    "voldown": {
+      "displayName": "lower 🔈",
+      "module": "windows",
+      "function": "volDown",
       "remote": true
     },
     "mute": {
@@ -68,11 +71,12 @@
       "function": "volUp",
       "remote": true
     },
-    "voldown": {
-      "displayName": "lower 🔈",
+    "snapshot": {
+      "displayName": "️picture 📸",
       "module": "windows",
-      "function": "volDown",
-      "remote": true
+      "function": "snapshot",
+      "remote": true,
+      "disabled": true
     },
     "lock": {
       "displayName": "lock 🔒️",

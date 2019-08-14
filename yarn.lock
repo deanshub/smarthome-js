@@ -3033,6 +3033,13 @@ node-telegram-bot-api@^0.30.0:
     request "^2.83.0"
     request-promise "^4.2.2"
 
+node-webcam@^0.5.0:
+  version "0.5.0"
+  resolved "https://registry.yarnpkg.com/node-webcam/-/node-webcam-0.5.0.tgz#3d14d01c29f6fead43680335554dba6d2a66545c"
+  integrity sha512-zvPfMns7GYFn4w47EJp9snBNf+WwcKsE321op/9qhlNHtyLXRsfuZigAqd1NtmBLwFm2mZoOtEgA8jioyTbhrw==
+  dependencies:
+    nopt "*"
+
 nodemon@^1.18.10:
   version "1.19.1"
   resolved "https://registry.yarnpkg.com/nodemon/-/nodemon-1.19.1.tgz#576f0aad0f863aabf8c48517f6192ff987cd5071"
@@ -3049,7 +3056,7 @@ nodemon@^1.18.10:
     undefsafe "^2.0.2"
     update-notifier "^2.5.0"
 
-nopt@^4.0.1:
+nopt@*, nopt@^4.0.1:
   version "4.0.1"
   resolved "https://registry.yarnpkg.com/nopt/-/nopt-4.0.1.tgz#d0d4685afd5415193c8c7505602d0d17cd64474d"
   integrity sha1-0NRoWv1UFRk8jHUFYC0NF81kR00=
