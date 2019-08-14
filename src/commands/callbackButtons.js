@@ -173,7 +173,10 @@ async function authorizedCommand({ msg, data, cmd }) {
     authorizedCommand({ msg, data: authData[1], cmd })
   } else {
     try {
-      await broadlinkController.executeCommand(room, cmd, msg)
+      await broadlinkController.executeCommand(room, cmd, {
+        ...msg,
+        from: { ...msg.from, id: authData[0] },
+      })
     } catch (e) {
       logger.error(e)
       logger.error(e.stack)
