@@ -171,7 +171,7 @@ export function subscribeToMessages() {
     if (cb) {
       return cb(msg)
     } else if (msg.text[0] !== '/') {
-      const reminderModule = await import('./commands/reminder')
+      const reminderModule = await import('../commands/reminder')
       return reminderModule.randomMessageReminder(msg)
     }
   })

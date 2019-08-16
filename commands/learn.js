@@ -1,4 +1,4 @@
-import { learnSignal } from '../broadlinkController'
+import { learnSignal } from '../src/broadlinkController'
 import {
   sendMessage,
   getMessage,

@@ -11,18 +11,18 @@ import {
   addCallbackActionUsingMatcher,
   getUserFriendlyName,
   isAdmin,
-} from '../botCommander'
-import * as broadlinkController from '../broadlinkController'
-import logger from '../logger'
+} from '../src/botCommander'
+import * as broadlinkController from '../src/broadlinkController'
+import logger from '../src/logger'
 import later from 'later'
-import CONSTS from '../consts'
+import CONSTS from '../src/consts'
 import {
   getRoomFromData,
   getTimeFromData,
   isRoomProp,
   getCmdFromData,
 } from './callback'
-import { excecuteRemoteCommand } from '../multiDevices/lanCommunications'
+import { excecuteRemoteCommand } from '../src/multiDevices/lanCommunications'
 
 later.date.localTime()
 
