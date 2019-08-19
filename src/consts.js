@@ -5,4 +5,5 @@ export default {
   TIME_KEY: '@',
   REQ_AUTH_KEY: '~',
   SEPERATOR: '.',
+  GROUP_SEPERATOR: ':',
 }

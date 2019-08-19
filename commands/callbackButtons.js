@@ -21,6 +21,7 @@ import {
   getTimeFromData,
   isRoomProp,
   getCmdFromData,
+  isGroupProp,
 } from './callback'
 import { excecuteRemoteCommand } from '../src/multiDevices/lanCommunications'
 
@@ -99,6 +100,14 @@ export async function roomCallback({ msg, data }) {
       message_id: msg.message.message_id,
     }
   )
+}
+
+export async function groupCallback({ msg, data }) {
+  // get room
+  // split the data to path
+  // move through the path to check if it's a group
+  // show the group inline buttons
+  // edit message text and reply markup
 }
 
 let adminRequestMessages = []
@@ -252,6 +261,7 @@ async function executeDeviceCommand({ msg, data }) {
 
 addCallbackAction(CONSTS.TIMER, timer)
 addCallbackActionUsingMatcher(isRoomProp, roomCallback)
+addCallbackActionUsingMatcher(isGroupProp, groupCallback)
 addCallbackActionUsingMatcher(async ({ msg }) => !isAdmin(msg), notAuthorized)
 addCallbackActionUsingMatcher(
   async ({ data }) => data.includes(CONSTS.REQ_AUTH_KEY),

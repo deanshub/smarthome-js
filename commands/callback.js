@@ -24,3 +24,18 @@ export async function isRoomProp({ data }) {
   }
   return false
 }
+
+export async function isGroupProp({ data }) {
+  if (data.includes(CONSTS.GROUP_SEPERATOR)) {
+    const parts = data.split(CONSTS.GROUP_SEPERATOR)
+    const devices = await broadlinkController.getDevices()
+    const pathResolver = parts.reduce((res, cur) => {
+      if (res) {
+        return res[cur]
+      }
+      return null
+    }, devices)
+    return !!pathResolver
+  }
+  return false
+}
