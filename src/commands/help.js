@@ -1,5 +1,5 @@
-import commandsConfig from '../src/commandsConfiguration'
-import { sendMessage } from '../src/botCommander'
+import commandsConfig from '../commandsConfiguration'
+import { sendMessage } from '../botCommander'
 
 const commandsDescription = commandsConfig
   .filter(command => !command.disabled && command.description)

@@ -1,5 +1,5 @@
-import { sendMessage, isAdmin } from '../src/botCommander'
-import logger from '../src/logger'
+import { sendMessage, isAdmin } from '../botCommander'
+import logger from '../logger'
 import fs from 'fs-extra'
 import path from 'path'
 

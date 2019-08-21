@@ -1,4 +1,4 @@
-import { sendSignal } from '../src/broadlinkController'
+import { sendSignal } from '../broadlinkController'
 
 let onSignal = 'bed30.deg'
 export async function off({ device }) {

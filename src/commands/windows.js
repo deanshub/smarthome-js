@@ -2,7 +2,7 @@ import { speaker } from 'win-audio'
 import lockSystem from 'lock-system'
 import Camera from 'node-webcam'
 import Webcam from 'node-webcam/src/Webcam'
-import { sendImage } from '../src/botCommander'
+import { sendImage } from '../botCommander'
 
 const webcamOptions = {
   output: 'jpeg',

@@ -1,11 +1,11 @@
-import { getDevices } from '../src/broadlinkController'
+import { getDevices } from '../broadlinkController'
 import {
   editMessageText,
   editMessageReplyMarkup,
   sendMessage,
   addCallbackRunCommand,
-} from '../src/botCommander'
-import CONSTS from '../src/consts'
+} from '../botCommander'
+import CONSTS from '../consts'
 
 export default async function(msg) {
   const id = msg.from.id

@@ -1,5 +1,5 @@
-import * as broadlinkController from '../src/broadlinkController'
-import CONSTS from '../src/consts'
+import * as broadlinkController from '../broadlinkController'
+import CONSTS from '../consts'
 import later from 'later'
 
 later.date.localTime()

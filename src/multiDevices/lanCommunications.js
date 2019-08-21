@@ -19,7 +19,7 @@ function generateId(length = 24) {
 }
 
 const PORT = config.REMOTE_COMMANDS_PORT || 13975
-if (!config.NAME) {
+if (!config.NAME && logger) {
   logger.warn('device name not configured!')
 }
 const devices = {}
