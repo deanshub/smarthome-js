@@ -7,14 +7,14 @@
   "scripts": {
     "dev": "nodemon src/index.js",
     "test": "jest",
-    "start": "npm run build && cross-env NODE_ENV=production electron dist/index.js",
+    "start": "npm run build && cross-env NODE_ENV=production npm run electron",
     "build": "npm run clean && cross-env NODE_ENV=production babel src -d dist",
     "clean": "rm -rf dist/*",
     "clean-all": "rm -rf dist/* logs/*",
     "pkg": "pkg . --targets win --out-path dist",
     "install": "node installer.js install",
     "uninstall": "node installer.js uninstall",
-    "electron": "electron index.js"
+    "electron": "electron ."
   },
   "bin": "index.js",
   "pkg": {
