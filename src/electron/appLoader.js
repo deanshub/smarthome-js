@@ -11,10 +11,12 @@ async function getCommandsMenu() {
   return Object.keys(devices).map(room => {
     return {
       label: room,
-      submenu: Object.keys(devices[room].commands).map(cmd => ({
-        label: devices[room].commands[cmd].displayName,
-        click: () => executeCommand(room, cmd),
-      })),
+      submenu: Object.keys(devices[room].commands)
+        .filter(cmd => !devices[room].commands[cmd].disabled)
+        .map(cmd => ({
+          label: devices[room].commands[cmd].displayName,
+          click: () => executeCommand(room, cmd),
+        })),
     }
   })
 }
