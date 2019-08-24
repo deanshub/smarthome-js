@@ -1,8 +1,5 @@
 import * as broadlinkController from '../broadlinkController'
 import CONSTS from '../consts'
-import later from 'later'
-
-later.date.localTime()
 
 export function getRoomFromData(data) {
   const withoutTime = data.split(CONSTS.TIME_KEY)[0]

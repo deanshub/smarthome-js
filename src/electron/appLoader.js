@@ -1,13 +1,16 @@
 // Modules to control application life and create native browser window
 import { app, Tray, Menu } from 'electron'
 import { getDevices, executeCommand } from '../broadlinkController'
+import logger from '../logger'
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow
+let tray
 
 async function getCommandsMenu() {
   const devices = await getDevices()
+
   return Object.keys(devices).map(room => {
     return {
       label: room,
@@ -15,14 +18,21 @@ async function getCommandsMenu() {
         .filter(cmd => !devices[room].commands[cmd].disabled)
         .map(cmd => ({
           label: devices[room].commands[cmd].displayName,
-          click: () => executeCommand(room, cmd),
+          click: async () => {
+            try {
+              await executeCommand(room, cmd)
+            } catch (e) {
+              logger.error(e.message)
+              logger.error(e.stack)
+            }
+          },
         })),
     }
   })
 }
 
 async function createTray() {
-  const tray = new Tray('logo.jpg')
+  tray = new Tray('logo.jpg')
   const contextMenu = Menu.buildFromTemplate([
     // { label: 'Open' },
     // { type: 'separator' },

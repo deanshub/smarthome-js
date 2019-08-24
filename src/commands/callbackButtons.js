@@ -14,7 +14,7 @@ import {
 } from '../botCommander'
 import * as broadlinkController from '../broadlinkController'
 import logger from '../logger'
-import later from 'later'
+import later from 'later/later'
 import CONSTS from '../consts'
 import {
   getRoomFromData,
@@ -25,7 +25,7 @@ import {
 } from './callback'
 import { excecuteRemoteCommand } from '../multiDevices/lanCommunications'
 
-later.date.localTime()
+// later.date.localTime()
 
 export default function() {}
 

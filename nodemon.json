@@ -3,7 +3,7 @@
   "verbose": true,
   "watch": ["src/"],
   "execMap": {
-    "js": "babel-node node_modules/electron/cli.js"
+    "js": "electron"
   },
   "env": {
     "NODE_ENV": "production"

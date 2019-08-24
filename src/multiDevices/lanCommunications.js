@@ -67,13 +67,11 @@ export async function scanForDevices() {
   for (let i = 0; i < ips.length; i++) {
     try {
       await getSocket(ips[i])
-      // const ws = await getSocket(ips[i])
-      // devices[ws.name] = ws
     } catch (e) {
       //
     }
   }
-  logger.info(Object.keys(devices).join(', '))
+  // logger.info(Object.keys(devices).join(', '))
   return devices
 }
 
@@ -89,7 +87,7 @@ export function createServer() {
   })
   server.listen(PORT, scanner.getInternalIP(), () => {
     // TODO: get local IP and present a url
-    console.log(
+    logger.info(
       `Remote command server started on\nws://${scanner.getInternalIP()}:${PORT}/`
     )
   })
