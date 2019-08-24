@@ -1,6 +1,7 @@
 // Modules to control application life and create native browser window
 import { app, Tray, Menu } from 'electron'
-import { getDevices, executeCommand } from '../broadlinkController'
+import { getDevices } from '../broadlinkController'
+import { excecuteRemoteCommand } from '../multiDevices/lanCommunications'
 import logger from '../logger'
 
 // Keep a global reference of the window object, if you don't, the window will
@@ -20,7 +21,7 @@ async function getCommandsMenu() {
           label: devices[room].commands[cmd].displayName,
           click: async () => {
             try {
-              await executeCommand(room, cmd)
+              await excecuteRemoteCommand(room, cmd)
             } catch (e) {
               logger.error(e.message)
               logger.error(e.stack)
