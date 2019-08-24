@@ -19,9 +19,6 @@ function generateId(length = 24) {
 }
 
 const PORT = config.REMOTE_COMMANDS_PORT || 13975
-if (!config.NAME && logger) {
-  logger.warn('device name not configured!')
-}
 const devices = {}
 
 function handleMessage(ws, data) {
@@ -96,6 +93,14 @@ export function createServer() {
 
 async function getManifest() {
   const myDevices = await getMyDevices()
+  if (!config.NAME) {
+    logger.error(`name of the device isn't set!!!
+please configure it in production or development json file`)
+
+    return {
+      manifest: {},
+    }
+  }
 
   return {
     manifest: {
