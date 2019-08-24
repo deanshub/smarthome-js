@@ -4,8 +4,8 @@ import {
   addCallbackActionUsingMatcher,
   deleteMessage,
   editMessage,
-} from '../src/botCommander'
-import logger from '../src/logger'
+} from '../botCommander'
+import logger from '../logger'
 
 const reminders = new Set()
 

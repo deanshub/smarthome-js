@@ -1,22 +1,14 @@
-import logger from './logger'
-import { addCommand, subscribeToMessages } from './botCommander'
-import commandsConfig from './commandsConfiguration'
-import { createServer, scanForDevices } from './multiDevices/lanCommunications'
-import callback from '../commands/callback'
+import start from './electron/appLoader'
+import preload from './preload'
+;(async function() {
+  await preload()
+  start()
+})()
 
-logger.info('Device Restarted')
-
-commandsConfig
-  .filter(command => !command.disabled)
-  .forEach(command => {
-    addCommand(
-      command,
-      require(`../commands/${command.name}`)[command.fn || 'default']
-    )
-  })
-addCommand({ name: 'callback' }, callback)
-
-subscribeToMessages()
-
-createServer()
-scanForDevices()
+if (process.env.NODE_ENV === 'development') {
+  process
+    .on('uncaughtException', console.error)
+    .on('unhandledRejection', (reason, p) => {
+      console.error(reason, 'Unhandled Rejection at Promise', p)
+    })
+}

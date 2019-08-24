@@ -11,11 +11,11 @@ import {
   addCallbackActionUsingMatcher,
   getUserFriendlyName,
   isAdmin,
-} from '../src/botCommander'
-import * as broadlinkController from '../src/broadlinkController'
-import logger from '../src/logger'
-import later from 'later'
-import CONSTS from '../src/consts'
+} from '../botCommander'
+import * as broadlinkController from '../broadlinkController'
+import logger from '../logger'
+import later from 'later/later'
+import CONSTS from '../consts'
 import {
   getRoomFromData,
   getTimeFromData,
@@ -23,9 +23,9 @@ import {
   getCmdFromData,
   isGroupProp,
 } from './callback'
-import { excecuteRemoteCommand } from '../src/multiDevices/lanCommunications'
+import { excecuteRemoteCommand } from '../multiDevices/lanCommunications'
 
-later.date.localTime()
+// later.date.localTime()
 
 export default function() {}
 

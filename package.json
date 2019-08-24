@@ -2,20 +2,20 @@
   "name": "smarthome-js",
   "version": "0.2.0",
   "description": "A Node.JS library for controlling Broadlink devices",
-  "main": "dist/index.js",
+  "main": "dist/smarthome.js",
   "types": "index.d.ts",
   "scripts": {
-    "dev": "nodemon src/index.js",
+    "dev": "webpack && npm run electron",
+    "dev:watch": "concurently webpack --watch && npm run nodemon",
+    "nodemon": "nodemon .",
     "test": "jest",
-    "start": "npm run build && cross-env NODE_ENV=production node dist/index.js",
-    "build": "npm run clean && cross-env NODE_ENV=production babel src -d dist",
-    "clean": "rm -rf dist/*",
+    "start": "npm run build && cross-env NODE_ENV=production npm run electron",
+    "build": "cross-env NODE_ENV=production webpack",
     "clean-all": "rm -rf dist/* logs/*",
     "pkg": "pkg . --targets win --out-path dist",
     "install": "node installer.js install",
     "uninstall": "node installer.js uninstall",
-    "install-service": "npm run build && winser -a -i --env NODE_ENV=production --startcmd \"node dist/index.js\"",
-    "uninstall-service": "winser -x -r"
+    "electron": "electron ."
   },
   "bin": "index.js",
   "pkg": {
@@ -75,10 +75,18 @@
     "@babel/preset-env": "^7.3.1",
     "@babel/runtime": "^7.3.1",
     "babel-eslint": "^10.0.1",
+    "babel-loader": "^8.0.6",
     "babel-plugin-dynamic-import-node-babel-7": "^2.0.7",
+    "clean-webpack-plugin": "^3.0.0",
+    "electron": "^6.0.3",
     "eslint": "^6.0.1",
+    "html-webpack-plugin": "^3.2.0",
+    "node-loader": "^0.6.0",
     "nodemon": "^1.18.10",
     "pkg": "^4.4.0",
-    "prettier": "^1.18.2"
+    "prettier": "^1.18.2",
+    "webpack": "^4.39.2",
+    "webpack-cli": "^3.3.7",
+    "webpack-node-externals": "^1.7.2"
   }
 }

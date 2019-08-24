@@ -5,10 +5,9 @@ import logger from './logger'
 import { getMyDevices } from './multiDevices/devicesHelper'
 let b = new Broadlink()
 
-const discoverDevices = () =>
-  new Promise(async resolve => {
-    const savedDevices = await getMyDevices()
-
+const discoverDevices = async () => {
+  const savedDevices = await getMyDevices()
+  return new Promise(resolve => {
     let unkownIndex = 0
     b.on('deviceReady', dev => {
       dev.checkData()
@@ -20,7 +19,9 @@ const discoverDevices = () =>
         if (!deviceConfiguration.displayName) {
           deviceConfiguration.displayName = deviceConfiguration.propName
         }
-        logger.info(`device "${deviceConfiguration.displayName}" found`)
+        logger.info(
+          `broadlink device "${deviceConfiguration.displayName}" found`
+        )
         deviceConfiguration.device = dev
       } else {
         const unknownDeviceProp = `Unkown${unkownIndex++}`
@@ -28,13 +29,14 @@ const discoverDevices = () =>
         savedDevices[unknownDeviceProp].propName = unknownDeviceProp
         savedDevices[unknownDeviceProp].displayName = unknownDeviceProp
       }
-      setTimeout(() => {
-        resolve(savedDevices)
-      }, 200)
     })
     logger.info('Discovering devices...')
     b.discover()
+    setTimeout(() => {
+      resolve(savedDevices)
+    }, 200)
   })
+}
 
 let devicesReady = discoverDevices()
 
@@ -57,11 +59,14 @@ export async function getCommandConfiguration(room, cmd) {
 export async function executeCommand(room, cmd, msg, args) {
   const roomConfig = await getRoomConfiguration(room)
   const commandConfig = await getCommandConfiguration(room, cmd)
-  const module = require(commandConfig.module
-    ? `../commands/${commandConfig.module}`
-    : './broadlinkController')
-  return module[commandConfig.function || 'default'].call(
-    module,
+  let executionModule
+  if (commandConfig.module) {
+    executionModule = require(`./commands/${commandConfig.module}`)
+  } else {
+    executionModule = require('./broadlinkController')
+  }
+  return executionModule[commandConfig.function || 'default'].call(
+    executionModule,
     { ...commandConfig, device: roomConfig.device, room, msg },
     args
   )
@@ -69,8 +74,11 @@ export async function executeCommand(room, cmd, msg, args) {
 
 export const sendSignal = async ({ signal, device }) => {
   const signalData = await fs.readFile(
-    path.join(__dirname, '../signals', signal)
+    path.join(process.cwd(), 'signals', signal)
   )
+  if (!device) {
+    throw new Error('Device not found for sending signal')
+  }
   return device.sendData(signalData)
 }
 
@@ -124,52 +132,3 @@ export const checkSingleTemperature = ({ device }) => {
 }
 
 export const getDevices = () => devicesReady
-
-// b.on('deviceReady', (dev) => {
-//     var timer = setInterval(function(){
-//         console.log('send check!')
-//         dev.checkData()
-//     }, 1000)
-//
-//     dev.on('temperature', (temp)=>{
-//         console.log('get temp '+temp)
-//         // console.log(dev)
-//         // dev.enterLearning()
-//     })
-//
-//     // dev.on('rawData', (data) => {
-//     //     fs.writeFile('30.deg', data, function(err) {
-//     //         if(err) {
-//     //             return console.log(err)
-//     //         }
-//     //         console.log('The file was saved!')
-//     //         clearInterval(timer)
-//     //     })
-//     // })
-//     dev.checkTemperature()
-//
-//     // fs.readFile('17.deg', (err, data) => {
-//     //     // console.log(data)
-//     //     dev.sendData(data)
-//     // })
-//
-//     // fs.readFile('off.deg', (err, data) => {
-//     //     // console.log(data)
-//     //     dev.sendData(data)
-//     // })
-// })
-//
-// b.discover()
-
-// const Broadlink = require('../Broadlink')
-// let b = new Broadlink()
-// b.discover()
-// b.getIPAddresses()
-//
-// rawData
-//
-// b.checkData()
-// b.sendData()
-// b.enterLearning()
-// b.checkTemperature()
-// b.cancelLearn()

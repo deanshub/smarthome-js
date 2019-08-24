@@ -1,5 +1,5 @@
-import fs from 'fs-extra'
 import path from 'path'
+import fs from 'fs-extra'
 import config from 'config'
 
 let cachedDevices = null
@@ -15,9 +15,12 @@ export async function getMyDevices() {
   const devicesManifest = {}
   await Promise.all(
     deviceFiles.map(async file => {
-      const manifest = await import(
-        path.resolve(process.cwd(), config.DEVICES_DIRECTORY, file)
+      const manifest = JSON.parse(
+        (await fs.readFile(
+          path.resolve(process.cwd(), config.DEVICES_DIRECTORY, file)
+        )).toString()
       )
+
       // add the key (readfile) and propName
       let key
       if (manifest.keyName) {
@@ -45,6 +48,7 @@ export async function saveSignalCommandToManifest({
 }) {
   const deviceFile = path.resolve(
     process.cwd(),
+    '..',
     config.DEVICES_DIRECTORY,
     `${room}.json`
   )

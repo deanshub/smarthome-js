@@ -19,9 +19,6 @@ function generateId(length = 24) {
 }
 
 const PORT = config.REMOTE_COMMANDS_PORT || 13975
-if (!config.NAME) {
-  logger.warn('device name not configured!')
-}
 const devices = {}
 
 function handleMessage(ws, data) {
@@ -67,13 +64,11 @@ export async function scanForDevices() {
   for (let i = 0; i < ips.length; i++) {
     try {
       await getSocket(ips[i])
-      // const ws = await getSocket(ips[i])
-      // devices[ws.name] = ws
     } catch (e) {
       //
     }
   }
-  logger.info(Object.keys(devices).join(', '))
+  // logger.info(Object.keys(devices).join(', '))
   return devices
 }
 
@@ -89,7 +84,7 @@ export function createServer() {
   })
   server.listen(PORT, scanner.getInternalIP(), () => {
     // TODO: get local IP and present a url
-    console.log(
+    logger.info(
       `Remote command server started on\nws://${scanner.getInternalIP()}:${PORT}/`
     )
   })
@@ -98,6 +93,14 @@ export function createServer() {
 
 async function getManifest() {
   const myDevices = await getMyDevices()
+  if (!config.NAME) {
+    logger.error(`name of the device isn't set!!!
+please configure it in production or development json file`)
+
+    return {
+      manifest: {},
+    }
+  }
 
   return {
     manifest: {

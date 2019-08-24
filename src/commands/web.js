@@ -5,7 +5,7 @@ import {
   sendMessage,
   getMessage,
   editMessage,
-} from '../src/botCommander'
+} from '../botCommander'
 
 const width = 2400
 const height = 600
