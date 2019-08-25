@@ -91,7 +91,7 @@ export const learnSignal = async ({ device, signalName }) => {
 
     device.on('rawData', signalData => {
       fs.writeFile(
-        path.join(__dirname, '../signals', `${signalName}.deg`),
+        path.join(process.cwd(), 'signals', `${signalName}.deg`),
         signalData
       )
         .then(res => {
