@@ -14,7 +14,6 @@ import {
 } from '../botCommander'
 import * as broadlinkController from '../broadlinkController'
 import logger from '../logger'
-import later from 'later/later'
 import CONSTS from '../consts'
 import {
   getRoomFromData,
@@ -24,10 +23,7 @@ import {
   isGroupProp,
 } from './callback'
 import { excecuteRemoteCommand } from '../multiDevices/lanCommunications'
-
-// later.date.localTime()
-
-export default function() {}
+import { isValidTimeText, later } from '../dateUtils'
 
 export async function timer({ msg }) {
   const whenMessage = await sendMessage(msg.from.id, 'When?')
@@ -38,7 +34,7 @@ export async function timer({ msg }) {
       timerText = `at ${timeMessage.text}`
     }
 
-    if (later.parse.text(timerText).error === -1) {
+    if (isValidTimeText(timerText)) {
       return runCommand('start', {
         ...timeMessage,
         timer: timerText,
@@ -208,19 +204,9 @@ async function scheduledCommand({ msg, data }) {
   const cmdConfig = await broadlinkController.getCommandConfiguration(room, cmd)
   let timeText = timeData
 
-  if (/^\d/.test(timeData)) {
-    timeText = `at ${timeData}`
-  }
+  isValidTimeText(timeData)
 
-  const time = later.parse.text(timeText)
-  logger.info(
-    `${getUserFriendlyName(msg)} scheduled ${cmd} in ${room} at ${timeData}`
-  )
-  const letKnowMessage = await sendMessage(
-    msg.from.id,
-    `${cmdConfig.displayName} scheduled in ${roomConfig.displayName} ${timeText}`
-  )
-  later.setTimeout(async () => {
+  const futureCommand = later(async () => {
     logger.logAction(msg, room, cmd)
     try {
       await broadlinkController.executeCommand(room, cmd, msg)
@@ -232,7 +218,15 @@ async function scheduledCommand({ msg, data }) {
     sendMessage(msg.from.id, 'Done', {
       reply_to_message_id: letKnowMessage.message_id,
     })
-  }, time)
+  }, timeText)
+
+  logger.info(
+    `${getUserFriendlyName(msg)} scheduled ${cmd} in ${room} at ${timeData}`
+  )
+  const letKnowMessage = await sendMessage(
+    msg.from.id,
+    `${cmdConfig.displayName} scheduled in ${roomConfig.displayName} in ${futureCommand.text}`
+  )
   return runCommand('start', msg)
 }
 

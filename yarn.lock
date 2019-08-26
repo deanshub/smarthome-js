@@ -2005,6 +2005,11 @@ dashdash@^1.12.0:
   dependencies:
     assert-plus "^1.0.0"
 
+date-fns@^2.0.1:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/date-fns/-/date-fns-2.0.1.tgz#c5f30e31d3294918e6b6a82753a4e719120e203d"
+  integrity sha512-C14oTzTZy8DH1Eq8N78owrCWvf3+cnJw88BTK/N3DYWVxDJuJzPaNdplzYxDYuuXXGvqBcO4Vy5SOrwAooXSWw==
+
 date-now@^0.1.4:
   version "0.1.4"
   resolved "https://registry.yarnpkg.com/date-now/-/date-now-0.1.4.tgz#eaf439fd4d4848ad74e5cc7dbef200672b9e345b"
@@ -3797,11 +3802,6 @@ lanscanner@^0.0.5:
   integrity sha512-utBFGBTnOc8b7LjImwcAGKvNd1Yg1vKVxXrkx7T4qKAvkdrBZoDLZPrFPu3nZl9HFUICTlWWwJ52oMAtIvpTVA==
   dependencies:
     cross-spawn "^6.0.5"
-
-later@^1.2.0:
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/later/-/later-1.2.0.tgz#f2cf6c4dd7956dd2f520adf0329836e9876bad0f"
-  integrity sha1-8s9sTdeVbdL1IK3wMpg26YdrrQ8=
 
 latest-version@^3.0.0:
   version "3.1.0"
