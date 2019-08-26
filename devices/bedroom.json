@@ -9,7 +9,7 @@
       "function": "on"
     },
     "25": {
-      "displayName": "bed25",
+      "displayName": "25",
       "signal": "bed25.deg",
       "module": "bedAc",
       "function": "on"
