@@ -48,11 +48,10 @@ export async function saveSignalCommandToManifest({
 }) {
   const deviceFile = path.resolve(
     process.cwd(),
-    '..',
     config.DEVICES_DIRECTORY,
     `${room}.json`
   )
-  const manifest = await import(deviceFile)
+  const manifest = JSON.parse((await fs.readFile(deviceFile)).toString())
   manifest.commands[signalName] = {
     displayName,
     function: 'sendSignal',

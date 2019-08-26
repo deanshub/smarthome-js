@@ -5,7 +5,7 @@
     "25": {
       "displayName": "25",
       "function": "sendSignal",
-      "signal": "25.deg"
+      "signal": "livingroom25.deg"
     },
     "hot": {
       "displayName": "Hot ☀️",
