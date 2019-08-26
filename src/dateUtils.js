@@ -5,6 +5,7 @@ import setHours from 'date-fns/setHours'
 import setMinutes from 'date-fns/setMinutes'
 import isFuture from 'date-fns/isFuture'
 import formatDistanceToNow from 'date-fns/formatDistanceToNow'
+import formatDistance from 'date-fns/formatDistance'
 
 const timeRegex = /(\d?\d):(\d\d)/
 const addRegex = /(\d+) ?([mhd])/i
@@ -28,6 +29,7 @@ export function later(fn, text) {
   return {
     text: formatDistanceToNow(futureDate),
     timeout: setTimeout(fn, futureDate - nowDate),
+    futureDate,
   }
 }
 
@@ -55,4 +57,8 @@ function getTimeActivationDate(timeText, fromDate = Date.now()) {
 
   const futureDate = setMinutes(setHours(new Date(fromDate), hours), minutes)
   return isFuture(futureDate) ? futureDate : addDays(futureDate, 1)
+}
+
+export function distanceInWords(from, to) {
+  return formatDistance(from, to)
 }

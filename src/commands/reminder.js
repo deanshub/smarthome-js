@@ -6,6 +6,7 @@ import {
   editMessage,
 } from '../botCommander'
 import logger from '../logger'
+import { isValidTimeText, later, distanceInWords } from '../dateUtils'
 
 const reminders = new Set()
 
@@ -19,20 +20,25 @@ export default async function(msg) {
   })
   const timeMessage = await getMessage()
 
-  const timeText = Number(timeMessage.text)
-  if (!isNaN(timeText)) {
-    reminderMessage.time = timeText
-    reminderMessage.now = Date.now()
-    reminders.add(reminderMessage)
-    setTimeout(async () => {
+  const timeText = timeMessage.text
+  if (isValidTimeText(timeText)) {
+    reminderMessage.start = new Date()
+    const futureMessage = later(async () => {
       await sendMessage(msg.from.id, 'Reminding you', {
         reply_to_message_id: reminderMessage.message_id,
       })
       reminders.delete(reminderMessage)
-    }, timeText * 60 * 1000)
-    return sendMessage(msg.from.id, `will remind you in ${timeText} minutes`, {
-      reply_to_message_id: reminderMessage.message_id,
-    })
+    }, timeText)
+    reminderMessage.end = futureMessage.futureDate
+    reminders.add(reminderMessage)
+
+    return sendMessage(
+      msg.from.id,
+      `will remind you in ${futureMessage.text}`,
+      {
+        reply_to_message_id: reminderMessage.message_id,
+      }
+    )
   }
   logger.error(`cant parse "${timeMessage.text}" minutes`)
   return sendMessage(msg.from.id, 'I don\'t understand when', {
@@ -43,12 +49,13 @@ export default async function(msg) {
 export async function getAllReminders(msg) {
   if (reminders.size > 0) {
     reminders.forEach(reminder => {
-      const remaining = Math.round(
-        (Date.now() - reminder.now + reminder.time * 60 * 1000) / 1000 / 60
+      return sendMessage(
+        msg.from.id,
+        `in ${distanceInWords(reminder.start, reminder.end)}`,
+        {
+          reply_to_message_id: reminder.message_id,
+        }
       )
-      return sendMessage(msg.from.id, `in ${remaining} minutes`, {
-        reply_to_message_id: reminder.message_id,
-      })
     })
   } else {
     return sendMessage(msg.from.id, 'No reminders set', {
@@ -59,9 +66,9 @@ export async function getAllReminders(msg) {
 
 const reminderTimes = [
   { text: 'No', callback_data: 'no' },
-  { text: '30 min', callback_data: '30' },
-  { text: '1 h', callback_data: '60' },
-  { text: '1 day', callback_data: '1440' },
+  { text: '30 min', callback_data: '30m' },
+  { text: '1 h', callback_data: '1h' },
+  { text: '1 day', callback_data: '1d' },
 ]
 
 const randomMessageCallbackKeyboard = {
@@ -94,17 +101,17 @@ export async function scheduleReminder({ msg, data }) {
     return deleteMessage(msg.from.id, msg.message.message_id)
   } else {
     const reminderMessage = msg.message.reply_to_message
-    reminderMessage.time = Number(data)
-    reminderMessage.now = Date.now()
-    reminders.add(reminderMessage)
-    setTimeout(async () => {
+    reminderMessage.start = new Date()
+    const futureMessage = later(async () => {
       await sendMessage(msg.from.id, 'Reminding you', {
         reply_to_message_id: reminderMessage.message_id,
       })
       reminders.delete(reminderMessage)
-    }, reminderMessage.time * 60 * 1000)
+    }, data)
+    reminderMessage.end = futureMessage.futureDate
+    reminders.add(reminderMessage)
 
-    return editMessage(`Will remind you in ${data} minutes`, undefined, {
+    return editMessage(`Will remind you in ${futureMessage.text}`, undefined, {
       chat_id: msg.message.chat.id,
       message_id: msg.message.message_id,
     })
