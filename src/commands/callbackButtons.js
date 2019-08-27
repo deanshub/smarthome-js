@@ -40,7 +40,11 @@ export async function timer({ msg }) {
         timer: timerText,
       })
     } else {
-      sendMessage(msg.from.id, `I don't understand what time is ${timerText}`)
+      sendMessage(
+        msg.from.id,
+        `I don't understand what time is "${timerText}",
+you can either enter the format *##:##* or *# m\\h\\d*`
+      )
       return runCallback(msg)
     }
   } catch (e) {
@@ -203,8 +207,6 @@ async function scheduledCommand({ msg, data }) {
   const roomConfig = await broadlinkController.getRoomConfiguration(room)
   const cmdConfig = await broadlinkController.getCommandConfiguration(room, cmd)
   let timeText = timeData
-
-  isValidTimeText(timeData)
 
   const futureCommand = later(async () => {
     logger.logAction(msg, room, cmd)

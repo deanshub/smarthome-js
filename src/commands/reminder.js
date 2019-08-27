@@ -41,9 +41,14 @@ export default async function(msg) {
     )
   }
   logger.error(`cant parse "${timeMessage.text}" minutes`)
-  return sendMessage(msg.from.id, 'I don\'t understand when', {
-    reply_to_message_id: timeMessage.message_id,
-  })
+  return sendMessage(
+    msg.from.id,
+    `I don't understand what time is "${timeMessage.text}",
+you can either enter the format *##:##* or *# m\\h\\d*`,
+    {
+      reply_to_message_id: timeMessage.message_id,
+    }
+  )
 }
 
 export async function getAllReminders(msg) {

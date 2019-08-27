@@ -8,7 +8,7 @@ import formatDistanceToNow from 'date-fns/formatDistanceToNow'
 import formatDistance from 'date-fns/formatDistance'
 
 const timeRegex = /(\d?\d):(\d\d)/
-const addRegex = /(\d+) ?([mhd])/i
+const addRegex = /(\d+) ?([mhd]|minutes?|hours?|days?)/i
 
 export function isValidTimeText(text) {
   const timeText = text.trim()
@@ -36,14 +36,14 @@ export function later(fn, text) {
 function getAdditionActivationDate(additionTimeText, fromDate = Date.now()) {
   const result = addRegex.exec(additionTimeText)
   const amount = parseInt(result[1])
-  const period = result[2]
+  const period = result[2].toLocaleLowerCase()
 
   let func
-  if (period.toLocaleLowerCase() === 'm') {
+  if (period === 'm' || period.startsWith('minute')) {
     func = addMinutes
-  } else if (period.toLocaleLowerCase() === 'h') {
+  } else if (period === 'h' || period.startsWith('hour')) {
     func = addHours
-  } else if (period.toLocaleLowerCase() === 'd') {
+  } else if (period === 'd' || period.startsWith('day')) {
     func = addDays
   }
 
