@@ -7,9 +7,11 @@ import {
   editMessage,
 } from '../botCommander'
 
-const width = 2400
-const height = 600
-const headless = true
+const puppeteerOptions = {
+  width: 2400,
+  height: 600,
+  headless: true,
+}
 
 const allKeyboardOpts = {
   reply_markup: JSON.stringify({
@@ -61,17 +63,8 @@ export async function google(data, args) {
     searchTerm = args[1]
   }
 
-  const browser = await puppeteer.launch({ headless })
-  const page = await browser.newPage()
-  await page.setViewport({ width, height })
-  const searchUrl = `https://www.google.com/search?q=${searchTerm}`
-  await page.goto(searchUrl)
-  const text = (await page.$eval(
-    '#search [data-hveid]',
-    a => a.textContent
-  )).slice(0, 1500)
-  const img = await (await page.$('#search [data-hveid]')).screenshot()
-  await browser.close()
+  const { img, text } = await puppeteerSearch(searchTerm)
+
   if (text) {
     return Promise.all([
       sendImage(msg.from.id, img, allKeyboardOpts),
@@ -79,6 +72,40 @@ export async function google(data, args) {
     ])
   }
   return sendImage(msg.from.id, img)
+}
+
+export async function puppeteerSearch(searchTerm) {
+  const browser = await puppeteer.launch({
+    headless: puppeteerOptions.headless,
+  })
+  const page = await browser.newPage()
+  await page.setViewport({
+    width: puppeteerOptions.width,
+    height: puppeteerOptions.height,
+  })
+  const searchUrl = `https://www.google.com/search?q=${encodeURIComponent(
+    searchTerm
+  )}`
+  await page.goto(searchUrl)
+
+  const rhsElement = await page.$('#rhs [data-hveid]')
+  let text
+  let img
+  if (rhsElement) {
+    text = (await page.$eval('#rhs [data-hveid]', a => a.textContent)).slice(
+      0,
+      1500
+    )
+    img = await rhsElement.screenshot()
+  } else {
+    text = (await page.$eval('#search [data-hveid]', a => a.textContent)).slice(
+      0,
+      1500
+    )
+    img = await (await page.$('#search [data-hveid]')).screenshot()
+  }
+  await browser.close()
+  return { text, img }
 }
 
 export async function browser(data, args) {
