@@ -51,6 +51,20 @@ export async function getRoomConfiguration(room) {
   return devices[room]
 }
 
+export async function addSignalCommandToMemory({
+  room,
+  signalName,
+  displayName,
+}) {
+  const devices = await devicesReady
+  devices[room].commands[signalName] = {
+    displayName,
+    function: 'sendSignal',
+    signal: `${signalName}.deg`,
+  }
+  return devices
+}
+
 export async function getCommandConfiguration(room, cmd) {
   const roomConfig = await getRoomConfiguration(room)
   return roomConfig.commands[cmd]

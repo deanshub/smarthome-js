@@ -1,4 +1,4 @@
-import { learnSignal } from '../broadlinkController'
+import { learnSignal, addSignalCommandToMemory } from '../broadlinkController'
 import {
   sendMessage,
   getMessage,
@@ -24,17 +24,14 @@ export default async function({ device, msg, room }) {
     const actionDisplayName = nameMessage.text.trim()
     const signalName = toSignalName(actionDisplayName)
 
-    const signalMessage = await sendMessage(
-      msg.from.id,
-      'Please send signal to learn'
-    )
+    await sendMessage(msg.from.id, 'Please send signal to learn')
 
-    // await editMessageText('Please send signal to learn', {
-    //   chat_id: lastMessage.chat.id,
-    //   message_id: lastMessage.message_id,
-    // })
     await learnSignal({ device, signalName })
-
+    await addSignalCommandToMemory({
+      room,
+      signalName,
+      displayName: actionDisplayName,
+    })
     await saveSignalCommandToManifest({
       room,
       signalName,
@@ -42,10 +39,6 @@ export default async function({ device, msg, room }) {
     })
 
     await sendMessage(msg.from.id, 'Done learning')
-    // await editMessageText('Done learning', {
-    //   chat_id: signalMessage.chat.id,
-    //   message_id: signalMessage.message_id,
-    // })
   } catch (e) {
     console.log(e && e.stack)
     logger.error(e && e.message)
