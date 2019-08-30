@@ -1,6 +1,6 @@
 {
   "master": true,
-  "displayName": "Workroom",
+  "displayName": "🖥️ Workroom",
   "keyName": "Broadlink RM Mini2",
   "commands": {
     "hot": {
