@@ -2,6 +2,7 @@ import config from 'config'
 import scanner from 'lanscanner'
 import http from 'http'
 import WebSocket from 'ws'
+import jwt from 'jsonwebtoken'
 import logger from '../logger'
 import { getMyDevices, getMasterRoom } from './devicesHelper'
 import { executeCommand } from '../broadlinkController'
@@ -24,26 +25,55 @@ const devices = {}
 function handleMessage(ws, data) {
   let message = {}
   try {
-    message = JSON.parse(data)
+    message = authenticate(data)
   } catch (e) {
     logger.error('Unknown message received:')
     logger.error(data)
     logger.error(e)
   }
-  // console.log(message)
-  if (message.manifest) {
-    if (config.NAME !== message.manifest.name) {
-      logger.info(`Got "${message.manifest.name}'s" manifest'`)
+
+  if (message) {
+    if (message.manifest) {
+      if (config.NAME !== message.manifest.name) {
+        logger.info(`Got "${message.manifest.name}'s" manifest'`)
+      }
+      devices[message.manifest.name] = { ...message.manifest, ws }
+    } else if (message.messageIdAnswered) {
+      const { messageIdAnswered, result } = message
+      publishMessageResult(messageIdAnswered, result)
+    } else {
+      triggerCommand(ws, message)
     }
-    devices[message.manifest.name] = { ...message.manifest, ws }
-  } else if (message.messageIdAnswered) {
-    const { messageIdAnswered, result } = message
-    publishMessageResult(messageIdAnswered, result)
-  } else {
-    // TODO: handle errors and acks
-    triggerCommand(ws, message)
-    // ws.send(ack)
   }
+}
+
+function authenticate(message) {
+  if (config.SECRET) {
+    try {
+      return jwt.verify(message, config.SECRET)
+    } catch (e) {
+      logger.error(
+        `received message:
+${message}
+But coudn't decrypt it with my secret key`
+      )
+      return null
+    }
+  }
+  logger.warn(
+    'No secret key provided, all communtication will be un-encrypted!'
+  )
+  return JSON.parse(message)
+}
+
+function sign(message) {
+  if (config.SECRET) {
+    return jwt.sign(message, config.SECRET)
+  }
+  logger.warn(
+    'No secret key provided, all communtication will be un-encrypted!'
+  )
+  return JSON.stringify(message)
 }
 
 function getSocket(ip) {
@@ -52,7 +82,7 @@ function getSocket(ip) {
     ws.on('message', data => handleMessage(ws, data))
     ws.on('open', async () => {
       resolve()
-      ws.send(JSON.stringify(await getManifest()))
+      ws.send(sign(await getManifest(), config.SECRET))
     })
     ws.on('close', reject)
     ws.on('error', reject)
@@ -80,7 +110,7 @@ export function createServer() {
   wss.on('connection', async ws => {
     ws.on('message', data => handleMessage(ws, data))
     logger.info('A new connection appeared')
-    ws.send(JSON.stringify(await getManifest()))
+    ws.send(sign((await getManifest(), config.SECRET)))
   })
   server.listen(PORT, scanner.getInternalIP(), () => {
     // TODO: get local IP and present a url
@@ -121,7 +151,9 @@ async function triggerCommand(ws, message) {
     result = await executeCommand(room, cmd, msg, args)
   }
 
-  return ws.send(JSON.stringify({ messageIdAnswered: messageId, result }))
+  return ws.send(
+    sign(({ messageIdAnswered: messageId, result }, config.SECRET))
+  )
   // return ws.send(failed)
 }
 
@@ -129,7 +161,7 @@ export async function excecuteRemoteCommand(room, cmd, msg, args) {
   const messageId = generateId()
   if (devices[room] && devices[room].ws) {
     devices[room].ws.send(
-      JSON.stringify({ messageId, data: { room, cmd, msg, args } })
+      sign({ messageId, data: { room, cmd, msg, args } }, config.SECRET)
     )
     return getMessageResult(messageId)
   } else {
@@ -143,7 +175,7 @@ export async function executeBotRemoteCommand(commandName, msg) {
   const masterRoom = await getMasterRoom()
   const messageId = generateId()
   devices[masterRoom].ws.send(
-    JSON.stringify({ messageId, botCommand: true, commandName, data: msg })
+    sign({ messageId, botCommand: true, commandName, data: msg }, config.SECRET)
   )
   return getMessageResult(messageId)
 }
