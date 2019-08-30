@@ -1,3 +1,5 @@
+import fs from 'fs-extra'
+import path from 'path'
 import {
   sendMessage,
   sendImage,
@@ -11,7 +13,47 @@ import { puppeteerSearch } from './web'
 import logger from '../logger'
 import { isValidTimeText, later, distanceInWords } from '../dateUtils'
 
-const reminders = new Set()
+const REMINDERS_PATH = path.resolve(process.cwd(), 'config/reminders.json')
+let reminders = new Set()
+
+function outOfDateReminder(reminder) {
+  return new Date() - reminder.end > 0
+}
+export async function loadReminders() {
+  if (await fs.pathExists(REMINDERS_PATH)) {
+    const tempReminders = JSON.parse(
+      (await fs.readFile(REMINDERS_PATH)).toString()
+    ).map(reminder => {
+      reminder.start = new Date(reminder.start)
+      reminder.end = new Date(reminder.end)
+      return reminder
+    })
+    reminders = new Set(tempReminders)
+    reminders.forEach(async reminder => {
+      if (outOfDateReminder(reminder)) {
+        await notifyAndRemoveReminder(reminder)
+      } else {
+        setTimeout(async () => {
+          await notifyAndRemoveReminder(reminder)
+        }, reminder.end - new Date())
+      }
+    })
+  }
+}
+function addReminder(reminder) {
+  reminders.add(reminder)
+  return persistReminders(reminders)
+}
+async function notifyAndRemoveReminder(reminder) {
+  await sendMessage(reminder.from.id, 'Reminding you', {
+    reply_to_message_id: reminder.message_id,
+  })
+  reminders.delete(reminder)
+  return persistReminders(reminders)
+}
+function persistReminders(reminders) {
+  return fs.writeFile(REMINDERS_PATH, JSON.stringify(Array.from(reminders)))
+}
 
 export default async function(msg) {
   await sendMessage(msg.from.id, 'what should I remind you?', {
@@ -27,13 +69,10 @@ export default async function(msg) {
   if (isValidTimeText(timeText)) {
     reminderMessage.start = new Date()
     const futureMessage = later(async () => {
-      await sendMessage(msg.from.id, 'Reminding you', {
-        reply_to_message_id: reminderMessage.message_id,
-      })
-      reminders.delete(reminderMessage)
+      await notifyAndRemoveReminder(reminderMessage)
     }, timeText)
     reminderMessage.end = futureMessage.futureDate
-    reminders.add(reminderMessage)
+    addReminder(reminderMessage)
 
     return sendMessage(
       msg.from.id,
@@ -59,7 +98,7 @@ export async function getAllReminders(msg) {
     reminders.forEach(reminder => {
       return sendMessage(
         msg.from.id,
-        `in ${distanceInWords(reminder.start, reminder.end)}`,
+        `in ${distanceInWords(new Date(), reminder.end)}`,
         {
           reply_to_message_id: reminder.message_id,
         }
@@ -136,13 +175,10 @@ you can either enter the format *##:##* or *# m\\h\\d*`,
     const reminderMessage = msg.message.reply_to_message
     reminderMessage.start = new Date()
     const futureMessage = later(async () => {
-      await sendMessage(msg.from.id, 'Reminding you', {
-        reply_to_message_id: reminderMessage.message_id,
-      })
-      reminders.delete(reminderMessage)
+      await notifyAndRemoveReminder(reminderMessage)
     }, data)
     reminderMessage.end = futureMessage.futureDate
-    reminders.add(reminderMessage)
+    addReminder(reminderMessage)
 
     return editMessage(`Will remind you in ${futureMessage.text}`, undefined, {
       chat_id: msg.message.chat.id,
@@ -164,3 +200,5 @@ export async function googleSearch({ msg }) {
 
 addCallbackActionUsingMatcher(reminderCallbackMatcher, scheduleReminder)
 addCallbackAction('google', googleSearch)
+
+loadReminders()
