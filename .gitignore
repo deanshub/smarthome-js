@@ -37,5 +37,6 @@ jspm_packages
 
 config/production.json
 config/development.json
+config/reminders.json
 tmp/
 img.*
