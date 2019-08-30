@@ -53,6 +53,7 @@
     "date-fns": "^2.0.1",
     "dateformat": "^3.0.3",
     "fs-extra": "^8.1.0",
+    "jsonwebtoken": "^8.5.1",
     "lanscanner": "^0.0.5",
     "lock-system": "^2.0.0",
     "node-telegram-bot-api": "^0.30.0",
