@@ -12,7 +12,10 @@ const logFormat = printf(info => {
 
 const logger = winston.createLogger({
   level: 'info',
-  format: winston.format.json(),
+  format: winston.format.combine(
+    winston.format.colorize({ all: true }),
+    winston.format.json()
+  ),
   transports: [
     //
     // - Write to all logs with level `info` and below to `combined.log`
