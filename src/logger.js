@@ -13,7 +13,7 @@ const logFormat = printf(info => {
 const logger = winston.createLogger({
   level: 'info',
   format: winston.format.combine(
-    winston.format.colorize(),
+    winston.format.colorize({ all: true }),
     winston.format.json()
   ),
   transports: [
