@@ -1,5 +1,6 @@
 import fs from 'fs-extra'
 import path from 'path'
+import config from 'config'
 import {
   sendMessage,
   sendImage,
@@ -139,10 +140,18 @@ const randomMessageCallbackKeyboard = {
 }
 
 export async function randomMessageReminder(msg) {
-  return sendMessage(msg.from.id, 'Should I remind you?', {
-    reply_to_message_id: msg.message_id,
-    ...randomMessageCallbackKeyboard,
-  })
+  const reminderMessage = await sendMessage(
+    msg.from.id,
+    'Should I remind you?',
+    {
+      reply_to_message_id: msg.message_id,
+      ...randomMessageCallbackKeyboard,
+    }
+  )
+  setTimeout(() => {
+    deleteMessage(reminderMessage.chat.id, reminderMessage.message_id)
+  }, config.MESSAGE_RESULT_TIMEOUT)
+  return reminderMessage
 }
 
 export async function reminderCallbackMatcher({ data }) {
