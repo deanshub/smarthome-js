@@ -3,7 +3,7 @@
   "keyName": "Broadlink RM Mini1",
   "commands": {
     "25": {
-      "displayName": "25",
+      "displayName": "25°",
       "function": "sendSignal",
       "signal": "livingroom25.deg"
     },
