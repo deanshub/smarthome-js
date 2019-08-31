@@ -4,73 +4,73 @@
   "keyName": "Broadlink RM Mini2",
   "commands": {
     "hot": {
-      "displayName": "Hot ☀️",
+      "displayName": "☀️ Hot",
       "function": "sendSignal",
       "signal": "work30.deg"
     },
     "cold": {
-      "displayName": "Cold ❄️",
+      "displayName": "❄️ Cold",
       "function": "sendSignal",
       "signal": "work17.deg"
     },
     "off": {
-      "displayName": "Off 💀",
+      "displayName": "💀 Off",
       "function": "sendSignal",
       "signal": "workoff.deg"
     },
     "temprature": {
-      "displayName": "Temprature 🌡️",
+      "displayName": "🌡️ Temprature",
       "module": "temprature",
       "disabled": true
     },
     "learn": {
-      "displayName": "Learn 🎓",
+      "displayName": "🎓 Learn",
       "module": "learn"
     },
     "google": {
-      "displayName": "Google 🔍",
+      "displayName": "🔍 Google",
       "module": "web",
       "function": "google"
     },
     "youtube": {
-      "displayName": "Youtube 📽️",
+      "displayName": "📽️ Youtube",
       "module": "web",
       "function": "youtube",
       "remote": true,
       "disabled": true
     },
     "browser": {
-      "displayName": "Browser 🌐️",
+      "displayName": "🌐️ Browser",
       "module": "web",
       "function": "browser",
       "remote": true
     },
     "voldown": {
-      "displayName": "lower 🔈",
+      "displayName": "🔈 Lower",
       "module": "windows",
       "function": "volDown",
       "remote": true
     },
     "mute": {
-      "displayName": "mute 🔇️",
+      "displayName": "🔇️ Mute",
       "module": "windows",
       "function": "mute",
       "remote": true
     },
     "volup": {
-      "displayName": "higher 🔊",
+      "displayName": "🔊 Higher",
       "module": "windows",
       "function": "volUp",
       "remote": true
     },
     "snapshot": {
-      "displayName": "️picture 📸",
+      "displayName": "📸 ️picture",
       "module": "windows",
       "function": "snapshot",
       "remote": true
     },
     "lock": {
-      "displayName": "lock 🔒️",
+      "displayName": "🔒️ Lock",
       "module": "windows",
       "function": "lock",
       "remote": true
