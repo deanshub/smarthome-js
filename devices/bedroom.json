@@ -3,13 +3,13 @@
   "keyName": "Broadlink RM2 Pro Plus v23",
   "commands": {
     "24": {
-      "displayName": "24",
+      "displayName": "24°",
       "signal": "bed24.deg",
       "module": "bedAc",
       "function": "on"
     },
     "25": {
-      "displayName": "25",
+      "displayName": "25°",
       "signal": "bed25.deg",
       "module": "bedAc",
       "function": "on"
