@@ -87,6 +87,21 @@ const clientConfig = {
         ],
       },
       {
+        test: /\.(svelte|html)$/,
+        include: /node_modules/,
+        use: [
+          babelLoader,
+          {
+            loader: 'svelte-loader',
+            options: {
+              // Emitting the CSS allows webpack to handle url(...) in the style part of the component.
+              emitCss: true,
+              legacy: true,
+            },
+          },
+        ],
+      },
+      {
         test: /\.css$/,
         use: [
           isDev ? 'style-loader' : MiniCssExtractPlugin.loader,
@@ -99,6 +114,13 @@ const clientConfig = {
         ],
       },
     ],
+  },
+  resolve: {
+    alias: {
+      svelte: path.resolve('node_modules', 'svelte'),
+    },
+    extensions: ['.mjs', '.js', '.svelte'],
+    mainFields: ['svelte', 'browser', 'module', 'main'],
   },
   plugins: [
     new CleanWebpackPlugin({

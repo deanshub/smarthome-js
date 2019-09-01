@@ -1,10 +1,8 @@
 {
   "restartable": "rs",
   "verbose": true,
-  "watch": ["src/"],
-  "execMap": {
-    "js": "electron"
-  },
+  "watch": ["*", "!src/client", "!dist/"],
+  "exec": "electron .",
   "env": {
     "NODE_ENV": "production"
   }
