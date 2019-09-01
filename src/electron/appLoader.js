@@ -65,13 +65,13 @@ async function createTray() {
 async function createWindow() {
   // Create the browser window.
   mainWindow = new BrowserWindow({
-    width: 800,
+    width: 1000,
     height: 600,
     // webPreferences: {
     //   preload: path.join(__dirname, 'preload.js'),
     // },
   })
-
+  mainWindow.setMenuBarVisibility(false)
   // and load the index.html of the app.
   mainWindow.loadFile(path.resolve('dist/public/index.html'))
 

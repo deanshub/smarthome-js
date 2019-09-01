@@ -113,6 +113,13 @@ const clientConfig = {
           },
         ],
       },
+      {
+        test: /\.jpg/,
+        loader: 'url-loader',
+        options: {
+          limit: 1024,
+        },
+      },
     ],
   },
   resolve: {

@@ -1,19 +1,24 @@
 <script>
-  import Icon from 'fa-svelte'
-  import { faThermometerFull } from '@fortawesome/free-solid-svg-icons/faThermometerFull'
+  import Box from './components/Box.svelte'
+  let devices = [
+    {name: 'bedroom'},
+    {name:'livingroom'},
+    {name:'workroom'}
+  ]
 
-	export let name;
-  let version = VERSION
-  let icon = faThermometerFull;
 </script>
 
 <style>
-	h1 {
-		color: purple;
-	}
+  .app{
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    text-shadow: 1px 1px black;
+  }
 </style>
 
-<h1>Hello {name}!</h1>
-<div>Version: {version}</div>
-<div>Mode: {process.env.NODE_ENV}</div>
-<Icon icon={icon} />
+<div class="app">
+  {#each devices as {name}}
+    <Box name={name}/>
+  {/each}
+</div>

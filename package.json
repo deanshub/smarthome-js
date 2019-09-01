@@ -93,6 +93,7 @@
     "style-loader": "^1.0.0",
     "svelte": "^3.9.1",
     "svelte-loader": "^2.13.6",
+    "url-loader": "^2.1.0",
     "webpack": "^4.39.2",
     "webpack-cli": "^3.3.7",
     "webpack-node-externals": "^1.7.2"
