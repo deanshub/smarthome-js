@@ -1,0 +1,18 @@
+@font-face {
+  font-family: 'Open Sans';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Open Sans Regular'), local('OpenSans-Regular'),
+    /* Modern Browsers */ url('./fonts/OpenSans-Regular.ttf') format('truetype');
+}
+body {
+  background-color: #101221;
+  color: #ffffff;
+  margin: 0;
+  padding: 0;
+  -webkit-user-select: none;
+  font-family: 'Open Sans', sans-serif;
+}
+* {
+  box-sizing: border-box;
+}

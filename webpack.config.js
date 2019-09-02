@@ -62,7 +62,7 @@ const electronConfig = {
 
 const clientConfig = {
   ...defaultConfig,
-  entry: './src/client/main.js',
+  entry: ['./src/client/main.js', './src/client/style.css'],
   output: {
     path: path.resolve(__dirname, 'dist/public'),
     filename: 'client.[hash:8].js',
@@ -114,11 +114,16 @@ const clientConfig = {
         ],
       },
       {
-        test: /\.jpg/,
+        test: /\.jpg$/,
         loader: 'url-loader',
         options: {
           limit: 1024,
         },
+      },
+      {
+        test: /\.ttf$/,
+        exclude: /node_modules/,
+        loader: 'file-loader',
       },
     ],
   },
