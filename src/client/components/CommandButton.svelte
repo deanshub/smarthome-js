@@ -19,8 +19,7 @@
     background-position: center;
     background-repeat: no-repeat;
 
-    max-height: 5em;
-    height: 100%;
+    height: 15vmin;
     border-radius: 10px;
 
     display: flex;

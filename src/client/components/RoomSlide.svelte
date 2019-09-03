@@ -28,7 +28,7 @@
     cursor: pointer;
     transition: all 400ms ease-in-out;
 
-    padding: 0vmin 2vmin 2vmin 12vmin;
+    padding: 0vmin 2vmin 2vmin 10vmin;
 
     display: flex;
     flex-wrap: wrap;
@@ -53,8 +53,8 @@
     position: absolute;
     text-orientation: mixed;
     writing-mode: vertical-rl;
-    bottom: 1em;
-    left: 0.5em;
+    bottom: 4vmin;
+    left: 2vmin;
   }
 </style>
 
