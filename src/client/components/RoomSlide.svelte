@@ -29,10 +29,10 @@
     transition: all 400ms ease-in-out;
 
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
     grid-gap: 1em;
     align-items: center;
-    padding: 2em 2em 2em 7em;
+    padding: 5vmin 5vmin 5vmin 13vmin;
   }
   .box:hover {
     flex: 5;
@@ -44,6 +44,7 @@
   }
   .box.notSelected {
     flex: 4;
+    padding: 6vmin;
   }
 
   .name {

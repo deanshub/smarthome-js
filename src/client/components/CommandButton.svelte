@@ -24,15 +24,11 @@
     border-radius: 10px;
 
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
 
-    text-transform: capitalize;
     background-color: rgba(0, 164, 255, 0.4);
-    font-family: 'Open Sans', sans-serif;
-    text-shadow: 1px 1px black;
-    color: white;
-    font-size: 3vmin;
     box-shadow: 1px 1px 3px black;
     border: 0;
     cursor: pointer;
@@ -42,6 +38,13 @@
   }
   .commandButton:hover {
     background-color: rgba(7, 68, 156, 0.4);
+  }
+  .commandText {
+    text-transform: capitalize;
+    font-family: 'Open Sans', sans-serif;
+    text-shadow: 1px 1px black;
+    color: white;
+    font-size: 2.5vmin;
   }
 </style>
 
@@ -53,5 +56,5 @@
   {#if icon}
     <Icon {icon} />
   {/if}
-  {clearedText}
+  <div class="commandText">{clearedText}</div>
 </div>
