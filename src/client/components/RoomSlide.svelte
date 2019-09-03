@@ -28,7 +28,7 @@
     cursor: pointer;
     transition: all 400ms ease-in-out;
 
-    padding: 5vmin 5vmin 5vmin 13vmin;
+    padding: 0vmin 2vmin 2vmin 12vmin;
 
     display: flex;
     flex-wrap: wrap;
@@ -80,7 +80,7 @@
     <CommandButton text="🔊 higher" />
     <CommandButton text="📸 picture" />
     <CommandButton text="🔒 lock" />
-    <CommandButton text="👈 Back" />
+    <!-- <CommandButton text="👈 Back" /> -->
   {/if}
   <div class="name">{name}</div>
   <!-- <h1>Hello {name}!</h1>
