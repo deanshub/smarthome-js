@@ -28,11 +28,12 @@
     cursor: pointer;
     transition: all 400ms ease-in-out;
 
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-    grid-gap: 1em;
-    align-items: center;
     padding: 5vmin 5vmin 5vmin 13vmin;
+
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
   }
   .box:hover {
     flex: 5;
