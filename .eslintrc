@@ -5,6 +5,17 @@
     "browser": true,
     "es6": true
   },
+  "parserOptions": {
+    "ecmaVersion": 2019,
+    "sourceType": "module"
+  },
+  "plugins": ["svelte3"],
+  "overrides": [
+    {
+      "files": ["**/*.svelte"],
+      "processor": "svelte3/svelte3"
+    }
+  ],
   "rules": {
     "indent": [1, 2],
     "quotes": [2, "single"],

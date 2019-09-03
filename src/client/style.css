@@ -12,6 +12,7 @@ body {
   padding: 0;
   -webkit-user-select: none;
   font-family: 'Open Sans', sans-serif;
+  overflow: hidden;
 }
 * {
   box-sizing: border-box;

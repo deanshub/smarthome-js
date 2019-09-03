@@ -1,0 +1,57 @@
+<script>
+  import { fade } from 'svelte/transition'
+  import Icon from 'fa-svelte'
+  import { parseText } from './emojiToIcon'
+
+  export let text
+  const parsedText = parseText(text)
+  $: clearedText = ` ${parsedText.clearedText}`
+  $: icon = parsedText.icon
+
+  function handleClick(e) {
+    e.stopPropagation()
+  }
+</script>
+
+<style>
+  .commandButton {
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+
+    max-height: 5em;
+    height: 100%;
+    border-radius: 10px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    text-transform: capitalize;
+    background-color: rgba(0, 164, 255, 0.4);
+    font-family: 'Open Sans', sans-serif;
+    text-shadow: 1px 1px black;
+    color: white;
+    font-size: 3vmin;
+    box-shadow: 1px 1px 3px black;
+    border: 0;
+    cursor: pointer;
+  }
+  .commandButton:focus {
+    outline: 0;
+  }
+  .commandButton:hover {
+    background-color: rgba(7, 68, 156, 0.4);
+  }
+</style>
+
+<div
+  class="commandButton"
+  in:fade={{ delay: 500, duration: 700 }}
+  out:fade={{ duration: 300 }}
+  on:click={handleClick}>
+  {#if icon}
+    <Icon {icon} />
+  {/if}
+  {clearedText}
+</div>

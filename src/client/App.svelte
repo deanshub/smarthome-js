@@ -1,15 +1,14 @@
 <script>
-  import Box from './components/Box.svelte'
+  import RoomSlide from './components/RoomSlide.svelte'
   let devices = [
-    {name: 'bedroom'},
-    {name:'livingroom'},
-    {name:'workroom'}
+    { name: 'bedroom' },
+    { name: 'livingroom' },
+    { name: 'workroom' },
   ]
-
 </script>
 
 <style>
-  .app{
+  .app {
     height: 100vh;
     width: 100vw;
     display: flex;
@@ -18,7 +17,7 @@
 </style>
 
 <div class="app">
-  {#each devices as {name}}
-    <Box name={name}/>
+  {#each devices as { name }}
+    <RoomSlide {name} />
   {/each}
 </div>
