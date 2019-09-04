@@ -5,6 +5,7 @@
 
   export let name
   $: active = $selected === name
+  $: notActive = $selected !== name && $selected !== undefined
 
   let img
   onMount(async () => {
@@ -62,7 +63,7 @@
   style="background-image: url({img});"
   class="box"
   class:selected={active}
-  class:notSelected={!active}
+  class:notSelected={notActive}
   on:click={() => ($selected = active ? undefined : name)}>
   {#if active}
     <CommandButton text="25°" />
