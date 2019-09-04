@@ -6,11 +6,24 @@
   export let name
   $: active = $selected === name
   $: notActive = $selected !== name && $selected !== undefined
+  const IDLE_TIMEOUT = 10000
 
+  let deactivateTimout
   let img
   onMount(async () => {
     img = await import(`../assets/${name}.jpg`)
+    reactivateTimeout()
   })
+
+  function reactivateTimeout() {
+    if (deactivateTimout) {
+      clearTimeout(deactivateTimout)
+    }
+    deactivateTimout = setTimeout(() => {
+      $selected = undefined
+    }, IDLE_TIMEOUT)
+  }
+
   // let version = VERSION
 </script>
 
