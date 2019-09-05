@@ -27,7 +27,8 @@
     justify-content: center;
     align-items: center;
 
-    background-color: rgba(0, 164, 255, 0.4);
+    background-color: rgba(255, 255, 255, 0.6);
+    color: black;
     box-shadow: 1px 1px 3px black;
     border: 0;
     cursor: pointer;
@@ -40,14 +41,14 @@
     outline: 0;
   }
   .commandButton:hover {
-    background-color: rgba(7, 68, 156, 0.4);
+    background-color: rgb(255, 255, 255);
   }
 
   .commandText {
     text-transform: capitalize;
     font-family: 'Open Sans', sans-serif;
     text-shadow: 1px 1px black;
-    color: white;
+    color: black;
     font-size: 2.8vmin;
   }
 
