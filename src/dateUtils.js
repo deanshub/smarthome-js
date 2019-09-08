@@ -43,7 +43,7 @@ export function later(fn, text) {
     timeout:
       futureDate - nowDate > 2147483647
         ? setTimeout(() => {
-          later(fn, text)
+          later(fn, `${Math.floor((futureDate - new Date()) / 1000)}s`)
         }, 2147483647)
         : setTimeout(fn, futureDate - nowDate),
     futureDate,
