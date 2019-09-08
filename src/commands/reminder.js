@@ -148,7 +148,7 @@ export async function randomMessageReminder(msg) {
     }
   )
   // setTimeout(() => {
-  deleteMessage(reminderMessage.chat.id, reminderMessage.message_id)
+  // deleteMessage(reminderMessage.chat.id, reminderMessage.message_id)
   // }, config.MESSAGE_RESULT_TIMEOUT)
   return reminderMessage
 }
