@@ -1,6 +1,5 @@
 import fs from 'fs-extra'
 import path from 'path'
-import config from 'config'
 import {
   sendMessage,
   sendImage,
@@ -8,6 +7,7 @@ import {
   addCallbackActionUsingMatcher,
   addCallbackAction,
   deleteMessage,
+  editMessage,
 } from '../botCommander'
 import { puppeteerSearch } from './web'
 import logger from '../logger'
@@ -49,6 +49,14 @@ async function notifyAndRemoveReminder(reminder) {
     reply_to_message_id: reminder.message_id,
   })
   reminders.delete(reminder)
+  if (reminder.repeat) {
+    // reminder.start = new Date() // no need because it already has a start date
+    const futureMessage = later(async () => {
+      await notifyAndRemoveReminder(reminder)
+    }, '7d')
+    reminder.end = futureMessage.futureDate
+    addReminder(reminder)
+  }
   return persistReminders(reminders)
 }
 function persistReminders(reminders) {
@@ -93,6 +101,25 @@ you can either enter the format *##:##* or *# m\\h\\d*`,
   )
 }
 
+const getRepeatCallbackKeyboard = reminder => {
+  const inline_keyboard = reminder.repeat
+    ? [[{ text: '❌', callback_data: 'deleteReminder' }]]
+    : [
+      [
+        { text: '🔁', callback_data: 'repeatReminder' },
+        { text: '❌', callback_data: 'deleteReminder' },
+      ],
+    ]
+
+  return {
+    reply_markup: JSON.stringify({
+      inline_keyboard,
+      resize_keyboard: true,
+      one_time_keyboard: true,
+    }),
+  }
+}
+
 export async function getAllReminders(msg) {
   if (reminders.size > 0) {
     reminders.forEach(reminder => {
@@ -101,6 +128,7 @@ export async function getAllReminders(msg) {
         `in ${distanceInWords(new Date(), reminder.end)}`,
         {
           reply_to_message_id: reminder.message_id,
+          ...getRepeatCallbackKeyboard(reminder),
         }
       )
     })
@@ -209,7 +237,33 @@ export async function googleSearch({ msg }) {
   return sendImage(msg.from.id, img)
 }
 
+async function deleteReminder({ msg }) {
+  const reminder = Array.from(reminders).find(
+    cur => cur.message_id === msg.message.reply_to_message.message_id
+  )
+  reminders.delete(reminder)
+  persistReminders(reminders)
+  return editMessage('Reminder deleted', undefined, {
+    chat_id: msg.message.chat.id,
+    message_id: msg.message.message_id,
+  })
+}
+
+async function repeatReminder({ msg }) {
+  const reminder = Array.from(reminders).find(
+    cur => cur.message_id === msg.message.reply_to_message.message_id
+  )
+  reminder.repeat = true
+  persistReminders(reminders)
+  return editMessage('Reminder will repeat', undefined, {
+    chat_id: msg.message.chat.id,
+    message_id: msg.message.message_id,
+  })
+}
+
 addCallbackActionUsingMatcher(reminderCallbackMatcher, scheduleReminder)
 addCallbackAction('google', googleSearch)
+addCallbackAction('deleteReminder', deleteReminder)
+addCallbackAction('repeatReminder', repeatReminder)
 
 loadReminders()
