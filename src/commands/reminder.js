@@ -148,9 +148,9 @@ export async function randomMessageReminder(msg) {
       ...randomMessageCallbackKeyboard,
     }
   )
-  setTimeout(() => {
-    deleteMessage(reminderMessage.chat.id, reminderMessage.message_id)
-  }, config.MESSAGE_RESULT_TIMEOUT)
+  // setTimeout(() => {
+  deleteMessage(reminderMessage.chat.id, reminderMessage.message_id)
+  // }, config.MESSAGE_RESULT_TIMEOUT)
   return reminderMessage
 }
 
