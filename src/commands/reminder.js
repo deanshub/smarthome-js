@@ -189,10 +189,13 @@ you can either enter the format *##:##* or *# m\\h\\d*`,
     reminderMessage.end = futureMessage.futureDate
     addReminder(reminderMessage)
 
-    return editMessage(`Will remind you in ${futureMessage.text}`, undefined, {
-      chat_id: msg.message.chat.id,
-      message_id: msg.message.message_id,
-    })
+    return sendMessage(
+      msg.from.id,
+      `will remind you in ${futureMessage.text}`,
+      {
+        reply_to_message_id: reminderMessage.message_id,
+      }
+    )
   }
 }
 
