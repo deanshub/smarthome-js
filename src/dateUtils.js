@@ -9,6 +9,7 @@ import formatDistance from 'date-fns/formatDistance'
 
 const timeRegex = /(\d?\d):(\d\d)/
 const addRegex = /(\d+) ?([mhd]|minutes?|hours?|days?)/i
+const dateRegex = / ?(\d?\d)(\/|\.)(\d?\d)((\/|\.)((\d\d)?\d\d))?( |$)/
 
 export function isValidTimeText(text) {
   const timeText = text.trim()
