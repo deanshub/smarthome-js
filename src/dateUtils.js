@@ -8,8 +8,8 @@ import formatDistanceToNow from 'date-fns/formatDistanceToNow'
 import formatDistance from 'date-fns/formatDistance'
 
 const timeRegexString = '(?<hours>\\d?\\d):(?<minutes>\\d\\d)'
-const timeRegex = new RegExp(timeRegexString)
-const addRegex = /(?<amount>\d+) ?(?<period>[mhd]|minutes?|hours?|days?)/i
+const timeRegex = new RegExp(`^${timeRegexString}$`)
+const addRegex = /^(?<amount>\d+) ?(?<period>[mhd]|minutes?|hours?|days?)$/i
 const dateRegexString =
   '( ?(?<day>\\d?\\d)(\\/|\\.)(?<month>\\d?\\d)((\\/|\\.)(?<year>(\\d\\d)?\\d\\d))?( |$))'
 const dateTimeRegex1 = new RegExp(`^${dateRegexString}${timeRegexString}$`)
@@ -40,7 +40,12 @@ export function later(fn, text) {
   }
   return {
     text: formatDistanceToNow(futureDate),
-    timeout: setTimeout(fn, futureDate - nowDate),
+    timeout:
+      futureDate - nowDate > 2147483647
+        ? setTimeout(() => {
+          later(fn, text)
+        }, 2147483647)
+        : setTimeout(fn, futureDate - nowDate),
     futureDate,
   }
 }

@@ -33,9 +33,9 @@ export async function loadReminders() {
       if (outOfDateReminder(reminder)) {
         await notifyAndRemoveReminder(reminder)
       } else {
-        setTimeout(async () => {
+        later(async () => {
           await notifyAndRemoveReminder(reminder)
-        }, reminder.end - new Date())
+        }, `${Math.floor((reminder.end - new Date()) / 1000)}s`)
       }
     })
   }
