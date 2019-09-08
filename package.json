@@ -6,7 +6,7 @@
   "types": "index.d.ts",
   "scripts": {
     "dev": "webpack && npm run electron",
-    "dev:watch": "concurrently \"webpack --watch\" \"nodemon\"",
+    "watch": "concurrently \"webpack --watch\" \"nodemon\"",
     "test": "jest",
     "start": "npm run build && cross-env NODE_ENV=production npm run electron",
     "build": "cross-env NODE_ENV=production webpack",

@@ -1,7 +1,7 @@
 {
   "restartable": "rs",
   "verbose": true,
-  "watch": ["*", "!src/client", "!dist/"],
+  "watch": ["*", "!src/client", "!dist/", "!config/reminders.json"],
   "exec": "electron .",
   "env": {
     "NODE_ENV": "production"

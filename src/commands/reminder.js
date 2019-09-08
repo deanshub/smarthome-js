@@ -8,7 +8,6 @@ import {
   addCallbackActionUsingMatcher,
   addCallbackAction,
   deleteMessage,
-  editMessage,
 } from '../botCommander'
 import { puppeteerSearch } from './web'
 import logger from '../logger'
