@@ -35,7 +35,7 @@ export async function loadReminders() {
       } else {
         later(async () => {
           await notifyAndRemoveReminder(reminder)
-        }, `${Math.floor((reminder.end - new Date()) / 1000)}s`)
+        }, `${Math.floor((reminder.end - new Date()) / 1000 / 60)}m`)
       }
     })
   }
