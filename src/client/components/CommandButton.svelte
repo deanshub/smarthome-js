@@ -27,9 +27,9 @@
     justify-content: center;
     align-items: center;
 
-    background-color: rgba(255, 255, 255, 0.6);
+    background-color: rgba(255, 255, 255, 0.8);
     color: black;
-    box-shadow: 1px 1px 3px black;
+    box-shadow: 0 0px 8px rgba(138, 138, 138, 0.8);
     border: 0;
     cursor: pointer;
 
