@@ -1,5 +1,6 @@
 import fs from 'fs-extra'
 import path from 'path'
+import notifier from 'node-notifier'
 import {
   sendMessage,
   sendImage,
@@ -48,6 +49,13 @@ async function notifyAndRemoveReminder(reminder) {
   await sendMessage(reminder.from.id, 'Reminding you', {
     reply_to_message_id: reminder.message_id,
   })
+  // TODO: allow notification on all devices
+  notifier.notify({
+    title: 'Reminding you',
+    message: reminder.text,
+    icon: path.resolve(process.cwd(), 'logo.jpg'),
+  })
+
   reminders.delete(reminder)
   if (reminder.repeat) {
     // reminder.start = new Date() // no need because it already has a start date
