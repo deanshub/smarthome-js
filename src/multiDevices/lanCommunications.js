@@ -167,6 +167,14 @@ export async function excecuteRemoteCommand(room, cmd, msg, args) {
   // TODO: handle ack? not sure if possible here
 }
 
+export async function broadcastRemoteCommand(cmd, msg, args) {
+  return Promise.allSettled(
+    Object.keys(devices)
+      .filter(room => room !== config.NAME)
+      .map(room => excecuteRemoteCommand(room, cmd, msg, args))
+  )
+}
+
 export async function executeBotRemoteCommand(commandName, msg) {
   const masterRoom = await getMasterRoom()
   const messageId = generateId()

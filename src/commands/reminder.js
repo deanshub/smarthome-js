@@ -13,6 +13,7 @@ import {
 import { puppeteerSearch } from './web'
 import logger from '../logger'
 import { isValidTimeText, later, distanceInWords } from '../dateUtils'
+import { broadcastRemoteCommand } from '../multiDevices/lanCommunications'
 
 const REMINDERS_PATH = path.resolve(process.cwd(), 'config/reminders.json')
 let reminders = new Set()
@@ -46,14 +47,10 @@ function addReminder(reminder) {
   return persistReminders(reminders)
 }
 async function notifyAndRemoveReminder(reminder) {
+  broadcastRemoteCommand('notify', reminder, { reminder })
+  notify(reminder, { reminder })
   await sendMessage(reminder.from.id, 'Reminding you', {
     reply_to_message_id: reminder.message_id,
-  })
-  // TODO: allow notification on all devices
-  notifier.notify({
-    title: 'Reminding you',
-    message: reminder.text,
-    icon: path.resolve(process.cwd(), 'logo.jpg'),
   })
 
   reminders.delete(reminder)
@@ -131,9 +128,15 @@ const getRepeatCallbackKeyboard = reminder => {
 export async function getAllReminders(msg) {
   if (reminders.size > 0) {
     reminders.forEach(reminder => {
+      const percentage = Math.floor(
+        ((new Date() - reminder.start) / (reminder.end - reminder.start)) * 100
+      )
       return sendMessage(
         msg.from.id,
-        `in ${distanceInWords(new Date(), reminder.end)}`,
+        `in ${distanceInWords(
+          new Date(),
+          reminder.end
+        )} (${percentage}% complete)`,
         {
           reply_to_message_id: reminder.message_id,
           ...getRepeatCallbackKeyboard(reminder),
@@ -266,6 +269,14 @@ async function repeatReminder({ msg }) {
   return editMessage('Reminder will repeat', undefined, {
     chat_id: msg.message.chat.id,
     message_id: msg.message.message_id,
+  })
+}
+
+export async function notify(_, { reminder }) {
+  notifier.notify({
+    title: 'Reminding you',
+    message: reminder.text,
+    icon: path.resolve(process.cwd(), 'logo.jpg'),
   })
 }
 

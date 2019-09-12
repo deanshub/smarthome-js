@@ -78,6 +78,12 @@
       "remote": true,
       "disabled": true
     },
+    "notify": {
+      "displayName": "💡 Notify",
+      "function": "notify",
+      "module": "reminder",
+      "disabled": true
+    },
     "lock": {
       "displayName": "🔒️ Lock",
       "module": "windows",
