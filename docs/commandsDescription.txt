@@ -1,0 +1,6 @@
+start - Let the bot help you around
+remind - Set a new reminder
+allreminders - Get all current reminders
+rediscover - Rediscover controlled devices
+log - Log of the last hour
+help - Instructions help
