@@ -1,5 +1,7 @@
 const path = require('path')
 const webpack = require('webpack')
+const config = require('config')
+const scanner = require('lanscanner')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const { CleanWebpackPlugin } = require('clean-webpack-plugin')
 const nodeExternals = require('webpack-node-externals')
@@ -20,9 +22,14 @@ const babelLoader = {
   },
 }
 
+const PORT = config.REMOTE_COMMANDS_PORT || 13975
+
 const definePlugin = new webpack.DefinePlugin({
   'process.env.NODE_ENV': JSON.stringify(NODE_ENV),
   VERSION: JSON.stringify(manifest.version),
+  INTERNAL_IP: JSON.stringify(scanner.getInternalIP()),
+  PORT,
+  SECRET: JSON.stringify(config.SECRET),
 })
 
 const electronConfig = {

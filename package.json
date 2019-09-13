@@ -1,6 +1,6 @@
 {
   "name": "smarthome-js",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "A Node.JS library for controlling Broadlink devices",
   "main": "dist/smarthome.js",
   "types": "index.d.ts",
@@ -93,7 +93,6 @@
     "nodemon": "^1.18.10",
     "pkg": "^4.4.0",
     "prettier": "^1.18.2",
-    "prettier-plugin-svelte": "^0.7.0",
     "style-loader": "^1.0.0",
     "svelte": "^3.9.1",
     "svelte-loader": "^2.13.6",

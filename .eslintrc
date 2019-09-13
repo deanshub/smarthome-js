@@ -16,6 +16,12 @@
       "processor": "svelte3/svelte3"
     }
   ],
+  "globals": {
+    "VERSION": "readonly",
+    "PORT": "readonly",
+    "SECRET": "readonly",
+    "INTERNAL_IP": "readonly"
+  },
   "rules": {
     "indent": [1, 2],
     "quotes": [2, "single"],

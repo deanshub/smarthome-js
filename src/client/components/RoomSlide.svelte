@@ -98,6 +98,5 @@
   {/if}
   <div class="name">{name}</div>
   <!-- <h1>Hello {name}!</h1>
-  <div>Version: {version}</div>
-  <div>Mode: {process.env.NODE_ENV}</div>-->
+  -->
 </div>
