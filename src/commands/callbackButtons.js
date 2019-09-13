@@ -30,9 +30,6 @@ export async function timer({ msg }) {
   try {
     const timeMessage = await getMessage()
     let timerText = timeMessage.text
-    if (/^\d/.test(timeMessage.text)) {
-      timerText = `at ${timeMessage.text}`
-    }
 
     if (isValidTimeText(timerText)) {
       return runCommand('start', {
