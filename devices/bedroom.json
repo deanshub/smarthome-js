@@ -54,6 +54,16 @@
       "displayName": "🌅 TV&AC",
       "module": "multi",
       "signals": ["bed30.deg", "bedTv.deg"]
+    },
+    "BedTo24": {
+      "displayName": "BedTo24",
+      "function": "sendSignal",
+      "signal": "bedTo24.deg"
+    },
+    "BedTo25": {
+      "displayName": "BedTo25",
+      "function": "sendSignal",
+      "signal": "bedTo25.deg"
     }
   }
 }
