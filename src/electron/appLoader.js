@@ -7,7 +7,7 @@ import logger from '../logger'
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
-let mainWindow
+let mainWindow = null
 let tray
 
 async function getCommandsMenu() {
@@ -91,7 +91,7 @@ async function createWindow() {
 
 function createUI() {
   createTray()
-  createWindow()
+  // createWindow()
 }
 
 export default async () => {

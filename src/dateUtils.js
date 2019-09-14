@@ -80,7 +80,7 @@ function getDateTimeActivationDate(timeText) {
   const { day, month, year, hours, minutes } = result.groups
   const futureDate = new Date(
     year || new Date().getFullYear(),
-    month,
+    month - 1,
     day,
     hours,
     minutes
