@@ -17,11 +17,6 @@
       "function": "sendSignal",
       "signal": "salon22.deg"
     },
-    "tv": {
-      "displayName": "📺 TV",
-      "function": "sendSignal",
-      "signal": "salonTv.deg"
-    },
     "off": {
       "displayName": "💀 Off",
       "function": "sendSignal",
@@ -32,14 +27,19 @@
       "module": "temprature",
       "disabled": true
     },
-    "learn": {
-      "displayName": "🎓 Learn",
-      "module": "learn"
+    "tv": {
+      "displayName": "📺 TV",
+      "function": "sendSignal",
+      "signal": "salonTv.deg"
     },
     "mood": {
       "displayName": "🌅 TV&AC",
       "module": "multi",
       "signals": ["salon30.deg", "salonTv.deg"]
+    },
+    "learn": {
+      "displayName": "🎓 Learn",
+      "module": "learn"
     },
     "youtube": {
       "displayName": "📽️ Youtube",

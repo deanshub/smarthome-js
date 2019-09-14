@@ -2,18 +2,25 @@
   import { onMount } from 'svelte'
   import { selected } from '../stores'
   import CommandButton from './CommandButton.svelte'
+  import {parseText} from './emojiToIcon'
 
-  export let name
+  export let manifest
+  $: name = parseText(manifest.displayName).clearedText.toLocaleLowerCase()
   $: active = $selected === name
   $: notActive = $selected !== name && $selected !== undefined
+  $: commands = Object.keys(manifest.commands).filter(cmd=>!manifest.commands[cmd].disabled).map(cmd=>{
+    return {propName: cmd, ...manifest.commands[cmd]}
+  })
   const IDLE_TIMEOUT = 10000
 
   let deactivateTimout
   let img
   onMount(async () => {
     img = await import(`../assets/${name}.jpg`)
-    reactivateTimeout()
+    // reactivateTimeout()
   })
+
+  // console.log(manifest)
 
   function reactivateTimeout() {
     if (deactivateTimout) {
@@ -23,8 +30,6 @@
       $selected = undefined
     }, IDLE_TIMEOUT)
   }
-
-  // let version = VERSION
 </script>
 
 <style>
@@ -79,24 +84,9 @@
   class:notSelected={notActive}
   on:click={() => ($selected = active ? undefined : name)}>
   {#if active}
-    <CommandButton text="25°" />
-    <CommandButton text="☀️ Hot" />
-    <CommandButton text="❄️ Cold" />
-    <CommandButton text="📺 TV" />
-    <CommandButton text="💀 Off" />
-    <CommandButton text="🌡 Temprature" />
-    <CommandButton text="🎓 Learn" />
-    <CommandButton text="🌅 TV&AC" />
-    <CommandButton text="📽 Youtube" />
-    <CommandButton text="🌐 Browser" />
-    <CommandButton text="🔈 lower" />
-    <CommandButton text="🔇 mute" />
-    <CommandButton text="🔊 higher" />
-    <CommandButton text="📸 picture" />
-    <CommandButton text="🔒 lock" />
-    <!-- <CommandButton text="👈 Back" /> -->
+    {#each commands as command}
+      <CommandButton text={command.displayName} />
+    {/each}
   {/if}
   <div class="name">{name}</div>
-  <!-- <h1>Hello {name}!</h1>
-  -->
 </div>

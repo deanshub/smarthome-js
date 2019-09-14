@@ -13,6 +13,8 @@ import { faVolumeUp } from '@fortawesome/free-solid-svg-icons/faVolumeUp'
 import { faCamera } from '@fortawesome/free-solid-svg-icons/faCamera'
 import { faUserLock } from '@fortawesome/free-solid-svg-icons/faUserLock'
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons/faArrowLeft'
+import { faSearch } from '@fortawesome/free-solid-svg-icons/faSearch'
+import { faFlag } from '@fortawesome/free-solid-svg-icons/faFlag'
 
 const emojis = [
   '☀️',
@@ -30,6 +32,11 @@ const emojis = [
   '📸',
   '🔒',
   '👈',
+  '🔍',
+  '💡',
+  '🛏️',
+  '🛋️',
+  '🖥️',
 ]
 const icons = [
   faTemperatureHigh,
@@ -47,6 +54,8 @@ const icons = [
   faCamera,
   faUserLock,
   faArrowLeft,
+  faSearch,
+  faFlag,
 ]
 const emojiFinder = new RegExp(`(${emojis.join('|')})`)
 const emojiToIcon = emoji => {

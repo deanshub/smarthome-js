@@ -26,11 +26,6 @@
       "module": "bedAc",
       "function": "on"
     },
-    "tv": {
-      "displayName": "📺 TV",
-      "function": "sendSignal",
-      "signal": "bedTv.deg"
-    },
     "off": {
       "displayName": "💀 Off",
       "module": "bedAc",
@@ -39,6 +34,11 @@
     "temprature": {
       "displayName": "🌡️ Temprature",
       "module": "temprature"
+    },
+    "tv": {
+      "displayName": "📺 TV",
+      "function": "sendSignal",
+      "signal": "bedTv.deg"
     },
     "lights": {
       "displayName": "💡 Lights",
@@ -56,12 +56,12 @@
       "signals": ["bed30.deg", "bedTv.deg"]
     },
     "BedTo24": {
-      "displayName": "BedTo24",
+      "displayName": "to24",
       "function": "sendSignal",
       "signal": "bedTo24.deg"
     },
     "BedTo25": {
-      "displayName": "BedTo25",
+      "displayName": "to25",
       "function": "sendSignal",
       "signal": "bedTo25.deg"
     }

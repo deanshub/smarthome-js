@@ -1,24 +1,42 @@
 <script>
-  import RoomSlide from './components/RoomSlide.svelte'
   import jwt from 'jsonwebtoken'
-  let devices = [
-    { name: 'bedroom' },
-    { name: 'livingroom' },
-    { name: 'workroom' },
-  ]
+  import { allManifests } from './stores'
+  import RoomSlide from './components/RoomSlide.svelte'
+  import Loader from './components/Loader.svelte'
 
   function connect() {
     const ws = new WebSocket('ws://'+INTERNAL_IP+':'+PORT)
-    ws.onmessage = data => console.log(authenticate(data))
-    // ws.onopen = async () => {
-    //   resolve()
-    //   ws.send(sign(await getManifest()))
-    // }
+    ws.onmessage = ({data}) => handleMessage(ws, data)
+    ws.onopen = async () => {
+      ws.send(sign(requestManifests()))
+    }
     ws.onclose = ()=> console.error('connection closed')
     ws.onerror = console.error
   }
 
-  function authenticate({data:message}) {
+  function requestManifests() {
+    return {
+      requestManifests: true,
+    }
+  }
+
+  function handleMessage(ws, data) {
+    const message = authenticate(data)
+    if (message.allManifests) {
+      $allManifests = message.allManifests
+    }
+  }
+
+  function sign(message) {
+    if (SECRET) {
+      return jwt.sign(message, SECRET)
+    }
+    console.warn(
+      'No secret key provided, all communtication will be un-encrypted!'
+    )
+    return JSON.stringify(message)
+  }
+  function authenticate(message) {
     if (SECRET) {
       try {
         return jwt.verify(message, SECRET)
@@ -56,9 +74,14 @@
 </style>
 
 <div class="app">
-  {#each devices as { name }}
-    <RoomSlide {name} />
-  {/each}
+  {#if $allManifests!==undefined}
+    {#each Object.keys($allManifests||{}) as room}
+      {@debug $allManifests}
+      <RoomSlide manifest={$allManifests[room]} />
+    {/each}
+  {:else}
+    <Loader/>
+  {/if}
   <div class="version">Version: {VERSION}</div>
   <!-- <div>Mode: {process.env.NODE_ENV}</div> -->
 </div>

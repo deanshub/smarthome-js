@@ -38,6 +38,8 @@ function handleMessage(ws, data) {
         logger.info(`Got "${message.manifest.name}'s" manifest'`)
       }
       devices[message.manifest.name] = { ...message.manifest, ws }
+    } else if (message.requestManifests) {
+      sendAllManifests(ws)
     } else if (message.messageIdAnswered) {
       const { messageIdAnswered, result } = message
       publishMessageResult(messageIdAnswered, result)
@@ -45,6 +47,12 @@ function handleMessage(ws, data) {
       triggerCommand(ws, message)
     }
   }
+}
+
+async function sendAllManifests(ws) {
+  const myDevices = await getMyDevices()
+
+  ws.send(sign({ allManifests: myDevices }))
 }
 
 function authenticate(message) {

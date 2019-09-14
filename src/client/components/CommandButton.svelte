@@ -34,6 +34,7 @@
     cursor: pointer;
 
     min-width: 10vmax;
+    max-width: 40vmin;
     margin: 1em;
     flex: 1;
   }
