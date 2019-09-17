@@ -54,11 +54,17 @@ async function notifyAndRemoveReminder(reminder) {
   })
 
   reminders.delete(reminder)
-  if (reminder.repeat) {
+  if (reminder.repeat === 'weekly') {
     // reminder.start = new Date() // no need because it already has a start date
     const futureMessage = later(async () => {
       await notifyAndRemoveReminder(reminder)
     }, '7d')
+    reminder.end = futureMessage.futureDate
+    addReminder(reminder)
+  } else if (reminder.repeat === 'yearly') {
+    const futureMessage = later(async () => {
+      await notifyAndRemoveReminder(reminder)
+    }, '1y')
     reminder.end = futureMessage.futureDate
     addReminder(reminder)
   }
@@ -107,14 +113,30 @@ you can either enter the format *##:##* or *# m\\h\\d*`,
 }
 
 const getRepeatCallbackKeyboard = reminder => {
-  const inline_keyboard = reminder.repeat
-    ? [[{ text: '❌', callback_data: 'deleteReminder' }]]
-    : [
+  let inline_keyboard
+  if (reminder.repeat === 'weekly') {
+    inline_keyboard = [
       [
-        { text: '🔁', callback_data: 'repeatReminder' },
+        { text: '🔁 Yearly', callback_data: 'repeatYearlyReminder' },
         { text: '❌', callback_data: 'deleteReminder' },
       ],
     ]
+  } else if (reminder.repeat === 'yearly') {
+    inline_keyboard = [
+      [
+        { text: '🔁 Weekly', callback_data: 'repeatWeeklyReminder' },
+        { text: '❌', callback_data: 'deleteReminder' },
+      ],
+    ]
+  } else {
+    inline_keyboard = [
+      [
+        { text: '🔁 Weekly', callback_data: 'repeatWeeklyReminder' },
+        { text: '🔁 Yearly', callback_data: 'repeatYearlyReminder' },
+        { text: '❌', callback_data: 'deleteReminder' },
+      ],
+    ]
+  }
 
   return {
     reply_markup: JSON.stringify({
@@ -264,7 +286,7 @@ async function repeatReminder({ msg }) {
   const reminder = Array.from(reminders).find(
     cur => cur.message_id === msg.message.reply_to_message.message_id
   )
-  reminder.repeat = true
+  reminder.repeat = 'weekly'
   persistReminders(reminders)
   return editMessage('Reminder will repeat', undefined, {
     chat_id: msg.message.chat.id,
@@ -283,6 +305,7 @@ export async function notify(_, { reminder }) {
 addCallbackActionUsingMatcher(reminderCallbackMatcher, scheduleReminder)
 addCallbackAction('google', googleSearch)
 addCallbackAction('deleteReminder', deleteReminder)
-addCallbackAction('repeatReminder', repeatReminder)
+addCallbackAction('repeatWeeklyReminder', repeatReminder)
+addCallbackAction('repeatYearlyReminder', repeatReminder)
 
 loadReminders()

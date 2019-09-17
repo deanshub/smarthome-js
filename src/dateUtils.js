@@ -1,6 +1,7 @@
 import addDays from 'date-fns/addDays'
 import addMinutes from 'date-fns/addMinutes'
 import addHours from 'date-fns/addHours'
+import addYears from 'date-fns/addYears'
 import setHours from 'date-fns/setHours'
 import setMinutes from 'date-fns/setMinutes'
 import isFuture from 'date-fns/isFuture'
@@ -56,7 +57,9 @@ function getAdditionActivationDate(additionTimeText, fromDate = Date.now()) {
   const period = result.groups.period.toLocaleLowerCase()
 
   let func
-  if (period === 'm' || period.startsWith('minute')) {
+  if (period === 'y' || period.startsWith('year')) {
+    func = addYears
+  } else if (period === 'm' || period.startsWith('minute')) {
     func = addMinutes
   } else if (period === 'h' || period.startsWith('hour')) {
     func = addHours
@@ -85,7 +88,7 @@ function getDateTimeActivationDate(timeText) {
     hours,
     minutes
   )
-  return futureDate
+  return isFuture(futureDate) ? futureDate : addYears(futureDate, 1)
 }
 
 export function distanceInWords(from, to) {
