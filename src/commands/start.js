@@ -14,14 +14,18 @@ export default async function(msg) {
   const devices = await getDevices()
 
   const inline_keyboard = [
-    Object.values(devices).map(device => {
-      return {
-        text: device.displayName,
-        callback_data: msg.timer
-          ? `${device.propName}${CONSTS.TIME_KEY}${msg.timer}`
-          : device.propName,
-      }
-    }),
+    Object.values(devices)
+      .sort((a, b) =>
+        (a.propName.toUpperCase() < b.propName.toUpperCase() ? -1 : 1)
+      )
+      .map(device => {
+        return {
+          text: device.displayName,
+          callback_data: msg.timer
+            ? `${device.propName}${CONSTS.TIME_KEY}${msg.timer}`
+            : device.propName,
+        }
+      }),
   ]
 
   if (!msg.timer) {

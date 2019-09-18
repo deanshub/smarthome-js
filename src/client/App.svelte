@@ -75,8 +75,7 @@
 
 <div class="app">
   {#if $allManifests!==undefined}
-    {#each Object.keys($allManifests||{}) as room}
-      {@debug $allManifests}
+    {#each Object.keys($allManifests||{}).sort() as room}
       <RoomSlide manifest={$allManifests[room]} />
     {/each}
   {:else}
