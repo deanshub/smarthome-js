@@ -27,8 +27,8 @@
     justify-content: center;
     align-items: center;
 
-    background-color: rgba(255, 255, 255, 0.8);
-    color: black;
+    backdrop-filter: contrast(40%) blur(1vmin) brightness(120%);
+    color: white;
     box-shadow: 0 0px 8px rgba(138, 138, 138, 0.8);
     border: 0;
     cursor: pointer;
@@ -42,14 +42,14 @@
     outline: 0;
   }
   .commandButton:hover {
-    background-color: rgb(255, 255, 255);
+    backdrop-filter: contrast(40%) blur(1vmin) brightness(150%);
+    color: black;
   }
 
   .commandText {
     text-transform: capitalize;
     font-family: 'Open Sans', sans-serif;
     text-shadow: 1px 1px black;
-    color: black;
     font-size: 2.8vmin;
   }
 
