@@ -85,7 +85,7 @@
   on:click={() => ($selected = active ? undefined : name)}>
   {#if active}
     {#each commands as command}
-      <CommandButton text={command.displayName} />
+      <CommandButton text={command.displayName} room={manifest.propName} command={command}/>
     {/each}
   {/if}
   <div class="name">{name}</div>

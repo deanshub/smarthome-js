@@ -149,9 +149,9 @@ please configure it in production or development json file`)
 }
 
 async function triggerCommand(ws, message) {
-  // check that the name is farmiliar
   const { messageId, botCommand, commandName, data } = message
   let result
+  //  botCommand is a command being sent over the websocket from the bot message
   if (botCommand) {
     result = await botCommander[commandName](...data)
   } else if (data && data.room && devices[data.room]) {

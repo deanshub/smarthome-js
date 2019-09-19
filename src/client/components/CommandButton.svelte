@@ -2,14 +2,19 @@
   import { fade } from 'svelte/transition'
   import Icon from 'fa-svelte'
   import { parseText } from './emojiToIcon'
+  import { sendMessage } from '../stores'
 
   export let text
+  export let room
+  export let command
+
   const parsedText = parseText(text)
   $: clearedText = ` ${parsedText.clearedText}`
   $: icon = parsedText.icon
 
   function handleClick(e) {
     e.stopPropagation()
+    sendMessage({data:{room, cmd: command.propName}})
   }
 </script>
 

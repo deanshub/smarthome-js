@@ -1,58 +1,17 @@
 <script>
-  import jwt from 'jsonwebtoken'
-  import { allManifests } from './stores'
+  import { allManifests, ws, createConnection, onMessage } from './stores'
   import RoomSlide from './components/RoomSlide.svelte'
   import Loader from './components/Loader.svelte'
 
   function connect() {
-    const ws = new WebSocket('ws://'+INTERNAL_IP+':'+PORT)
-    ws.onmessage = ({data}) => handleMessage(ws, data)
-    ws.onopen = async () => {
-      ws.send(sign(requestManifests()))
-    }
-    ws.onclose = ()=> console.error('connection closed')
-    ws.onerror = console.error
+    createConnection('ws://'+INTERNAL_IP+':'+PORT)
+    onMessage(handleMessage)
   }
 
-  function requestManifests() {
-    return {
-      requestManifests: true,
-    }
-  }
-
-  function handleMessage(ws, data) {
-    const message = authenticate(data)
+  function handleMessage(ws, message) {
     if (message.allManifests) {
       $allManifests = message.allManifests
     }
-  }
-
-  function sign(message) {
-    if (SECRET) {
-      return jwt.sign(message, SECRET)
-    }
-    console.warn(
-      'No secret key provided, all communtication will be un-encrypted!'
-    )
-    return JSON.stringify(message)
-  }
-  function authenticate(message) {
-    if (SECRET) {
-      try {
-        return jwt.verify(message, SECRET)
-      } catch (e) {
-        console.error(
-          `received message:
-  ${message}
-  But coudn't decrypt it with my secret key`
-        )
-        return null
-      }
-    }
-    console.warn(
-      'No secret key provided, all communtication will be un-encrypted!'
-    )
-    return JSON.parse(message)
   }
 
   connect()
