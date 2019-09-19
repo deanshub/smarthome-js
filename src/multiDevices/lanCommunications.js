@@ -156,7 +156,7 @@ async function triggerCommand(ws, message) {
     result = await botCommander[commandName](...data)
   } else if (data && data.room && devices[data.room]) {
     const { room, cmd, msg, args } = data
-    result = await executeCommand(room, cmd, msg, args)
+    result = await excecuteRemoteCommand(room, cmd, msg, args)
   }
 
   return ws.send(sign({ messageIdAnswered: messageId, result }))
@@ -165,7 +165,9 @@ async function triggerCommand(ws, message) {
 
 export async function excecuteRemoteCommand(room, cmd, msg, args) {
   const messageId = generateId()
-  if (devices[room] && devices[room].ws) {
+  if (room === config.NAME) {
+    return executeCommand(room, cmd, msg, args)
+  } else if (devices[room] && devices[room].ws) {
     devices[room].ws.send(sign({ messageId, data: { room, cmd, msg, args } }))
     return getMessageResult(messageId)
   } else {
