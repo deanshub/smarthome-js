@@ -1,5 +1,5 @@
 <script>
-  import { allManifests, ws, createConnection, onMessage } from './stores'
+  import { allManifests, selectedRoom, createConnection, onMessage } from './stores'
   import RoomSlide from './components/RoomSlide.svelte'
   import Loader from './components/Loader.svelte'
 
@@ -12,6 +12,17 @@
     if (message.allManifests) {
       $allManifests = message.allManifests
     }
+  }
+
+  const IDLE_TIMEOUT = 10000
+  let deactivateTimout
+  function reactivateTimeout() {
+    if (deactivateTimout) {
+      clearTimeout(deactivateTimout)
+    }
+    deactivateTimout = setTimeout(() => {
+      $selectedRoom = undefined
+    }, IDLE_TIMEOUT)
   }
 
   connect()
@@ -32,7 +43,7 @@
   }
 </style>
 
-<div class="app">
+<div class="app" on:mousemove={reactivateTimeout} on:click={reactivateTimeout}>
   {#if $allManifests!==undefined}
     {#each Object.keys($allManifests||{}).sort() as room}
       <RoomSlide manifest={$allManifests[room]} />

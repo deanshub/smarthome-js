@@ -1,35 +1,23 @@
 <script>
   import { onMount } from 'svelte'
-  import { selected } from '../stores'
+  import { selectedRoom } from '../stores'
   import CommandButton from './CommandButton.svelte'
   import {parseText} from './emojiToIcon'
 
   export let manifest
   $: name = parseText(manifest.displayName).clearedText.toLocaleLowerCase()
-  $: active = $selected === name
-  $: notActive = $selected !== name && $selected !== undefined
+  $: active = $selectedRoom === name
+  $: notActive = $selectedRoom !== name && $selectedRoom !== undefined
   $: commands = Object.keys(manifest.commands).filter(cmd=>!manifest.commands[cmd].disabled).map(cmd=>{
     return {propName: cmd, ...manifest.commands[cmd]}
   })
-  const IDLE_TIMEOUT = 10000
 
-  let deactivateTimout
   let img
   onMount(async () => {
     img = await import(`../assets/${name}.jpg`)
-    // reactivateTimeout()
   })
 
   // console.log(manifest)
-
-  function reactivateTimeout() {
-    if (deactivateTimout) {
-      clearTimeout(deactivateTimout)
-    }
-    deactivateTimout = setTimeout(() => {
-      $selected = undefined
-    }, IDLE_TIMEOUT)
-  }
 </script>
 
 <style>
@@ -82,7 +70,7 @@
   class="box"
   class:selected={active}
   class:notSelected={notActive}
-  on:click={() => ($selected = active ? undefined : name)}>
+  on:click={() => ($selectedRoom = active ? undefined : name)}>
   {#if active}
     {#each commands as command}
       <CommandButton text={command.displayName} room={manifest.propName} command={command}/>

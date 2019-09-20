@@ -1,7 +1,7 @@
 import { writable, get } from 'svelte/store'
 import jwt from 'jsonwebtoken'
 
-export const selected = writable()
+export const selectedRoom = writable()
 export const allManifests = writable()
 
 export const wsStore = writable()
