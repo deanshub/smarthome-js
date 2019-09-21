@@ -6,6 +6,7 @@ export const allManifests = writable()
 
 export const wsStore = writable()
 export function createConnection(connectionUrl) {
+  // TODO: reconnection
   wsStore.set(new WebSocket(connectionUrl))
 }
 
@@ -13,16 +14,20 @@ export function onMessage(cb) {
   wsStore.subscribe(ws => {
     if (ws) {
       ws.onopen = async () => {
-        ws.send(sign(requestManifests()))
+        sendMessage(requestManifests())
       }
       ws.onclose = () => console.error('connection closed')
       ws.onerror = console.error
 
-      ws.onmessage = ({ data }) => cb(ws, authenticate(data))
+      ws.onmessage = ({ data }) => {
+        // console.log('client received', authenticate(data))
+        cb(ws, authenticate(data))
+      }
     }
   })
 }
 export function sendMessage(data) {
+  // console.log('client sending', data)
   const ws = get(wsStore)
   ws.send(sign(data))
 }

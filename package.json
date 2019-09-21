@@ -61,6 +61,7 @@
     "node-telegram-bot-api": "^0.30.0",
     "node-webcam": "^0.5.0",
     "opn": "^6.0.0",
+    "pem": "^1.14.3",
     "puppeteer": "^1.18.1",
     "win-audio": "^2.0.2",
     "winston": "^3.2.1",
@@ -99,6 +100,8 @@
     "url-loader": "^2.1.0",
     "webpack": "^4.39.2",
     "webpack-cli": "^3.3.7",
-    "webpack-node-externals": "^1.7.2"
+    "webpack-node-externals": "^1.7.2",
+    "webpack-pwa-manifest": "^4.0.0",
+    "workbox-webpack-plugin": "^4.3.1"
   }
 }
