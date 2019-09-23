@@ -1,5 +1,6 @@
 import { writable, get } from 'svelte/store'
 import jwt from 'jsonwebtoken'
+import ReconnectingWebSocket from 'reconnecting-websocket'
 
 export const selectedRoom = writable()
 export const allManifests = writable()
@@ -7,7 +8,7 @@ export const allManifests = writable()
 export const wsStore = writable()
 export function createConnection(connectionUrl) {
   // TODO: reconnection
-  wsStore.set(new WebSocket(connectionUrl))
+  wsStore.set(new ReconnectingWebSocket(connectionUrl))
 }
 
 export function onMessage(cb) {

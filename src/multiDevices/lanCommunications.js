@@ -8,6 +8,7 @@ import logger from '../logger'
 import { getMyDevices, getMasterRoom } from './devicesHelper'
 import { executeCommand } from '../broadlinkController'
 import * as botCommander from '../botCommander'
+import ReconnectingWebSocket from 'reconnecting-websocket'
 
 function generateId(length = 24) {
   let result = ''
@@ -88,7 +89,7 @@ function sign(message) {
 
 function getSocket(ip) {
   return new Promise((resolve, reject) => {
-    const ws = new WebSocket(`wss://${ip}:${PORT}`)
+    const ws = new ReconnectingWebSocket(`wss://${ip}:${PORT}`, { WebSocket })
     ws.on('message', data => handleMessage(ws, data))
     ws.on('open', async () => {
       resolve()
