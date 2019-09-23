@@ -1,7 +1,7 @@
 import config from 'config'
 import scanner from 'lanscanner'
 import https from 'https'
-import pem from 'pem'
+import createCert from 'create-cert'
 import WebSocket from 'ws'
 import jwt from 'jsonwebtoken'
 import logger from '../logger'
@@ -113,23 +113,11 @@ export async function scanForDevices() {
   return devices
 }
 
-function createCertificates() {
-  return new Promise((resolve, reject) => {
-    pem.createCertificate({ selfSigned: true }, (err, keys) => {
-      if (err) reject(err)
-      resolve(keys)
-    })
-  })
-}
-
 export async function createServer() {
   devices[config.NAME] = await getManifest()
 
-  const keys = await createCertificates()
-  const server = https.createServer({
-    key: keys.serviceKey,
-    cert: keys.certificate,
-  })
+  const keys = await createCert()
+  const server = https.createServer(keys)
   const wsServer = new WebSocket.Server({ server })
   wsServer.on('connection', async ws => {
     ws.on('message', data => handleMessage(ws, data))

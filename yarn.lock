@@ -2016,6 +2016,14 @@ core-util-is@1.0.2, core-util-is@~1.0.0:
   resolved "https://registry.yarnpkg.com/core-util-is/-/core-util-is-1.0.2.tgz#b5fd54220aa2bc5ab57aab7140c940754503c1a7"
   integrity sha1-tf1UIgqivFq1eqtxQMlAdUUDwac=
 
+create-cert@^1.0.6:
+  version "1.0.6"
+  resolved "https://registry.yarnpkg.com/create-cert/-/create-cert-1.0.6.tgz#7ed01fff7f9f0cea500aba5eff119af4c8de84f6"
+  integrity sha1-ftAf/3+fDOpQCrpe/xGa9MjehPY=
+  dependencies:
+    pem "^1.9.7"
+    pify "^3.0.0"
+
 create-ecdh@^4.0.0:
   version "4.0.3"
   resolved "https://registry.yarnpkg.com/create-ecdh/-/create-ecdh-4.0.3.tgz#c9111b6f33045c4697f144787f9254cdc77c45ff"
@@ -5317,7 +5325,7 @@ pbkdf2@^3.0.3:
     safe-buffer "^5.0.1"
     sha.js "^2.4.8"
 
-pem@^1.14.3:
+pem@^1.9.7:
   version "1.14.3"
   resolved "https://registry.yarnpkg.com/pem/-/pem-1.14.3.tgz#347e5a5c194a5f7612b88083e45042fcc4fb4901"
   integrity sha512-Q+AMVMD3fzeVvZs5PHeI+pVt0hgZY2fjhkliBW43qyONLgCXPVk1ryim43F9eupHlNGLJNT5T/NNrzhUdiC5Zg==
