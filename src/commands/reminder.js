@@ -9,6 +9,7 @@ import {
   addCallbackAction,
   deleteMessage,
   editMessage,
+  editMessageReplyMarkup,
 } from '../botCommander'
 import { puppeteerSearch } from './web'
 import logger from '../logger'
@@ -49,13 +50,22 @@ function addReminder(reminder) {
 
 const snoozeKeyboard = [
   [
-    { text: '5 min', callback_data: '5m' },
-    { text: '1 h', callback_data: '1h' },
-    { text: '1 day', callback_data: '1d' },
-    { text: '⏰', callback_data: 'setTime' },
+    { text: '5 min', callback_data: 'snooze5m' },
+    { text: '1 h', callback_data: 'snooze1h' },
+    { text: '1 day', callback_data: 'snooze1d' },
+    { text: '⏰', callback_data: 'snoozesetTime' },
     { text: '✔️', callback_data: 'reminderDone' },
   ],
 ]
+export async function snoozeCallbackMatcher({ data }) {
+  return snoozeKeyboard[0].find(
+    reminderTime => reminderTime.callback_data === data
+  )
+}
+export async function scheduleSnooze({ msg, data }) {
+  const noSnoozeData = data.replace('snooze', '')
+  return scheduleReminder({ msg: msg, data: noSnoozeData })
+}
 async function notifyAndRemoveReminder(reminder) {
   broadcastRemoteCommand('notify', reminder, { reminder })
   notify(reminder, { reminder })
@@ -298,7 +308,7 @@ async function reminderDelete({ msg }) {
 }
 
 async function reminderDone({ msg }) {
-  return editMessage('Reminder deleted', undefined, {
+  return editMessageReplyMarkup(undefined, {
     chat_id: msg.message.chat.id,
     message_id: msg.message.message_id,
   })
@@ -325,6 +335,7 @@ export async function notify(_, { reminder }) {
 }
 
 addCallbackActionUsingMatcher(reminderCallbackMatcher, scheduleReminder)
+addCallbackActionUsingMatcher(snoozeCallbackMatcher, scheduleSnooze)
 addCallbackAction('google', googleSearch)
 addCallbackAction('reminderDelete', reminderDelete)
 addCallbackAction('reminderDone', reminderDone)
