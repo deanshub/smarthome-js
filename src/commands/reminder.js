@@ -46,11 +46,26 @@ function addReminder(reminder) {
   reminders.add(reminder)
   return persistReminders(reminders)
 }
+
+const snoozeKeyboard = [
+  [
+    { text: '5 min', callback_data: '5m' },
+    { text: '1 h', callback_data: '1h' },
+    { text: '1 day', callback_data: '1d' },
+    { text: '⏰', callback_data: 'setTime' },
+    { text: '✔️', callback_data: 'reminderDone' },
+  ],
+]
 async function notifyAndRemoveReminder(reminder) {
   broadcastRemoteCommand('notify', reminder, { reminder })
   notify(reminder, { reminder })
   await sendMessage(reminder.from.id, 'Reminding you', {
     reply_to_message_id: reminder.message_id,
+    reply_markup: JSON.stringify({
+      inline_keyboard: snoozeKeyboard,
+      resize_keyboard: true,
+      one_time_keyboard: true,
+    }),
   })
 
   reminders.delete(reminder)
@@ -118,14 +133,14 @@ const getRepeatCallbackKeyboard = reminder => {
     inline_keyboard = [
       [
         { text: '🔁 Yearly', callback_data: 'repeatYearlyReminder' },
-        { text: '❌', callback_data: 'deleteReminder' },
+        { text: '❌', callback_data: 'reminderDelete' },
       ],
     ]
   } else if (reminder.repeat === 'yearly') {
     inline_keyboard = [
       [
         { text: '🔁 Weekly', callback_data: 'repeatWeeklyReminder' },
-        { text: '❌', callback_data: 'deleteReminder' },
+        { text: '❌', callback_data: 'reminderDelete' },
       ],
     ]
   } else {
@@ -133,7 +148,7 @@ const getRepeatCallbackKeyboard = reminder => {
       [
         { text: '🔁 Weekly', callback_data: 'repeatWeeklyReminder' },
         { text: '🔁 Yearly', callback_data: 'repeatYearlyReminder' },
-        { text: '❌', callback_data: 'deleteReminder' },
+        { text: '❌', callback_data: 'reminderDelete' },
       ],
     ]
   }
@@ -270,12 +285,19 @@ export async function googleSearch({ msg }) {
   return sendImage(msg.from.id, img)
 }
 
-async function deleteReminder({ msg }) {
+async function reminderDelete({ msg }) {
   const reminder = Array.from(reminders).find(
     cur => cur.message_id === msg.message.reply_to_message.message_id
   )
   reminders.delete(reminder)
   persistReminders(reminders)
+  return editMessage('Reminder deleted', undefined, {
+    chat_id: msg.message.chat.id,
+    message_id: msg.message.message_id,
+  })
+}
+
+async function reminderDone({ msg }) {
   return editMessage('Reminder deleted', undefined, {
     chat_id: msg.message.chat.id,
     message_id: msg.message.message_id,
@@ -304,7 +326,8 @@ export async function notify(_, { reminder }) {
 
 addCallbackActionUsingMatcher(reminderCallbackMatcher, scheduleReminder)
 addCallbackAction('google', googleSearch)
-addCallbackAction('deleteReminder', deleteReminder)
+addCallbackAction('reminderDelete', reminderDelete)
+addCallbackAction('reminderDone', reminderDone)
 addCallbackAction('repeatWeeklyReminder', repeatReminder)
 addCallbackAction('repeatYearlyReminder', repeatReminder)
 
