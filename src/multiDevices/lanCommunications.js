@@ -89,7 +89,7 @@ function sign(message) {
 
 function getSocket(ip) {
   return new Promise((resolve, reject) => {
-    const ws = new ReconnectingWebSocket(`wss://${ip}:${PORT}`, { WebSocket })
+    const ws = new ReconnectingWebSocket(`ws://${ip}:${PORT}`, { WebSocket })
     ws.on('message', data => handleMessage(ws, data))
     ws.on('open', async () => {
       resolve()
@@ -127,7 +127,7 @@ export async function createServer() {
   return new Promise(resolve => {
     server.listen(PORT, scanner.getInternalIP(), () => {
       logger.info(
-        `Remote command server started on:\nwss://${scanner.getInternalIP()}:${PORT}/`
+        `Remote command server started on:\nws://${scanner.getInternalIP()}:${PORT}/`
       )
       resolve({ server, wsServer })
     })

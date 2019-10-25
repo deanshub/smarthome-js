@@ -5,7 +5,7 @@
   import {onMount} from 'svelte'
 
   function connect() {
-    createConnection('wss://'+INTERNAL_IP+':'+PORT)
+    createConnection('ws://'+INTERNAL_IP+':'+PORT)
     onMessage(handleMessage)
   }
 
