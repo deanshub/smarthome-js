@@ -6,6 +6,9 @@ const HtmlWebpackPlugin = require('html-webpack-plugin')
 const { CleanWebpackPlugin } = require('clean-webpack-plugin')
 const nodeExternals = require('webpack-node-externals')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
+const WebpackPwaManifest = require('webpack-pwa-manifest')
+const { GenerateSW } = require('workbox-webpack-plugin')
+
 const manifest = require('./package.json')
 
 const NODE_ENV =
@@ -65,6 +68,26 @@ const electronConfig = {
     definePlugin,
   ],
   externals: [nodeExternals()],
+}
+
+const pwaManifest = {
+  name: 'Friday',
+  short_name: 'Friday',
+  description: 'Smart home controller using js',
+  background_color: '#101221',
+  crossorigin: 'use-credentials',
+  start_url: '/',
+  display: 'fullscreen',
+  icons: [
+    {
+      src: path.resolve('logo.jpg'),
+      sizes: [96, 128, 192, 256, 384, 512],
+    },
+    {
+      src: path.resolve('logo.jpg'),
+      size: '1024x1024',
+    },
+  ],
 }
 
 const clientConfig = {
@@ -147,8 +170,15 @@ const clientConfig = {
     }),
     new HtmlWebpackPlugin({
       template: './src/client/index.html',
+      title: 'friday',
+      favicon: path.resolve('logo.jpg'),
     }),
     definePlugin,
+    new WebpackPwaManifest(pwaManifest),
+    new GenerateSW({
+      clientsClaim: true, // Control any existing client when the Service Worker starts
+      skipWaiting: true, // Skip the wait on update of the Service Worker
+    }),
     !isDev &&
       new MiniCssExtractPlugin({
         filename: '[name].[hash:8].css',

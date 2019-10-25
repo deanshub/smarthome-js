@@ -1,12 +1,14 @@
 import config from 'config'
 import scanner from 'lanscanner'
-import http from 'http'
+import https from 'https'
+import createCert from 'create-cert'
 import WebSocket from 'ws'
 import jwt from 'jsonwebtoken'
 import logger from '../logger'
 import { getMyDevices, getMasterRoom } from './devicesHelper'
 import { executeCommand } from '../broadlinkController'
 import * as botCommander from '../botCommander'
+import ReconnectingWebSocket from 'reconnecting-websocket'
 
 function generateId(length = 24) {
   let result = ''
@@ -25,6 +27,7 @@ const devices = {}
 function handleMessage(ws, data) {
   let message = {}
   try {
+    // console.log('server received', authenticate(data))
     message = authenticate(data)
   } catch (e) {
     logger.error('Unknown message received:')
@@ -86,7 +89,7 @@ function sign(message) {
 
 function getSocket(ip) {
   return new Promise((resolve, reject) => {
-    const ws = new WebSocket(`ws://${ip}:${PORT}`)
+    const ws = new ReconnectingWebSocket(`wss://${ip}:${PORT}`, { WebSocket })
     ws.on('message', data => handleMessage(ws, data))
     ws.on('open', async () => {
       resolve()
@@ -110,23 +113,25 @@ export async function scanForDevices() {
   return devices
 }
 
-export function createServer() {
-  // TODO: allow only internal connections
+export async function createServer() {
+  devices[config.NAME] = await getManifest()
 
-  const server = http.createServer()
-  const wss = new WebSocket.Server({ server })
-  wss.on('connection', async ws => {
+  const keys = await createCert()
+  const server = https.createServer(keys)
+  const wsServer = new WebSocket.Server({ server })
+  wsServer.on('connection', async ws => {
     ws.on('message', data => handleMessage(ws, data))
     logger.info('A new connection appeared')
     ws.send(sign(await getManifest()))
   })
-  server.listen(PORT, scanner.getInternalIP(), () => {
-    // TODO: get local IP and present a url
-    logger.info(
-      `Remote command server started on\nws://${scanner.getInternalIP()}:${PORT}/`
-    )
+  return new Promise(resolve => {
+    server.listen(PORT, scanner.getInternalIP(), () => {
+      logger.info(
+        `Remote command server started on:\nwss://${scanner.getInternalIP()}:${PORT}/`
+      )
+      resolve({ server, wsServer })
+    })
   })
-  return { server, wss }
 }
 
 async function getManifest() {

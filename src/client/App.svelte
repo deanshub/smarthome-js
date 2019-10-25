@@ -2,9 +2,10 @@
   import { allManifests, selectedRoom, createConnection, onMessage } from './stores'
   import RoomSlide from './components/RoomSlide.svelte'
   import Loader from './components/Loader.svelte'
+  import {onMount} from 'svelte'
 
   function connect() {
-    createConnection('ws://'+INTERNAL_IP+':'+PORT)
+    createConnection('wss://'+INTERNAL_IP+':'+PORT)
     onMessage(handleMessage)
   }
 
@@ -25,7 +26,23 @@
     }, IDLE_TIMEOUT)
   }
 
-  connect()
+
+  onMount(()=>{
+    connect()
+    if ('serviceWorker' in navigator) {
+      // On load register the Worker and get the registration object
+      window.addEventListener('load', () => {
+        navigator.serviceWorker
+          .register('/service-worker.js')
+          .then(registration => {
+            console.log('SW registered: ', registration)
+          })
+          .catch(registrationError => {
+            console.log('SW registration failed: ', registrationError)
+          })
+      })
+    }
+  })
 </script>
 
 <style>

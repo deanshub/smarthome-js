@@ -5,6 +5,8 @@ import { getDevices } from '../broadlinkController'
 import { excecuteRemoteCommand } from '../multiDevices/lanCommunications'
 import logger from '../logger'
 
+app.commandLine.appendSwitch('ignore-certificate-errors')
+
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow = null
@@ -67,9 +69,11 @@ async function createWindow() {
   mainWindow = new BrowserWindow({
     width: 1000,
     height: 600,
-    // webPreferences: {
-    //   preload: path.join(__dirname, 'preload.js'),
-    // },
+    webPreferences: {
+      //   preload: path.join(__dirname, 'preload.js'),
+      // webSecurity: false,
+      // allowRunningInsecureContent: true,
+    },
   })
   mainWindow.setMenuBarVisibility(false)
   // and load the index.html of the app.

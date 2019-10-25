@@ -16,6 +16,10 @@ export default async function() {
 
   subscribeToMessages()
 
-  createServer()
+  try {
+    await createServer()
+  } catch (e) {
+    logger.error(e)
+  }
   scanForDevices()
 }
