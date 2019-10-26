@@ -174,22 +174,29 @@ const getRepeatCallbackKeyboard = reminder => {
 
 export async function getAllReminders(msg) {
   if (reminders.size > 0) {
-    reminders.forEach(reminder => {
-      const percentage = Math.floor(
-        ((new Date() - reminder.start) / (reminder.end - reminder.start)) * 100
-      )
-      return sendMessage(
-        msg.from.id,
-        `in ${distanceInWords(
-          new Date(),
-          reminder.end
-        )} (${percentage}% complete)`,
-        {
-          reply_to_message_id: reminder.message_id,
-          ...getRepeatCallbackKeyboard(reminder),
-        }
-      )
-    })
+    return Promise.all(
+      Array.from(reminders)
+        .sort((a, b) => {
+          return b.start - a.start
+        })
+        .map(reminder => {
+          const percentage = Math.floor(
+            ((new Date() - reminder.start) / (reminder.end - reminder.start)) *
+              100
+          )
+          return sendMessage(
+            msg.from.id,
+            `in ${distanceInWords(
+              new Date(),
+              reminder.end
+            )} (${percentage}% complete)`,
+            {
+              reply_to_message_id: reminder.message_id,
+              ...getRepeatCallbackKeyboard(reminder),
+            }
+          )
+        })
+    )
   } else {
     return sendMessage(msg.from.id, 'No reminders set', {
       reply_to_message_id: msg.message_id,
