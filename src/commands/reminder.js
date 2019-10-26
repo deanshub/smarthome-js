@@ -308,7 +308,7 @@ async function reminderDelete({ msg }) {
 }
 
 async function reminderDone({ msg }) {
-  return editMessageReplyMarkup(undefined, {
+  return editMessage('Done', undefined, {
     chat_id: msg.message.chat.id,
     message_id: msg.message.message_id,
   })
