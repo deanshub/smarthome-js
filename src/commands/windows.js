@@ -1,4 +1,4 @@
-import { speaker } from 'win-audio'
+import { audio } from 'system-control'
 import lockSystem from 'lock-system'
 import Camera from 'node-webcam'
 import Webcam from 'node-webcam/src/Webcam'
@@ -11,24 +11,19 @@ const webcamOptions = {
 }
 const webcam = Camera.create(webcamOptions)
 
-// speaker.polling(200)
-//
-// let muted = false
-// speaker.events.on('toggle', status => {
-//   muted = status.new
-//   // console.log('muted: %s -> %s', status.old, status.new)
-// })
-
 export async function mute() {
-  return speaker.toggle()
+  const muted = await audio.muted()
+  return audio.muted(!muted)
 }
 
 export async function volUp() {
-  return speaker.increase(5)
+  const volume = await audio.volume()
+  return audio.volume(volume + 5)
 }
 
 export async function volDown() {
-  return speaker.decrease(5)
+  const volume = await audio.volume()
+  return audio.volume(volume - 5)
 }
 
 export async function lock() {

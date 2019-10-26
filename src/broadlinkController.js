@@ -3,7 +3,8 @@ import path from 'path'
 import Broadlink from './Broadlink'
 import logger from './logger'
 import { getMyDevices } from './multiDevices/devicesHelper'
-let b = new Broadlink()
+import config from 'config'
+let b = new Broadlink(false, () => {})
 
 const discoverDevices = async () => {
   const savedDevices = await getMyDevices()
@@ -13,7 +14,8 @@ const discoverDevices = async () => {
       dev.checkData()
       // fs.writeFile(path.join(__dirname, '../devices', `${dev.model}${index}`), dev.key)
       const deviceConfiguration = Object.values(savedDevices).find(
-        savedDevice => savedDevice.key.toString() === dev.key.toString()
+        savedDevice =>
+          (savedDevice.key && savedDevice.key.toString()) === dev.key.toString()
       )
       if (deviceConfiguration) {
         if (!deviceConfiguration.displayName) {
@@ -25,6 +27,17 @@ const discoverDevices = async () => {
         deviceConfiguration.device = dev
       } else {
         const unknownDeviceProp = `Unkown${unkownIndex++}`
+        logger.info(
+          `Unknown device ${unkownIndex} found, saving key to "devices/${unknownDeviceProp}.key"`
+        )
+        fs.writeFile(
+          path.join(
+            process.cwd(),
+            config.DEVICES_DIRECTORY,
+            `${unknownDeviceProp}.key`
+          ),
+          dev.key
+        )
         savedDevices[unknownDeviceProp].device = dev
         savedDevices[unknownDeviceProp].propName = unknownDeviceProp
         savedDevices[unknownDeviceProp].displayName = unknownDeviceProp
@@ -42,8 +55,7 @@ let devicesReady = discoverDevices()
 
 export const rediscoverDevices = () => {
   b = new Broadlink()
-  devicesReady = discoverDevices()
-  return devicesReady
+  return discoverDevices()
 }
 
 export async function getRoomConfiguration(room) {

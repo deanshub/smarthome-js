@@ -1,22 +1,22 @@
 {
   "master": true,
   "displayName": "🖥️ Workroom",
-  "keyName": "Broadlink RM Mini2",
+  "keyName": "Broadlink RM Mini1",
   "commands": {
     "hot": {
       "displayName": "☀️ Hot",
       "function": "sendSignal",
-      "signal": "work30.deg"
+      "signal": "30autoLow.deg"
     },
     "cold": {
       "displayName": "❄️ Cold",
       "function": "sendSignal",
-      "signal": "work17.deg"
+      "signal": "25autoLow.deg"
     },
     "off": {
       "displayName": "💀 Off",
       "function": "sendSignal",
-      "signal": "workoff.deg"
+      "signal": "acOff.deg"
     },
     "temprature": {
       "displayName": "🌡️ Temprature",

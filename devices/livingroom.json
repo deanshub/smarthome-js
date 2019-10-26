@@ -1,6 +1,6 @@
 {
   "displayName": "🛋️ Livingroom",
-  "keyName": "Broadlink RM Mini1",
+  "keyName": "Broadlink RM2 Pro Plus v23",
   "commands": {
     "25": {
       "displayName": "25°",
@@ -15,17 +15,16 @@
     "cold": {
       "displayName": "❄️ Cold",
       "function": "sendSignal",
-      "signal": "salon22.deg"
+      "signal": "22coldCentral.deg"
     },
     "off": {
       "displayName": "💀 Off",
       "function": "sendSignal",
-      "signal": "salonoff.deg"
+      "signal": "centralAcOff.deg"
     },
     "temprature": {
       "displayName": "🌡️ Temprature",
-      "module": "temprature",
-      "disabled": true
+      "module": "temprature"
     },
     "tv": {
       "displayName": "📺 TV",

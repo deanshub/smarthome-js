@@ -1,6 +1,7 @@
 import path from 'path'
 import fs from 'fs-extra'
 import config from 'config'
+import logger from '../logger'
 
 let cachedDevices = null
 
@@ -24,13 +25,24 @@ export async function getMyDevices() {
       // add the key (readfile) and propName
       let key
       if (manifest.keyName) {
-        key = await fs.readFile(
-          path.resolve(
-            process.cwd(),
-            config.DEVICES_DIRECTORY,
-            manifest.keyName
+        try {
+          key = await fs.readFile(
+            path.resolve(
+              process.cwd(),
+              config.DEVICES_DIRECTORY,
+              manifest.keyName
+            )
           )
-        )
+        } catch (e) {
+          logger.error(
+            `key "${path.resolve(
+              process.cwd(),
+              config.DEVICES_DIRECTORY,
+              manifest.keyName
+            )}" not found`
+          )
+          logger.error(e.message)
+        }
       }
       const room = file.slice(0, file.length - 5)
       devicesManifest[room] = { ...manifest, key, propName: room }
