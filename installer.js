@@ -3,8 +3,8 @@ const AutoLaunch = require('auto-launch')
 const command = process.argv[process.argv.length - 1]
 
 const autoLauncher = new AutoLaunch({
-  name: 'smarthome-js',
-  path: `${process.execPath} ${path.resolve(__dirname, '../dist/index.js')}`,
+  name: 'Friday',
+  path: `${process.execPath} ${path.resolve(process.cwd(), 'dist/index.js')}`,
 })
 
 autoLauncher
