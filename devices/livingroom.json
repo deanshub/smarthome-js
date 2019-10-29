@@ -10,7 +10,7 @@
     "hot": {
       "displayName": "☀️ Hot",
       "function": "sendSignal",
-      "signal": "salon30.deg"
+      "signal": "28centralHot.deg"
     },
     "cold": {
       "displayName": "❄️ Cold",

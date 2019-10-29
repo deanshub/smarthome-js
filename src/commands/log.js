@@ -20,11 +20,7 @@ export default async function(msg, values) {
       Array.from(Array(days)).map((_, index) => {
         if (files[files.length - (index + 1)]) {
           return fs.readFile(
-            path.join(
-              __dirname,
-              '../..',
-              files[files.length - (index + 1)].name
-            )
+            path.join(process.cwd(), files[files.length - (index + 1)].name)
           )
         }
         return ''
