@@ -38,6 +38,7 @@ const emojis = [
   '🛋️',
   '🖥️',
   '👶',
+  '🚪',
 ]
 const icons = [
   faTemperatureHigh,

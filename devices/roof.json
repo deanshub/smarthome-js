@@ -1,0 +1,30 @@
+{
+  "displayName": "🚪 Roof",
+  "keyName": "Broadlink RM Mini4.key",
+  "commands": {
+    "hot": {
+      "displayName": "☀️ Hot",
+      "function": "sendSignal",
+      "signal": "roof30low.deg"
+    },
+    "cold": {
+      "displayName": "❄️ Cold",
+      "function": "sendSignal",
+      "signal": "roof22low.deg"
+    },
+    "off": {
+      "displayName": "💀 Off",
+      "function": "sendSignal",
+      "signal": "roofAcOff.deg"
+    },
+    "temprature": {
+      "displayName": "🌡️ Temprature",
+      "module": "temprature",
+      "disabled": true
+    },
+    "learn": {
+      "displayName": "🎓 Learn",
+      "module": "learn"
+    }
+  }
+}
