@@ -4,7 +4,10 @@ const command = process.argv[process.argv.length - 1]
 
 const autoLauncher = new AutoLaunch({
   name: 'Friday',
-  path: `${process.execPath} ${path.resolve(process.cwd(), 'dist/index.js')}`,
+  path: `${path.resolve(
+    process.cwd(),
+    'node_modules/.bin/electron.cmd'
+  )} ${path.resolve(process.cwd(), 'dist/smarthome.js')}`,
 })
 
 autoLauncher
