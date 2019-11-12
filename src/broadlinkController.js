@@ -17,13 +17,12 @@ const discoverDevices = async () => {
         savedDevice =>
           (savedDevice.key && savedDevice.key.toString()) === dev.key.toString()
       )
+
       if (deviceConfiguration) {
         if (!deviceConfiguration.displayName) {
           deviceConfiguration.displayName = deviceConfiguration.propName
         }
-        logger.info(
-          `broadlink device "${deviceConfiguration.displayName}" found`
-        )
+        logger.info(`broadlink device "${deviceConfiguration.propName}" found`)
         deviceConfiguration.device = dev
       } else {
         const unknownDeviceProp = `Unkown${unkownIndex++}`
@@ -47,7 +46,7 @@ const discoverDevices = async () => {
     b.discover()
     setTimeout(() => {
       resolve(savedDevices)
-    }, 200)
+    }, 300)
   })
 }
 
@@ -55,7 +54,7 @@ let devicesReady = discoverDevices()
 
 export const rediscoverDevices = () => {
   b = new Broadlink()
-  return discoverDevices()
+  return (devicesReady = discoverDevices())
 }
 
 export async function getRoomConfiguration(room) {

@@ -13,20 +13,26 @@ export default async function(msg) {
 
   const devices = await getDevices()
 
-  const inline_keyboard = [
-    Object.values(devices)
-      .sort((a, b) =>
-        (a.propName.toUpperCase() < b.propName.toUpperCase() ? -1 : 1)
-      )
-      .map(device => {
-        return {
-          text: device.displayName,
-          callback_data: msg.timer
-            ? `${device.propName}${CONSTS.TIME_KEY}${msg.timer}`
-            : device.propName,
-        }
-      }),
-  ]
+  const inline_keyboard = Object.values(devices)
+    .sort((a, b) =>
+      (a.propName.toUpperCase() < b.propName.toUpperCase() ? -1 : 1)
+    )
+    .map(device => {
+      return {
+        text: device.device ? device.displayName : `🔴 ${device.displayName}`,
+        callback_data: msg.timer
+          ? `${device.propName}${CONSTS.TIME_KEY}${msg.timer}`
+          : device.propName,
+      }
+    })
+    .reduce((res, device, index) => {
+      if (index % 3 == 0) {
+        res.push([device])
+      } else {
+        res[res.length - 1].push(device)
+      }
+      return res
+    }, [])
 
   if (!msg.timer) {
     inline_keyboard.unshift([{ text: '⏲ Timer', callback_data: CONSTS.TIMER }])
