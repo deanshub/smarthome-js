@@ -95,7 +95,7 @@
     "pkg": "^4.4.0",
     "prettier": "^1.18.2",
     "style-loader": "^1.0.0",
-    "svelte": "^3.9.1",
+    "svelte": "^3.49.0",
     "svelte-loader": "^2.13.6",
     "url-loader": "^2.1.0",
     "webpack": "^4.39.2",
