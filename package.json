@@ -54,7 +54,7 @@
     "dateformat": "^3.0.3",
     "fa-svelte": "^3.0.0",
     "fs-extra": "^8.1.0",
-    "jsonwebtoken": "^8.5.1",
+    "jsonwebtoken": "^9.0.0",
     "lanscanner": "^0.0.5",
     "lock-system": "^2.0.0",
     "node-notifier": "^5.4.3",
